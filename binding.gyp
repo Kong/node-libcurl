@@ -61,9 +61,15 @@
                     'defines' : [
                         'CURL_STATICLIB'
                     ]
-                }, { # OS != "win"
+                }],
+                ['OS=="mac"', {
                     'libraries': [
                         '<!@(node "<(module_root_dir)/tools/curl-config.js")'
+                    ]
+                }],
+                ['OS=="linux"', {
+                    'libraries': [
+                        '<!@(node "<(module_root_dir)/tools/curl-config.js" static)'
                     ]
                 }]
             ]
