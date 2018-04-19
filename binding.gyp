@@ -69,12 +69,12 @@
                     'defines' : [
                         'CURL_STATICLIB'
                     ]
-                }]
+                }],
                 ['OS=="mac"', {
                     'libraries': [
                         '<!@(node "<(module_root_dir)/tools/curl-config.js")'
                     ]
-                }],
+                }]
             ]
         },
         {
