@@ -10,15 +10,16 @@
                 'src/Curl.cc',
                 'src/CurlHttpPost.cc'
             ],
-            'include_dirs' : [
+            'include_dirs': [
                 "<!(node -e \"require('nan')\")"
             ],
             'msvs_settings': {
                 'VCCLCompilerTool': {
-                    'DisableSpecificWarnings': ['4506', '4838'] #warning about v8 inline function and narrowing
+                    # warning about v8 inline function and narrowing
+                    'DisableSpecificWarnings': ['4506', '4838']
                 }
             },
-            'configurations' : {
+            'configurations': {
                 'Release': {
                     'msvs_settings': {
                         'VCCLCompilerTool': {
@@ -26,7 +27,8 @@
                             'Optimization': 2,                  # /O2 safe optimization
                             'FavorSizeOrSpeed': 1,              # /Ot, favour speed over size
                             'InlineFunctionExpansion': 2,       # /Ob2, inline anything eligible
-                            'WholeProgramOptimization': 'true', # /GL, whole program optimization, needed for LTCG
+                            # /GL, whole program optimization, needed for LTCG
+                            'WholeProgramOptimization': 'true',
                             'OmitFramePointers': 'true',
                             'EnableFunctionLevelLinking': 'true',
                             'EnableIntrinsicFunctions': 'true',
@@ -42,10 +44,11 @@
                     }
                 }
             },
-            'cflags' : ['-std=c++11', '-O2', '-Wno-narrowing'],
-            'cflags!': [ '-fno-exceptions', '-O3' ], # enable exceptions, remove level 3 optimization
+            'cflags': ['-std=c++11', '-O2', '-Wno-narrowing'],
+            # enable exceptions, remove level 3 optimization
+            'cflags!': ['-fno-exceptions', '-O3'],
             'xcode_settings': {
-                'OTHER_CPLUSPLUSFLAGS' : ['-std=c++11','-stdlib=libc++'],
+                'OTHER_CPLUSPLUSFLAGS': ['-std=c++11', '-stdlib=libc++'],
                 'OTHER_LDFLAGS': ['-stdlib=libc++'],
                 'MACOSX_DEPLOYMENT_TARGET': '10.8',
                 'WARNING_CFLAGS':[
@@ -58,16 +61,21 @@
                     'dependencies': [
                         '<!@(node "<(module_root_dir)/tools/retrieve-win-deps.js")'
                     ],
-                    'defines' : [
+                    'defines': [
+                        'CURL_STATICLIB'
+                    ]
+                }],
+                ['OS=="linux" and "<!(echo $NODELIBCURL_BUILD_STATIC)"=="yes"', {
+                    'libraries': [
+                        '<!@(node "<(module_root_dir)/tools/curl-config.js" static)'
+                    ],
+                    'defines': [
                         'CURL_STATICLIB'
                     ]
                 }],
                 ['OS=="linux"', {
                     'libraries': [
-                        '<!@(node "<(module_root_dir)/tools/curl-config.js" static)'
-                    ],
-                    'defines' : [
-                        'CURL_STATICLIB'
+                        '<!@(node "<(module_root_dir)/tools/curl-config.js")'
                     ]
                 }],
                 ['OS=="mac"', {
@@ -80,10 +88,10 @@
         {
             'target_name': 'action_after_build',
             'type': 'none',
-            'dependencies': [ '<(module_name)' ],
+            'dependencies': ['<(module_name)'],
             'copies': [
                 {
-                    'files': [ '<(PRODUCT_DIR)/<(module_name).node' ],
+                    'files': ['<(PRODUCT_DIR)/<(module_name).node'],
                     'destination': '<(module_path)'
                 }
             ]
