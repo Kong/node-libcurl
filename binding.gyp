@@ -54,7 +54,7 @@
                         'CURL_STATICLIB'
                     ]
                 }],
-                ['OS=="mac"', {
+                ['OS=="mac" or (OS=="linux" and "<!(echo $NODELIBCURL_BUILD_STATIC)"!="yes")', {
                     'cflags_cc': [
                         '-std=c++11',
                         '-O2',
@@ -102,7 +102,7 @@
                         '-L <!@(node "<(module_root_dir)/tools/curl-config.js" --prefix)/lib -lcurl'
                     ]
                 }],
-                ['OS=="linux"', {
+                ['OS=="linux" and "<!(echo $NODELIBCURL_BUILD_STATIC)"=="yes"', {
                     'cflags_cc': [
                         '-std=c++11',
                         '-O2',
