@@ -1,6 +1,6 @@
 {
-  "name": "insomnia-node-libcurl",
-  "version": "2.0.0-alpha.0-1",
+  "name": "inlc",
+  "version": "2.0.0-alpha.0-2",
   "author": "Jonathan Cardoso <me@jonathancardoso.com>",
   "description": "Node bindings for libcurl. Based on the work from node-curl.",
   "keywords": [
@@ -23,7 +23,7 @@
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "mocha test --reporter spec --timeout 5000",
     "docs": "jsdoc2md lib/*.js > api.md",
-    "postinstall": "node scripts/postinstall",
+    "postinstall": "node scripts/postinstall && rimraf build",
     "pregyp": "node-pre-gyp",
     "prettier": "prettier --write --single-quote true --trailing-comma es5 --print-width 120",
     "prettier:all": "yarn prettier lib/**/*.js tools/**/*.js scripts/**/*.js test/**/*.js examples/**/*.js",
@@ -60,9 +60,10 @@
     "mocha": "^5.2.0",
     "multiparty": "^4.2.0",
     "octonode": "^0.9.3",
+    "prettier": "1.14.2",
     "progress": "^2.0.0",
-    "should": "^13.2.3",
-    "prettier": "1.14.2"
+    "rimraf": "^3.0.2",
+    "should": "^13.2.3"
   },
   "lint-staged": {
     "*.js": [
