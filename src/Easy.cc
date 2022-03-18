@@ -1349,6 +1349,9 @@ NAN_MODULE_INIT(Easy::Initialize) {
 
   // prototype methods
   Nan::SetPrototypeMethod(tmpl, "setOpt", Easy::SetOpt);
+#if NODE_LIBCURL_VER_GE(7, 62, 0)
+  Nan::SetPrototypeMethod(tmpl, "setRawUrl", Easy::SetRawUrl);
+#endif
   Nan::SetPrototypeMethod(tmpl, "getInfo", Easy::GetInfo);
   Nan::SetPrototypeMethod(tmpl, "send", Easy::Send);
   Nan::SetPrototypeMethod(tmpl, "recv", Easy::Recv);
@@ -2018,6 +2021,53 @@ v8::Local<v8::Value> Easy::GetInfoTmpl(const Easy* obj, int infoId) {
 
   return scope.Escape(retVal);
 }
+
+#if NODE_LIBCURL_VER_GE(7, 62, 0)
+
+NAN_METHOD(Easy::SetRawUrl) {
+  Easy* obj = Nan::ObjectWrap::Unwrap<Easy>(info.This());
+
+  if (!obj->isOpen) {
+    Nan::ThrowError("Curl handle is closed.");
+    return;
+  }
+
+  CURLcode setOptRetCode = CURLE_UNKNOWN_OPTION;
+
+  v8::Local<v8::Value> value = info[0];
+
+  if (value->IsNull()) {
+    setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CURLU, NULL);
+  } else {
+    if (!value->IsString()) {
+      Nan::ThrowTypeError("Raw URL value must be a string.");
+      return;
+    }
+
+    // Not sure why we need an std::string. Null terminator?
+    // Keeping because Chesterton's fence, etc.
+    Nan::Utf8String value(info[0]);
+    std::string valueStr = std::string(*value, static_cast<size_t>(value.length()));
+
+    unsigned int flags = CURLU_NON_SUPPORT_SCHEME | CURLU_NO_AUTHORITY | CURLU_PATH_AS_IS;
+
+#if NODE_LIBCURL_VER_GE(7, 78, 0)
+    flags |= CURLU_ALLOW_SPACE;
+#endif
+
+    CURLU* urlp = curl_url();
+    if (curl_url_set(urlp, CURLUPART_URL, valueStr.c_str(), flags) != CURLUE_OK) {
+      curl_url_cleanup(urlp);
+      Nan::ThrowError("Invalid/malformed URL.");
+      return;
+    }
+    setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CURLU, urlp);
+  }
+
+  info.GetReturnValue().Set(setOptRetCode);
+}
+
+#endif
 
 NAN_METHOD(Easy::GetInfo) {
   Nan::HandleScope scope;

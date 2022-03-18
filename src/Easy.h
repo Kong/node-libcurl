@@ -78,6 +78,9 @@ class Easy : public Nan::ObjectWrap {
   static NAN_GETTER(IsMonitoringSocketsGetter);
   static NAN_GETTER(IsOpenGetter);
   static NAN_METHOD(SetOpt);
+#if NODE_LIBCURL_VER_GE(7, 62, 0)
+  static NAN_METHOD(SetRawUrl);
+#endif
   static NAN_METHOD(GetInfo);
   static NAN_METHOD(Send);
   static NAN_METHOD(Recv);

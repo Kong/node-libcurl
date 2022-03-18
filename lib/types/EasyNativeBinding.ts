@@ -429,6 +429,13 @@ export declare class EasyNativeBinding {
   ): CurlCode
   // END AUTOMATICALLY GENERATED CODE - DO NOT EDIT
 
+  /**
+   * Sets the raw URL using a CURLU object with permissive options.
+   *
+   * @param url URL to set.
+   */
+  setRawUrl(url: string | null): CurlCode
+
   // overloaded getInfo definitions - changes made here must also be made in Curl.ts
   // TODO: do this automatically, like above.
 
