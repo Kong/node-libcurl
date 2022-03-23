@@ -543,6 +543,11 @@ NAN_METHOD(Multi::AddHandle) {
       return;
     }
 
+    if (!easy->SetUrlOpts()) {
+      Nan::ThrowError("Invalid/malformed URL.");
+      return;
+    }
+
     // reset callback error in case it is set
     easy->callbackError.Reset();
 

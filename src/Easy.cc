@@ -10,8 +10,13 @@
 #include "CurlHttpPost.h"
 #include "Share.h"
 #include "make_unique.h"
+#include "nan.h"
+
+#include <curl/curl.h>
+#include <curl/urlapi.h>
 
 #include <cctype>
+#include <cstdio>
 #include <iostream>
 #include <string>
 
@@ -47,6 +52,7 @@ Easy::Easy() {
   NODE_LIBCURL_ADJUST_MEM(MEMORY_PER_HANDLE);
 
   this->toFree = std::make_shared<Easy::ToFree>();
+  this->url = curl_url();
 
   this->ResetRequiredHandleOptions();
 
@@ -89,6 +95,7 @@ Easy::Easy(Easy* orig) {
   // since they are reset on ResetRequiredHandleOptions()
 
   this->toFree = orig->toFree;
+  this->url = curl_url();
 
   this->ResetRequiredHandleOptions();
 
@@ -145,6 +152,7 @@ Easy::Easy(CURL* easy) {
   // since they are reset on ResetRequiredHandleOptions()
 
   this->toFree = orig->toFree;
+  this->url = curl_url();
 
   this->ResetRequiredHandleOptions();
 
@@ -175,6 +183,10 @@ Easy::~Easy(void) {
   if (this->isOpen) {
     this->Dispose();
   }
+
+  if (this->url) {
+    curl_url_cleanup(this->url);
+  }
 }
 
 void Easy::ResetRequiredHandleOptions() {
@@ -192,6 +204,22 @@ void Easy::ResetRequiredHandleOptions() {
 
   curl_easy_setopt(this->ch, CURLOPT_WRITEFUNCTION, Easy::WriteFunction);
   curl_easy_setopt(this->ch, CURLOPT_WRITEDATA, this);
+}
+
+bool Easy::SetUrlOpts() {
+  unsigned int flags = this->pathAsIs ? CURLU_PATH_AS_IS : 0;
+
+#if NODE_LIBCURL_VER_GE(7, 78, 0)
+  flags |= CURLU_ALLOW_SPACE;
+#endif
+
+  CURLUcode status;
+  if ((status = curl_url_set(this->url, CURLUPART_URL, &this->urlData[0], flags)) != CURLUE_OK) {
+    return false;
+  }
+
+  curl_easy_setopt(this->ch, CURLOPT_CURLU, this->url);
+  return true;
 }
 
 // Dispose persistent objects and references stored during the life of this obj.
@@ -1694,6 +1722,10 @@ NAN_METHOD(Easy::SetOpt) {
           obj->toFree->str.push_back(std::move(valueChar));
         }
 
+      } else if (static_cast<CURLoption>(optionId) == CURLOPT_URL) {
+        obj->urlData = std::vector<char>(valueStr.begin(), valueStr.end());
+        obj->urlData.push_back(0);
+        setOptRetCode = CURLE_OK;
       } else {
         setOptRetCode =
             curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), valueStr.c_str());
@@ -1717,6 +1749,10 @@ NAN_METHOD(Easy::SetOpt) {
       // and not overwrite the READDATA already set in the handle.
       case CURLOPT_READDATA:
         obj->readDataFileDescriptor = Nan::To<int32_t>(value).FromJust();
+        setOptRetCode = CURLE_OK;
+        break;
+      case CURLOPT_PATH_AS_IS:
+        obj->pathAsIs = Nan::To<int32_t>(value).FromJust();
         setOptRetCode = CURLE_OK;
         break;
       default:
@@ -2255,6 +2291,12 @@ NAN_METHOD(Easy::Perform) {
 
   if (!obj->isOpen) {
     Nan::ThrowError("Curl handle is closed.");
+    return;
+  }
+
+  if (!obj->SetUrlOpts()) {
+    v8::Local<v8::Integer> ret = Nan::New<v8::Integer>(static_cast<int32_t>(CURLE_URL_MALFORMAT));
+    info.GetReturnValue().Set(ret);
     return;
   }
 
