@@ -213,7 +213,9 @@ void Easy::ResetRequiredHandleOptions() {
 }
 
 bool Easy::SetUrlOpts() {
-  unsigned int flags = this->pathAsIs ? CURLU_PATH_AS_IS : 0;
+  unsigned int flags = CURLU_GUESS_SCHEME | CURLU_NON_SUPPORT_SCHEME;
+
+  flags |= this->pathAsIs ? CURLU_PATH_AS_IS : 0;
 
 #if NODE_LIBCURL_VER_GE(7, 78, 0)
   flags |= CURLU_ALLOW_SPACE;
