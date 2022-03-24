@@ -18,7 +18,6 @@
 #include <openssl/ssl.h>
 
 #include <cctype>
-#include <cstdio>
 #include <iostream>
 #include <string>
 
