@@ -15,6 +15,8 @@
 #include <curl/curl.h>
 #include <curl/urlapi.h>
 
+#include <openssl/ssl.h>
+
 #include <cctype>
 #include <cstdio>
 #include <iostream>
@@ -204,6 +206,11 @@ void Easy::ResetRequiredHandleOptions() {
 
   curl_easy_setopt(this->ch, CURLOPT_WRITEFUNCTION, Easy::WriteFunction);
   curl_easy_setopt(this->ch, CURLOPT_WRITEDATA, this);
+
+#if NODE_LIBCURL_VER_GE(7, 11, 0)
+  curl_easy_setopt(this->ch, CURLOPT_SSL_CTX_FUNCTION, Easy::SslCtxFunction);
+  curl_easy_setopt(this->ch, CURLOPT_SSL_CTX_DATA, this);
+#endif
 }
 
 bool Easy::SetUrlOpts() {
@@ -220,6 +227,16 @@ bool Easy::SetUrlOpts() {
 
   curl_easy_setopt(this->ch, CURLOPT_CURLU, this->url);
   return true;
+}
+
+CURLcode Easy::SslCtxFunction(CURL* curl, void* sslctx, void* userdata) {
+  Easy* obj = static_cast<Easy*>(userdata);
+  (void)obj;
+
+  SSL_CTX_set_options(static_cast<SSL_CTX*>(sslctx), SSL_OP_LEGACY_SERVER_CONNECT);
+  SSL_CTX_set_options(static_cast<SSL_CTX*>(sslctx), SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
+
+  return CURLE_OK;
 }
 
 // Dispose persistent objects and references stored during the life of this obj.

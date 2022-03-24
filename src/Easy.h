@@ -119,6 +119,7 @@ class Easy : public Nan::ObjectWrap {
 
  public:
   bool SetUrlOpts();
+  static CURLcode SslCtxFunction(CURL* curl, void* sslctx, void* userdata);
 
   // operators
   bool operator==(const Easy& easy) const;
