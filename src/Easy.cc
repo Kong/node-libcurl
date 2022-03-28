@@ -223,6 +223,10 @@ void Easy::ResetRequiredHandleOptions() {
 }
 
 bool Easy::SetUrlOpts() {
+  if (this->urlData.empty()) {
+    return true;
+  }
+
   unsigned int flags = CURLU_GUESS_SCHEME | CURLU_NON_SUPPORT_SCHEME;
 
   flags |= this->pathAsIs ? CURLU_PATH_AS_IS : 0;
