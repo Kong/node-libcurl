@@ -2398,9 +2398,11 @@ NAN_METHOD(Easy::Reset) {
 
   curl_easy_reset(obj->ch);
 
-  // reset the URL,
-  // https://github.com/bagder/curl/commit/ac6da721a3740500cc0764947385eb1c22116b83
-  curl_easy_setopt(obj->ch, CURLOPT_URL, "");
+  curl_easy_setopt(obj->ch, CURLOPT_CURLU, nullptr);
+  curl_url_cleanup(obj->url);
+  obj->url = curl_url();
+  obj->urlData.clear();
+  obj->pathAsIs = false;
 
   obj->callbacks.clear();
   obj->ResetRequiredHandleOptions();
