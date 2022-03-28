@@ -107,6 +107,8 @@ Easy::Easy(Easy* orig) {
 
   this->toFree = orig->toFree;
   this->url = curl_url();
+  this->urlData = orig->urlData;
+  this->pathAsIs = orig->pathAsIs;
 
   this->ResetRequiredHandleOptions();
 
