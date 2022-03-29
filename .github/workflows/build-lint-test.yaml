@@ -236,8 +236,8 @@ jobs:
           retention-days: 5
       - run: echo "::set-output name=run_result::success" > run_result
 
-  build-and-release-nodejs-windows:
-    runs-on: windows-2016
+  build-and-test-nodejs-windows:
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -275,8 +275,8 @@ jobs:
             $host.SetShouldExit(0)
           }
 
-  build-and-release-electron-windows:
-    runs-on: windows-2016
+  build-and-test-electron-windows:
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:

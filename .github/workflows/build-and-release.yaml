@@ -197,7 +197,7 @@ jobs:
           retention-days: 5
 
   build-and-release-nodejs-windows:
-    runs-on: windows-2016
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -241,7 +241,7 @@ jobs:
           node scripts\module-packaging.js --publish $(yarn -s node-pre-gyp reveal staged_tarball --silent)
 
   build-and-release-electron-windows:
-    runs-on: windows-2016
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
