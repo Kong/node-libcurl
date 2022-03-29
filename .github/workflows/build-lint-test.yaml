@@ -237,7 +237,7 @@ jobs:
       - run: echo "::set-output name=run_result::success" > run_result
 
   build-and-test-nodejs-windows:
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
@@ -246,7 +246,7 @@ jobs:
           - 14
           - 16
     env:
-      npm_config_msvs_version: 2022
+      npm_config_msvs_version: 2019
       npm_config_build_from_source: true
     steps:
       - name: Checkout
@@ -276,7 +276,7 @@ jobs:
           }
 
   build-and-test-electron-windows:
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
@@ -286,7 +286,7 @@ jobs:
           - 17.1.0
     env:
       ELECTRON_VERSION: ${{ matrix.electron-version }}
-      npm_config_msvs_version: 2022
+      npm_config_msvs_version: 2019
       npm_config_build_from_source: true
       npm_config_runtime: "electron"
       npm_config_dist_url: "https://atom.io/download/electron"
