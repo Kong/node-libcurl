@@ -74,13 +74,10 @@
       "prettier"
     ]
   },
-  "resolutions": {
-    "nan": "github:jkleinsc/nan#remove_accessor_signature"
-  },
   "dependencies": {
     "@mapbox/node-pre-gyp": "1.0.5",
     "env-paths": "2.2.0",
-    "nan": "2.16.0",
+    "nan": "2.17.0",
     "node-gyp": "8.4.0",
     "npmlog": "4.1.2",
     "rimraf": "^3.0.2",
