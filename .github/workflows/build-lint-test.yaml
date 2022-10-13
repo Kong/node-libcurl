@@ -30,11 +30,11 @@ jobs:
           - 14
         include:
           - os: macos-11
-            node: 16
+            node: 16.16.0
             node-libcurl-cpp-std: c++17
             libcurl-release: 7.79.1
           - os: ubuntu-18.04
-            node: 16
+            node: 16.16.0
             node-libcurl-cpp-std: c++17
             libcurl-release: 7.79.1
             run-lint-and-tsc: true # Run lint
