@@ -284,7 +284,7 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 16
+          - 16.16.0
         electron-version:
           - 21.0.0
     env:
