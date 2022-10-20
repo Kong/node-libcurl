@@ -121,6 +121,7 @@ echo "Building openssl v$OPENSSL_RELEASE"
 # Weird concatenation of the array with itself is needed
 #  because on bash <= 4, using [@] to access an array with 0 elements
 #  gives an error with set -o pipefail
+echo "[DEBUG] ./scripts/ci/build-openssl.sh $OPENSSL_RELEASE $OPENSSL_DEST_FOLDER ${openssl_params+\"${openssl_params[@]}\"} >$LOGS_FOLDER/build-openssl.log 2>&1"
 ./scripts/ci/build-openssl.sh $OPENSSL_RELEASE $OPENSSL_DEST_FOLDER ${openssl_params+"${openssl_params[@]}"} >$LOGS_FOLDER/build-openssl.log 2>&1
 export OPENSSL_BUILD_FOLDER=$OPENSSL_DEST_FOLDER/build/$OPENSSL_RELEASE
 ls -al $OPENSSL_BUILD_FOLDER/lib*
