@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest-large
+          - macos-latest
           - ubuntu-latest
         libcurl-release:
           - 8.4.0
@@ -139,7 +139,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest-large
+          - macos-latest
           - ubuntu-latest
         libcurl-release:
           - 8.4.0
