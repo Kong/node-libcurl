@@ -271,11 +271,13 @@ The maintainers of node-libcurl and thousands of other packages are working with
 
 The latest version of this package has prebuilt binaries (thanks to [node-pre-gyp](https://github.com/mapbox/node-pre-gyp/))
  available for:
+
 - Node.js: Latest two versions on active LTS (see <https://github.com/nodejs/Release>)
 - Electron: Latest 3 major versions
 - NW.js (node-webkit): Latest 3 major (minor for nw.js case) versions
 
 And on the following platforms:
+
 - Linux 64 bits
 - Mac OS X 64 bits
 - Windows 32 and 64 bits
@@ -441,7 +443,7 @@ In case you want some examples check the CI configuration files ([`.travis.yml`]
 
 On macOS you must have:
 
-- macOS >= 10.12 (Sierra)
+- macOS >= 10.15 (Catalina)
 - Xcode Command Line Tools
 
 You can check if you have Xcode Command Line Tools be running:

@@ -32,7 +32,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export MACOS_ARCH_FLAGS=""
   fi
 
-  export MACOSX_DEPLOYMENT_TARGET=10.12
+  export MACOSX_DEPLOYMENT_TARGET=10.15
   export MACOS_TARGET_FLAGS="-mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
 
   export CFLAGS="$MACOS_TARGET_FLAGS $MACOS_ARCH_FLAGS"
