@@ -22,7 +22,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.4.0
         node-libcurl-cpp-std:
           - c++17
         node:
@@ -32,7 +32,7 @@ jobs:
           - os: ubuntu-latest
             node: 18.16.1
             node-libcurl-cpp-std: c++17
-            libcurl-release: 7.79.1
+            libcurl-release: 8.4.0
             run-lint-and-tsc: true
 
     env:
@@ -142,7 +142,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.4.0
         node:
           - 18.16.1
         electron-version:
