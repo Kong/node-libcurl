@@ -176,7 +176,7 @@ fi
 ###################
 # Brotli version must match Node.js one
 # But brotli only started being shipped with Node 12
-BROTLI_NODEJS=$(node -e "console.log(process.versions.brotli || '')")
+# BROTLI_NODEJS=$(node -e "console.log(process.versions.brotli || '')")
 BROTLI_DEFAULT_RELEASE=${BROTLI_NODEJS:-1.0.9}
 BROTLI_RELEASE=${BROTLI_RELEASE:-$BROTLI_DEFAULT_RELEASE}
 BROTLI_DEST_FOLDER=$PREFIX_DIR/deps/brotli
