@@ -177,7 +177,7 @@ fi
 # Brotli version must match Node.js one
 # But brotli only started being shipped with Node 12
 BROTLI_NODEJS=$(node -e "console.log(process.versions.brotli || '')")
-BROTLI_DEFAULT_RELEASE=${BROTLI_NODEJS:-1.0.7}
+BROTLI_DEFAULT_RELEASE=${BROTLI_NODEJS:-1.0.9}
 BROTLI_RELEASE=${BROTLI_RELEASE:-$BROTLI_DEFAULT_RELEASE}
 BROTLI_DEST_FOLDER=$PREFIX_DIR/deps/brotli
 echo "Building brotli v$BROTLI_RELEASE"
@@ -210,7 +210,7 @@ ls -al $ZSTD_BUILD_FOLDER/lib
 ###################
 # Build libssh2
 ###################
-LIBSSH2_RELEASE=${LIBSSH2_RELEASE:-1.10.0}
+LIBSSH2_RELEASE=${LIBSSH2_RELEASE:-1.11.0}
 LIBSSH2_DEST_FOLDER=$PREFIX_DIR/deps/libssh2
 echo "Building libssh2 v$LIBSSH2_RELEASE"
 ./scripts/ci/build-libssh2.sh $LIBSSH2_RELEASE $LIBSSH2_DEST_FOLDER >$LOGS_FOLDER/build-libssh2.log 2>&1

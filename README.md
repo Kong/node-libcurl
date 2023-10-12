@@ -65,7 +65,7 @@
     - [Electron >= 11 / NW.js >= 0.50](#electron--11--nwjs--050)
   - [Building on Linux](#building-on-linux)
   - [Building on macOS](#building-on-macos)
-    - [Xcode >= 10 | macOS >= Mojave](#xcode--10--macos--mojave)
+    - [Xcode >= 10 | macOS >= Catalina](#xcode--10--macos--catalina)
   - [Building on Windows](#building-on-windows)
 - [Getting Help](#getting-help)
 - [Contributing](#contributing)
@@ -458,9 +458,9 @@ It should return their path, in case it returns nothing, you must install it by 
 xcode-select --install
 ```
 
-#### Xcode >= 10 | macOS >= Mojave
+#### Xcode >= 10 | macOS >= Catalina
 
-In case you have errors installing the addon from source, and you are using macOS version >= Mojave, check if the error you are receiving is the following one:
+In case you have errors installing the addon from source, and you are using macOS version >= Catalina, check if the error you are receiving is the following one:
 
 ```
   CXX(target) Release/obj.target/node_libcurl/src/node_libcurl.o
