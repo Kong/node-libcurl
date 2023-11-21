@@ -33,6 +33,20 @@ export interface CurlInfo {
   readonly APPCONNECT_TIME_T: 'APPCONNECT_TIME_T'
 
   /**
+   * Get the default value for .
+   *
+   * Official libcurl documentation: : [https://curl.haxx.se/libcurl/c/CURLINFO_CAINFO.html](https://curl.haxx.se/libcurl/c/CURLINFO_CAINFO.html)
+   */
+  readonly CAINFO: 'CAINFO'
+
+  /**
+   * Get the default value for .
+   *
+   * Official libcurl documentation: : [https://curl.haxx.se/libcurl/c/CURLINFO_CAPATH.html](https://curl.haxx.se/libcurl/c/CURLINFO_CAPATH.html)
+   */
+  readonly CAPATH: 'CAPATH'
+
+  /**
    * Certificate chain.
    *
    * Official libcurl documentation: : [https://curl.haxx.se/libcurl/c/CURLINFO_CERTINFO.html](https://curl.haxx.se/libcurl/c/CURLINFO_CERTINFO.html)
@@ -488,6 +502,8 @@ export type CurlInfoName =
   | 'ACTIVESOCKET'
   | 'APPCONNECT_TIME'
   | 'APPCONNECT_TIME_T'
+  | 'CAINFO'
+  | 'CAPATH'
   | 'CERTINFO'
   | 'CONDITION_UNMET'
   | 'CONNECT_TIME'
