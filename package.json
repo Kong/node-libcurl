@@ -1,6 +1,6 @@
 {
   "name": "@getinsomnia/node-libcurl",
-  "version": "2.3.6-22",
+  "version": "2.3.6-22-alpha",
   "description": "The fastest http(s) client (and much more) for Node.js - Node.js bindings for libcurl",
   "keywords": [
     "node-curl",
