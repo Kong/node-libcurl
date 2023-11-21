@@ -60,7 +60,7 @@ describe('HTTP2', () => {
   })
 
   // skipped until https://github.com/nodejs/node/issues/42713 is fixed
-  it('should work with https2 site', (done) => {
+  xit('should work with https2 site', (done) => {
     const curl = new Curl()
 
     curl.setOpt('URL', `https://${host}:${portHttp2}/`)
