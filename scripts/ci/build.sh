@@ -357,6 +357,13 @@ echo "npm_config_dist_url=$npm_config_dist_url"
 echo "npm_config_target=$npm_config_target"
 echo "npm_config_target_arch=$npm_config_target_arch"
 
+# install setuptools for python3 using pip if python is 3.12 or higher
+python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+if [[ $python_version == "3.12" || $python_version > "3.12" ]]; then
+  echo "Found Python version 3.12/above, installing setuptools for python3"
+  python3 -m pip install setuptools
+fi
+
 yarn install --frozen-lockfile --network-timeout 300000
 
 if [ "$STOP_ON_INSTALL" == "true" ]; then
