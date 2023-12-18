@@ -89,7 +89,7 @@ jobs:
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: "Publish Binary"
         run: |
-          pip install setuptools
+          pip install packaging
           GIT_COMMIT=${{ github.sha }} GIT_TAG=$GIT_TAG RUNNER_OS=${{ runner.os }} ./scripts/ci/build.sh
       - name: Upload artifacts
         if: always()
@@ -178,7 +178,7 @@ jobs:
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: "Publish Binary"
         run: |
-          pip install setuptools
+          pip install packaging
           GIT_COMMIT=${{ github.sha }} GIT_TAG=$GIT_TAG ./scripts/ci/build.sh
       - name: Upload artifacts
         if: always()
@@ -227,7 +227,7 @@ jobs:
       - name: Publish binary
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          pip install setuptools
+          pip install packaging
           yarn node-pre-gyp package testpackage --verbose
           node scripts\module-packaging.js --publish $(yarn -s node-pre-gyp reveal staged_tarball --silent)
 
@@ -276,6 +276,6 @@ jobs:
       - name: Publish binary
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          pip install setuptools
+          pip install packaging
           yarn node-pre-gyp package testpackage --verbose
           node scripts\module-packaging.js --publish $(yarn -s node-pre-gyp reveal staged_tarball --silent)
