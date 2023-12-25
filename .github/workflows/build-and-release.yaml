@@ -27,7 +27,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.5.0
         node-libcurl-cpp-std:
           - c++17
         node:
@@ -108,7 +108,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.5.0
         node:
           - 18.18.2
         electron-version:

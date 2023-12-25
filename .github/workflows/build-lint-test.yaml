@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  LIBCURL_RELEASE: 'LATEST'
+  LIBCURL_RELEASE: "LATEST"
 
 concurrency:
   group: ${{ github.head_ref }}
@@ -22,7 +22,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.5.0
         node-libcurl-cpp-std:
           - c++17
         node:
@@ -32,7 +32,7 @@ jobs:
           - os: ubuntu-latest
             node: 18.18.2
             node-libcurl-cpp-std: c++17
-            libcurl-release: 7.79.1
+            libcurl-release: 8.5.0
             run-lint-and-tsc: true
 
     env:
@@ -98,21 +98,21 @@ jobs:
           key: v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}
           restore-keys: |
             v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}
-      - name: 'Build node-libcurl'
+      - name: "Build node-libcurl"
         if: steps.run_result.outputs.run_result != 'success'
         run: |
           RUN_TESTS=false \
           RUN_PREGYP_CLEAN=false \
           PUBLISH_BINARY=false \
             ./scripts/ci/build.sh
-      - name: 'Run lint'
+      - name: "Run lint"
         if: matrix.run-lint-and-tsc && steps.run_result.outputs.run_result != 'success'
         run: yarn lint
-      - name: 'Run tsc'
+      - name: "Run tsc"
         if: matrix.run-lint-and-tsc && steps.run_result.outputs.run_result != 'success'
         run: yarn build:dist
       # we do run tests in all matrix jobs
-      - name: 'Run tests'
+      - name: "Run tests"
         if: steps.run_result.outputs.run_result != 'success'
         run: yarn test:coverage
       # but coverage is only sent for the run-lint-and-tsc job
@@ -142,7 +142,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         libcurl-release:
-          - 7.79.1
+          - 8.5.0
         node:
           - 18.18.2
         electron-version:
@@ -218,10 +218,10 @@ jobs:
           key: v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
           restore-keys: |
             v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
-      - name: 'Set GIT_TAG'
+      - name: "Set GIT_TAG"
         if: startsWith(github.ref, 'refs/tags')
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: 'Build node-libcurl'
+      - name: "Build node-libcurl"
         if: steps.run_result.outputs.run_result != 'success'
         run: |
           RUN_TESTS=true \
@@ -288,8 +288,8 @@ jobs:
       ELECTRON_VERSION: ${{ matrix.electron-version }}
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
-      npm_config_runtime: 'electron'
-      npm_config_dist_url: 'https://electronjs.org/headers'
+      npm_config_runtime: "electron"
+      npm_config_dist_url: "https://electronjs.org/headers"
       npm_config_target: ${{ matrix.electron-version }}
     steps:
       - name: Checkout
