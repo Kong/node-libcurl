@@ -15,6 +15,11 @@ mkdir -p $2/source
 FORCE_REBUILD=${FORCE_REBUILD:-}
 FORCE_REBUILD_LIBCURL=${FORCE_REBUILD_LIBCURL:-}
 
+# has a cache issue which will skip the rebuild of libcurl
+if [ "${RUNNER_OS}" == "macOS" ]; then
+  FORCE_REBUILD_LIBCURL="true"
+fi
+
 # @TODO We are explicitly checking the static lib
 if [[ -f $build_folder/lib/libcurl.a ]] && [[ -z $FORCE_REBUILD || $FORCE_REBUILD != "true" ]] && [[ -z $FORCE_REBUILD_LIBCURL || $FORCE_REBUILD_LIBCURL != "true" ]]; then
   echo "Skipping rebuild of libcurl because lib file already exists"
@@ -142,6 +147,9 @@ if [ ! -z "$OPENSSL_BUILD_FOLDER" ]; then
   if [ "${RUNNER_OS}" == "macOS" ]; then
     libcurl_args+=("--with-secure-transport")
     libcurl_args+=("--with-default-ssl-backend=openssl")
+    libcurl_args+=("--without-ca-bundle")
+    libcurl_args+=("--without-ca-path")
+    libcurl_args+=("--with-ca-fallback")
   fi
 else
   libcurl_args+=("--without-ssl")
