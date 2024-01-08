@@ -147,9 +147,6 @@ if [ ! -z "$OPENSSL_BUILD_FOLDER" ]; then
   if [ "${RUNNER_OS}" == "macOS" ]; then
     libcurl_args+=("--with-secure-transport")
     libcurl_args+=("--with-default-ssl-backend=openssl")
-    libcurl_args+=("--without-ca-bundle")
-    libcurl_args+=("--without-ca-path")
-    libcurl_args+=("--with-ca-fallback")
   fi
 else
   libcurl_args+=("--without-ssl")
