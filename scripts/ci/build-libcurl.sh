@@ -15,6 +15,11 @@ mkdir -p $2/source
 FORCE_REBUILD=${FORCE_REBUILD:-}
 FORCE_REBUILD_LIBCURL=${FORCE_REBUILD_LIBCURL:-}
 
+# @TODO force rebuild on macOS, remove this later
+if [ "${RUNNER_OS}" == "macOS" ]; then
+  FORCE_REBUILD_LIBCURL="true"
+fi
+
 # @TODO We are explicitly checking the static lib
 if [[ -f $build_folder/lib/libcurl.a ]] && [[ -z $FORCE_REBUILD || $FORCE_REBUILD != "true" ]] && [[ -z $FORCE_REBUILD_LIBCURL || $FORCE_REBUILD_LIBCURL != "true" ]]; then
   echo "Skipping rebuild of libcurl because lib file already exists"
