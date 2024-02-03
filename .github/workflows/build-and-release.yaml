@@ -19,6 +19,7 @@ env:
 
 jobs:
   build-and-release-nodejs:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -100,6 +101,7 @@ jobs:
           retention-days: 5
 
   build-and-release-electron:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -189,6 +191,7 @@ jobs:
           retention-days: 5
 
   build-and-release-nodejs-windows:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -232,6 +235,7 @@ jobs:
           node scripts\module-packaging.js --publish $(yarn -s node-pre-gyp reveal staged_tarball --silent)
 
   build-and-release-electron-windows:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
