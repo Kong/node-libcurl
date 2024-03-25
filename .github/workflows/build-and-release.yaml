@@ -112,7 +112,7 @@ jobs:
         node:
           - 20.9.0
         electron-version:
-          - 28.0.0
+          - 29.0.0
     env:
       LIBCURL_RELEASE: ${{ matrix.libcurl-release }}
       LATEST_LIBCURL_RELEASE: ${{ matrix.libcurl-release }}
@@ -239,7 +239,7 @@ jobs:
         node:
           - 20.9.0
         electron-version:
-          - 28.0.0
+          - 29.0.0
     env:
       ELECTRON_VERSION: ${{ matrix.electron-version }}
       npm_config_msvs_version: 2022
