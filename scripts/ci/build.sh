@@ -357,6 +357,9 @@ echo "npm_config_dist_url=$npm_config_dist_url"
 echo "npm_config_target=$npm_config_target"
 echo "npm_config_target_arch=$npm_config_target_arch"
 
+echo "node version: $(node -v)"
+echo "yarn version: $(yarn -v)"
+
 yarn install --frozen-lockfile --network-timeout 300000
 
 if [ "$STOP_ON_INSTALL" == "true" ]; then
@@ -406,8 +409,8 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
     node scripts/module-packaging.js --publish "$(yarn --silent pregyp reveal staged_tarball --silent)"
   fi
 fi
-node -v
-yarn -v
+echo "node version: $(node -v)"
+echo "yarn version: $(yarn -v)"
 # In case we published the binaries, verify if we can download them, and that they work
 # Otherwise, unpublish them
 INSTALL_RESULT=0
