@@ -1,3 +1,7 @@
+
+#ifndef NOMINMAX
+# define NOMINMAX // To remove conflicts with recent v8 code std::numeric_limits<int>::max()
+#endif
 /**
  * Copyright (c) Jonathan Cardoso Machado. All Rights Reserved.
  *
@@ -62,9 +66,6 @@ NAN_MODULE_INIT(Init) {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   node::AtExit(AtExitCallback, NULL);
 #pragma GCC diagnostic pop
-#endif
-#ifndef NOMINMAX
-# define NOMINMAX // To remove conflicts with recent v8 code std::numeric_limits<int>::max()
 #endif
 }
 
