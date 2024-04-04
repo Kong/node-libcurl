@@ -63,6 +63,9 @@ NAN_MODULE_INIT(Init) {
   node::AtExit(AtExitCallback, NULL);
 #pragma GCC diagnostic pop
 #endif
+#ifndef NOMINMAX
+# define NOMINMAX // To remove conflicts with recent v8 code std::numeric_limits<int>::max()
+#endif
 }
 
 NODE_MODULE(node_libcurl, Init);
