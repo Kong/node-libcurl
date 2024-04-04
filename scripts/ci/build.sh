@@ -406,12 +406,14 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
     node scripts/module-packaging.js --publish "$(yarn --silent pregyp reveal staged_tarball --silent)"
   fi
 fi
-
+node -v
+yarn -v
 # In case we published the binaries, verify if we can download them, and that they work
 # Otherwise, unpublish them
 INSTALL_RESULT=0
 if [[ $PUBLISH_BINARY == true ]]; then
   echo "Publish binary is true - Testing if it was published correctly"
+
   INSTALL_RESULT=$(npm_config_fallback_to_build=false yarn install --frozen-lockfile --network-timeout 300000 > /dev/null)$? || true
 fi
 if [[ $INSTALL_RESULT != 0 ]]; then
