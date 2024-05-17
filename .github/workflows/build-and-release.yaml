@@ -8,7 +8,7 @@ name: build-and-release
 on:
   push:
     tags:
-      - "*"
+      - '*'
     branches:
       - develop
 
@@ -33,13 +33,13 @@ jobs:
       # Produces SBOM and CVE report
       # Helps understand vulnerabilities / license compliance across third party dependencies
       # Drift: Doesn't track any yarn global or OS specific packages that involves scanning entire root file system.
-      # (TODO): Produce OS specific SBOM to detect build time depdencies. 
+      # (TODO): Produce OS specific SBOM to detect build time depdencies.
       - id: sca-project
         uses: Kong/public-shared-actions/security-actions/sca@2f02738ecb1670f01391162e43fe3f5d4e7942a1 # v2.2.2
         with:
           dir: ${{ github.repository }}
           upload-sbom-release-assets: true
-      
+
   build-and-release-nodejs:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -94,10 +94,10 @@ jobs:
           key: v4-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}-fork
           restore-keys: |
             v4-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}-fork
-      - name: "Set GIT_TAG"
+      - name: 'Set GIT_TAG'
         if: startsWith(github.ref, 'refs/tags')
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: "Publish Binary"
+      - name: 'Publish Binary'
         run: |
           pip install packaging
           GIT_COMMIT=${{ github.sha }} GIT_TAG=$GIT_TAG RUNNER_OS=${{ runner.os }} ./scripts/ci/build.sh
@@ -171,10 +171,10 @@ jobs:
           key: v4-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}-fork
           restore-keys: |
             v4-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}-fork
-      - name: "Set GIT_TAG"
+      - name: 'Set GIT_TAG'
         if: startsWith(github.ref, 'refs/tags')
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: "Publish Binary"
+      - name: 'Publish Binary'
         run: |
           pip install packaging
           GIT_COMMIT=${{ github.sha }} GIT_TAG=$GIT_TAG ./scripts/ci/build.sh
@@ -243,8 +243,8 @@ jobs:
       ELECTRON_VERSION: ${{ matrix.electron-version }}
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
-      npm_config_runtime: "electron"
-      npm_config_dist_url: "https://electronjs.org/headers"
+      npm_config_runtime: 'electron'
+      npm_config_dist_url: 'https://electronjs.org/headers'
       npm_config_target: ${{ matrix.electron-version }}
     steps:
       - name: Checkout
@@ -278,4 +278,3 @@ jobs:
           pip install packaging
           yarn node-pre-gyp package testpackage --verbose
           node scripts\module-packaging.js --publish $(yarn -s node-pre-gyp reveal staged_tarball --silent)
-          
