@@ -151,12 +151,6 @@ git merge develop
 And then:
 
 ```bash
-npx np [major|minor|patch]
-```
-
-or if you are having trouble with `np`:
-
-```bash
 npm version [major|minor|patch]
 npm publish
 ```
@@ -168,20 +162,6 @@ git push --follow-tags
 git checkout develop
 git merge master
 git push
-```
-
-#### Prereleases
-
-For prereleases, use something like this from the `develop` branch:
-
-```shell
-npm run np prerelease --any-branch --tag next
-```
-
-If for some reason np fails to run, you can use this command to skip cleaning up and use npm to publish:
-
-```shell
-npm run np prerelease --no-yarn --no-cleanup --any-branch --tag next
 ```
 
 #### Build Matrix
