@@ -274,8 +274,8 @@ fi
 echo "Publish binary is: $PUBLISH_BINARY"
 
 # Configure npm run cache
-mkdir -p ~/.cache/npm run
-npm run config set cache-folder ~/.cache/npm run
+mkdir -p ~/.cache/npm
+npm config set cache-folder ~/.cache/npm
 
 run_tests_electron=false
 has_display=$(xdpyinfo -display $DISPLAY >/dev/null 2>&1 && echo "true" || echo "false")
