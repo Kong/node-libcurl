@@ -22,22 +22,23 @@
 [![AppVeyor CI Status][appveyor-image]][appveyor-url]
 [![Code Quality][codeclimate-image]][codeclimate-url]
 
-[npm-image]:https://img.shields.io/npm/v/node-libcurl.svg?style=flat-square
-[npm-url]:https://www.npmjs.org/package/node-libcurl
-[travis-image]:https://img.shields.io/travis/JCMais/node-libcurl/master.svg?style=flat-square
-[travis-url]:https://travis-ci.com/JCMais/node-libcurl
-[appveyor-image]:https://ci.appveyor.com/api/projects/status/u7ox641jyb6hxrkt/branch/master?svg=true
-[appveyor-url]:https://ci.appveyor.com/project/JCMais/node-libcurl
-[codeclimate-image]:https://img.shields.io/codeclimate/maintainability/JCMais/node-libcurl?style=flat-square
-[codeclimate-url]:https://codeclimate.com/github/JCMais/node-libcurl
-[license-image]:https://img.shields.io/npm/l/node-libcurl?style=flat-square
-[license-url]:https://raw.githubusercontent.com/JCMais/node-libcurl/develop/LICENSE
-[deps-image]:https://img.shields.io/david/JCMais/node-libcurl.svg?style=flat-square
-[deps-url]:https://david-dm.org/jcmais/node-libcurl
+[npm-image]: https://img.shields.io/npm/v/node-libcurl.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/node-libcurl
+[travis-image]: https://img.shields.io/travis/JCMais/node-libcurl/master.svg?style=flat-square
+[travis-url]: https://travis-ci.com/JCMais/node-libcurl
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/u7ox641jyb6hxrkt/branch/master?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/JCMais/node-libcurl
+[codeclimate-image]: https://img.shields.io/codeclimate/maintainability/JCMais/node-libcurl?style=flat-square
+[codeclimate-url]: https://codeclimate.com/github/JCMais/node-libcurl
+[license-image]: https://img.shields.io/npm/l/node-libcurl?style=flat-square
+[license-url]: https://raw.githubusercontent.com/JCMais/node-libcurl/develop/LICENSE
+[deps-image]: https://img.shields.io/david/JCMais/node-libcurl.svg?style=flat-square
+[deps-url]: https://david-dm.org/jcmais/node-libcurl
 
 > The [fastest](#benchmarks) URL transfer library for Node.js.
 
 [libcurl](https://github.com/bagder/curl) bindings for Node.js. libcurl official description:
+
 > libcurl is a free and easy-to-use client-side URL transfer library, supporting DICT, FILE, FTP, FTPS, Gopher, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, Telnet and TFTP. libcurl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP form based upload, proxies, cookies, user+password authentication (Basic, Digest, NTLM, Negotiate, Kerberos), file transfer resume, http proxy tunneling and more!
 
 - [Quick Start](#quick-start)
@@ -85,11 +86,11 @@ npm i node-libcurl --save
 ```
 
 ### Simple Request - Async / Await using curly
->
+
 > this API is experimental and is subject to changes without a major version bump
 
 ```javascript
-const { curly } = require('node-libcurl');
+const { curly } = require('node-libcurl')
 
 const { statusCode, data, headers } = await curly.get('http://www.google.com')
 ```
@@ -97,15 +98,18 @@ const { statusCode, data, headers } = await curly.get('http://www.google.com')
 Any option can be passed using their `FULLNAME` or a `lowerPascalCase` format:
 
 ```javascript
-const querystring = require('querystring');
-const { curly } = require('node-libcurl');
+const querystring = require('querystring')
+const { curly } = require('node-libcurl')
 
-const { statusCode, data, headers } = await curly.post('http://httpbin.com/post', {
-  postFields: querystring.stringify({
-    field: 'value',
-  }),
-  // can use `postFields` or `POSTFIELDS`
-})
+const { statusCode, data, headers } = await curly.post(
+  'http://httpbin.com/post',
+  {
+    postFields: querystring.stringify({
+      field: 'value',
+    }),
+    // can use `postFields` or `POSTFIELDS`
+  },
+)
 ```
 
 JSON POST example:
@@ -114,10 +118,7 @@ JSON POST example:
 const { curly } = require('node-libcurl')
 const { data } = await curly.post('http://httpbin.com/post', {
   postFields: JSON.stringify({ field: 'value' }),
-  httpHeader: [
-    'Content-Type: application/json',
-    'Accept: application/json'
-  ],
+  httpHeader: ['Content-Type: application/json', 'Accept: application/json'],
 })
 
 console.log(data)
@@ -126,25 +127,25 @@ console.log(data)
 ### Simple Request - Using Curl class
 
 ```javascript
-const { Curl } = require('node-libcurl');
+const { Curl } = require('node-libcurl')
 
-const curl = new Curl();
+const curl = new Curl()
 
-curl.setOpt('URL', 'www.google.com');
-curl.setOpt('FOLLOWLOCATION', true);
+curl.setOpt('URL', 'www.google.com')
+curl.setOpt('FOLLOWLOCATION', true)
 
 curl.on('end', function (statusCode, data, headers) {
-  console.info(statusCode);
-  console.info('---');
-  console.info(data.length);
-  console.info('---');
-  console.info(this.getInfo( 'TOTAL_TIME'));
-  
-  this.close();
-});
+  console.info(statusCode)
+  console.info('---')
+  console.info(data.length)
+  console.info('---')
+  console.info(this.getInfo('TOTAL_TIME'))
 
-curl.on('error', curl.close.bind(curl));
-curl.perform();
+  this.close()
+})
+
+curl.on('error', curl.close.bind(curl))
+curl.perform()
 ```
 
 ### Setting HTTP headers
@@ -152,45 +153,49 @@ curl.perform();
 Pass an array of strings specifying headers
 
 ```javascript
-curl.setOpt(Curl.option.HTTPHEADER,
-  ['Content-Type: application/x-amz-json-1.1'])
+curl.setOpt(Curl.option.HTTPHEADER, [
+  'Content-Type: application/x-amz-json-1.1',
+])
 ```
 
 ### Form Submission (Content-Type: application/x-www-form-urlencoded)
 
 ```javascript
-const querystring = require('querystring');
-const { Curl } = require('node-libcurl');
+const querystring = require('querystring')
+const { Curl } = require('node-libcurl')
 
-const curl = new Curl();
-const close = curl.close.bind(curl);
+const curl = new Curl()
+const close = curl.close.bind(curl)
 
-curl.setOpt(Curl.option.URL, '127.0.0.1/upload');
+curl.setOpt(Curl.option.URL, '127.0.0.1/upload')
 curl.setOpt(Curl.option.POST, true)
-curl.setOpt(Curl.option.POSTFIELDS, querystring.stringify({
-  field: 'value',
-}));
+curl.setOpt(
+  Curl.option.POSTFIELDS,
+  querystring.stringify({
+    field: 'value',
+  }),
+)
 
-curl.on('end', close);
-curl.on('error', close);
+curl.on('end', close)
+curl.on('error', close)
 ```
 
 ### MultiPart Upload / HttpPost libcurl Option (Content-Type: multipart/form-data)
 
 ```javascript
-const { Curl } = require('node-libcurl');
+const { Curl } = require('node-libcurl')
 
-const curl = new Curl();
-const close = curl.close.bind(curl);
+const curl = new Curl()
+const close = curl.close.bind(curl)
 
-curl.setOpt(Curl.option.URL, '127.0.0.1/upload.php');
+curl.setOpt(Curl.option.URL, '127.0.0.1/upload.php')
 curl.setOpt(Curl.option.HTTPPOST, [
-    { name: 'input-name', file: '/file/path', type: 'text/html' },
-    { name: 'input-name2', contents: 'field-contents' }
-]);
+  { name: 'input-name', file: '/file/path', type: 'text/html' },
+  { name: 'input-name2', contents: 'field-contents' },
+])
 
-curl.on('end', close);
-curl.on('error', close);
+curl.on('end', close)
+curl.on('error', close)
 ```
 
 ### Binary Data
@@ -264,7 +269,7 @@ The maintainers of node-libcurl and thousands of other packages are working with
 ## Detailed Installation
 
 The latest version of this package has prebuilt binaries (thanks to [node-pre-gyp](https://github.com/mapbox/node-pre-gyp/))
- available for:
+available for:
 
 - Node.js: Latest two versions on active LTS (see <https://github.com/nodejs/Release>)
 - Electron: Latest 3 major versions
@@ -292,6 +297,7 @@ If there is no prebuilt binary available that matches your system, or if the ins
 - updated C++ compiler able to compile C++11, or if building Electron >= 11 / NW.js >= 0.50, C++17 (see the [Electron >= 11 / NW.js >= 0.50](#electron--11--nwjs--050) section below).
 
 If you don't want to use the prebuilt binary even if it works on your system, you can pass a flag when installing:
+
 > With `npm`
 
 ```sh
@@ -321,9 +327,9 @@ The build process will use `curl-config` available on path, if you want to overw
 And if you don't want to use `curl-config`, you can pass two extra variables to control the build process:
 
 - `curl_include_dirs`
-    Space separated list of directories to search for header files
+  Space separated list of directories to search for header files
 - `curl_libraries`
-    Space separated list of flags to pass to the linker
+  Space separated list of flags to pass to the linker
 
 #### Missing Packages
 
@@ -336,26 +342,9 @@ The scripts to build Kerberos exists on the `./scripts/ci` folder, but it was re
 
 ### Electron / NW.js
 
-If building for a `Electron` or `NW.js` you need to pass additional parameters to the install command.
+If building for a `Electron` you need to pass additional parameters to the install command.
 
 If you do not want to use the prebuilt binary, pass the `npm_config_build_from_source=true` / `--build-from-source` flag to the install command.
-
-#### NW.js (aka node-webkit)
-
-For building from source on NW.js you first need to make sure you have nw-gyp installed globally:
-`npm i -g nw-gyp`
-
-> If on Windows, you also need addition steps, currently the available win_delay_load_hook.cc on `nw-gyp` is not working with this addon, so it's necessary to apply a patch to it. The patch can be found on `./scripts/ci/patches/win_delay_load_hook.cc.patch`, and should be applied to the file on `<nw-gyp-folder>/src/win_delay_load_hook.cc`.
-
-Then:
-
-> npm
-
-```bash
-npm install node-libcurl --runtime=node-webkit --target=0.38.2 --save
-```
-
-where `--target` is the current version of NW.js you are using
 
 #### Electron (aka atom-shell)
 

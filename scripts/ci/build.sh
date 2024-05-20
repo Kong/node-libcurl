@@ -337,9 +337,8 @@ echo "npm_config_target_arch=$npm_config_target_arch"
 echo "node version: $(node -v)"
 echo "npm run version: $(npm run -v)"
 echo "node-gyp version: $(npm ls node-gyp -g)"
-# force global node-gyp override https://github.com/nodejs/node-gyp/blob/main/docs/Force-npm-to-use-global-node-gyp.md
-npm install --global node-gyp@10.1.0
-# npm config set node_gyp $(npm prefix -g)/lib/node_modules/node-gyp/bin/node-gyp.js
+# https://github.com/nodejs/node-gyp/blob/main/docs/Updating-npm-bundled-node-gyp.md
+npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@10.1.0
 
 npm ci
 
