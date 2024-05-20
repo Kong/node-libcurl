@@ -360,7 +360,7 @@ echo "npm_config_target_arch=$npm_config_target_arch"
 echo "node version: $(node -v)"
 echo "npm run version: $(npm run -v)"
 
-npm run install --frozen-lockfile --network-timeout 300000
+npm ci
 
 if [ "$STOP_ON_INSTALL" == "true" ]; then
   set +uv
@@ -392,7 +392,7 @@ fi
 # If we are here, it means the addon worked
 # Check if we need to publish the binaries
 if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]]; then
-  echo "Publish binary is true - Testing and publishing package with pregyp"
+  echo "=== Publish binary is true - Testing and publishing package with pregyp"
   if [[ "$MACOS_UNIVERSAL_BUILD" == "true" ]]; then
     # Need to publish two binaries when doing a universal build.
     # --
@@ -409,23 +409,24 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
     node scripts/module-packaging.js --publish "$(npm run --silent pregyp reveal staged_tarball --silent)"
   fi
 fi
-echo "node version: $(node -v)"
+echo "=== node version: $(node -v)"
 # In case we published the binaries, verify if we can download them, and that they work
 # Otherwise, unpublish them
 INSTALL_RESULT=0
 if [[ $PUBLISH_BINARY == true ]]; then
-  echo "Publish binary is true - Testing if it was published correctly"
+  echo "=== Publish binary is true - Testing if it was published correctly"
 
-  INSTALL_RESULT=$(npm_config_fallback_to_build=false npm install --frozen-lockfile --network-timeout 300000 > /dev/null)$? || true
+  INSTALL_RESULT=$(npm_config_fallback_to_build=false npm ci > /dev/null)$? || true
 fi
 if [[ $INSTALL_RESULT != 0 ]]; then
-  echo "Failed to install package from npm after being published"
+  echo "=== Failed to install package from npm after being published"
   node scripts/module-packaging.js --unpublish "$(npm run --silent pregyp reveal hosted_tarball --silent)"
   false
 fi
 
 # Clean everything
 if [[ $RUN_PREGYP_CLEAN == true ]]; then
+  echo "=== cleanup"
   npm run pregyp clean
 fi
 
