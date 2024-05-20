@@ -337,7 +337,9 @@ echo "npm_config_target_arch=$npm_config_target_arch"
 echo "node version: $(node -v)"
 echo "npm run version: $(npm run -v)"
 echo "node-gyp version: $(npm ls node-gyp -g)"
-
+# force global node-gyp override
+npm install --global node-gyp@latest
+npm config set node_gyp $(npm prefix -g)/lib/node_modules/node-gyp/bin/node-gyp.js
 
 npm ci
 
