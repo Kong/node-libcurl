@@ -6,7 +6,7 @@
 #  . ./scripts/ci/build.sh
 set -euvo pipefail
 
-echo "node-gyp version: $(npm v node-gyp -v)"
+echo "node-gyp version: $(npm ls node-gyp -g)"
 
 curr_dirname=$(dirname "$0")
 
@@ -286,6 +286,7 @@ if [ -n "$ELECTRON_VERSION" ]; then
   runtime='electron'
   dist_url='https://electronjs.org/headers'
   target="$ELECTRON_VERSION"
+  echo "electron version: ${ELECTRON_VERSION}"
 
   # enabled always temporarily
   is_electron_lt_5=1
@@ -300,6 +301,7 @@ if [ -n "$ELECTRON_VERSION" ]; then
     npm i -g electron@"${ELECTRON_VERSION}"
   fi
 else
+  echo "WARNING: electron version NOT SET this is the nodejs build"
   runtime=''
   dist_url=''
   target=''
@@ -334,12 +336,12 @@ echo "npm_config_target_arch=$npm_config_target_arch"
 
 echo "node version: $(node -v)"
 echo "npm run version: $(npm run -v)"
-echo "node-gyp version: $(npm v node-gyp -v)"
+echo "node-gyp version: $(npm ls node-gyp -g)"
 
 
-npm ci --strict-peer-deps
+npm ci
 
-echo "node-gyp version: $(npm v node-gyp -v)"
+echo "node-gyp version: $(npm ls node-gyp -g)"
 
 
 if [ "$STOP_ON_INSTALL" == "true" ]; then
