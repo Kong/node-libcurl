@@ -262,7 +262,7 @@ curl-config --cflags
 DISPLAY=${DISPLAY:-}
 PUBLISH_BINARY=${PUBLISH_BINARY:-}
 ELECTRON_VERSION=${ELECTRON_VERSION:-}
-NWJS_VERSION=${NWJS_VERSION:-}
+# NWJS_VERSION=${NWJS_VERSION:-}
 RUN_TESTS=${RUN_TESTS:-"true"}
 
 if [ -z "$PUBLISH_BINARY" ]; then
@@ -275,9 +275,9 @@ fi
 
 echo "Publish binary is: $PUBLISH_BINARY"
 
-# Configure npm run cache
-mkdir -p ~/.cache/npm
-npm config set cache ~/.cache/npm
+# # Configure npm run cache
+# mkdir -p ~/.cache/npm
+# npm config set cache ~/.cache/npm
 
 run_tests_electron=false
 has_display=$(xdpyinfo -display $DISPLAY >/dev/null 2>&1 && echo "true" || echo "false")
@@ -299,33 +299,6 @@ if [ -n "$ELECTRON_VERSION" ]; then
     run_tests_electron=true
     npm i -g electron@"${ELECTRON_VERSION}"
   fi
-
-  # A possible solution to the above issue is the following,
-  #  but it kinda does not work because it requires running docker with --privileged flag
-  # npm run_global_dir=$(npm run global dir)
-
-  # # Below is to fix the following error:
-  # # [19233:0507/005247.965078:FATAL:setuid_sandbox_host.cc(157)] The SUID sandbox helper binary was found, but is not
-  # #  configured correctly. Rather than run without sandboxing I'm aborting now. You need to make sure that
-  # # /home/circleci/node-libcurl/node_modules/electron/dist/chrome-sandbox is owned by root and has mode 4755.
-  # if [[ -x "$(command -v sudo)" && "$EUID" -ne 0 && -f $npm run_global_dir/node_modules/electron/dist/chrome-sandbox ]]; then
-  #   echo "Changing owner of chrome-sandbox"
-  #   sudo chown root $npm run_global_dir/node_modules/electron/dist/chrome-sandbox
-  #   sudo chmod 4755 $npm run_global_dir/node_modules/electron/dist/chrome-sandbox
-  # fi
-elif [ -n "$NWJS_VERSION" ]; then
-  runtime='node-webkit'
-  dist_url=''
-  target="$NWJS_VERSION"
-
-  npm i -g nw-gyp nw@$target
-
-  # On macOS node-pre-gyp uses node-webkit instead of nw, see:
-  # https://github.com/mapbox/node-pre-gyp/blob/d60bc992d20500e8ceb6fe3242df585a28c56413/lib/testbinary.js#L43
-  if [ "$(uname)" == "Darwin" ]; then
-    ln -s $(npm root --global)/.bin/nw $(npm root --global)/.bin/node-webkit
-  fi
-
 else
   runtime=''
   dist_url=''
@@ -364,7 +337,10 @@ echo "npm run version: $(npm run -v)"
 echo "node-gyp version: $(npm v node-gyp -v)"
 
 
-npm ci
+npm ci --strict-peer-deps
+
+echo "node-gyp version: $(npm v node-gyp -v)"
+
 
 if [ "$STOP_ON_INSTALL" == "true" ]; then
   set +uv
