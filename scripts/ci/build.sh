@@ -6,6 +6,8 @@
 #  . ./scripts/ci/build.sh
 set -euvo pipefail
 
+echo "node-gyp version: $(npm v node-gyp -v)"
+
 curr_dirname=$(dirname "$0")
 
 . $curr_dirname/utils/gsort.sh
@@ -316,12 +318,12 @@ elif [ -n "$NWJS_VERSION" ]; then
   dist_url=''
   target="$NWJS_VERSION"
 
-  npm run global add nw-gyp nw@$target
+  npm i -g nw-gyp nw@$target
 
   # On macOS node-pre-gyp uses node-webkit instead of nw, see:
   # https://github.com/mapbox/node-pre-gyp/blob/d60bc992d20500e8ceb6fe3242df585a28c56413/lib/testbinary.js#L43
   if [ "$(uname)" == "Darwin" ]; then
-    ln -s $(npm run global bin)/nw $(npm run global bin)/node-webkit
+    ln -s $(npm root --global)/.bin/nw $(npm root --global)/.bin/node-webkit
   fi
 
 else
@@ -359,6 +361,8 @@ echo "npm_config_target_arch=$npm_config_target_arch"
 
 echo "node version: $(node -v)"
 echo "npm run version: $(npm run -v)"
+echo "node-gyp version: $(npm v node-gyp -v)"
+
 
 npm ci
 
