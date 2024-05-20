@@ -295,7 +295,7 @@ if [ -n "$ELECTRON_VERSION" ]; then
   # https://github.com/electron/electron/issues/17972
   if [[ "$(uname)" == "Darwin" || $is_electron_lt_5 -eq 1 && $has_display == "true" ]]; then
     run_tests_electron=true
-    npm run global add electron@${ELECTRON_VERSION} --network-timeout 300000
+    npm i -g electron@"${ELECTRON_VERSION}"
   fi
 
   # A possible solution to the above issue is the following,
