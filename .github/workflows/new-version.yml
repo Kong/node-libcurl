@@ -1,4 +1,4 @@
-name: Create new version release
+name: Release node-libcurl
 
 on:
   workflow_dispatch:
@@ -8,6 +8,7 @@ on:
         required: true
 
 env:
+  # Release Tag to build and publish
   TAG: ${{ github.event.inputs.version }}
 
 jobs:
@@ -28,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version: 20
 
       - name: Install
         run: npm ci
@@ -36,21 +37,22 @@ jobs:
       - name: Create new package version
         run: npm version "${{ env.TAG }}"
 
+      - name: DEBUG see tags
+        run: |
+          git tag --list
+          git remote -v
+
       - name: Merge version commit into master
         run: |
-          remote_repo="https://${GITHUB_ACTOR}:${RELEASE_GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push "${remote_repo}"
-        env:
-          RELEASE_GH_TOKEN: ${{ secrets.PAT_INSOMNIA_INFRA }}
+          git push origin v${{ env.TAG }}
+          git push origin master
 
       - name: Create Tag and Release
         uses: ncipollo/release-action@v1
         id: core_tag_and_release
         with:
-          tag: ${{ env.TAG }}
-          name: "node-libcurl ${{ env.TAG }} 📦"
+          tag: v${{ env.TAG }}
+          name: "nodelibcurl v${{ env.TAG }} 📦"
           generateReleaseNotes: true
           prerelease: false
           draft: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_INSOMNIA_INFRA }}
