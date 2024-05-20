@@ -373,7 +373,7 @@ const create = (defaultOptions: CurlyOptions = {}): CurlyFunction => {
 
       curlHandle.on(
         'end',
-        (statusCode, data: Buffer, headers: HeaderInfo[]) => {
+        (statusCode: any, data: Buffer, headers: HeaderInfo[]) => {
           curlHandle.close()
 
           // only need to the remaining here if we did not enabled
@@ -387,7 +387,12 @@ const create = (defaultOptions: CurlyOptions = {}): CurlyFunction => {
           ).find(([k]) => k.toLowerCase() === 'content-type')
           const firstHeader = contentTypeEntry && contentTypeEntry[1]
           if (typeof firstHeader !== 'string') {
-            return
+            return resolve({
+              statusCode: statusCode,
+              // @ts-ignore
+              data: data,
+              headers: headers,
+            })
           }
           let contentType = firstHeader
 
