@@ -91,7 +91,7 @@
     "formidable": "^1.2.2",
     "http-auth": "^4.1.2",
     "http-auth-connect": "^1.0.4",
-    "mocha": "^7.1.1",
+    "mocha": "^10.5.2",
     "nyc": "^15.1.0",
     "octonode": "^0.9.5",
     "prettier": "^2.1.2",
