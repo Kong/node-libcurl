@@ -224,7 +224,7 @@ ls -al $LIBSSH2_BUILD_FOLDER/lib
 ###################
 # Build openldap
 ###################
-OPENLDAP_RELEASE=${OPENLDAP_RELEASE:-2.4.47}
+OPENLDAP_RELEASE=${OPENLDAP_RELEASE:-2.6.8}
 OPENLDAP_DEST_FOLDER=$PREFIX_DIR/deps/openldap
 echo "Building openldap v$OPENLDAP_RELEASE"
 ./scripts/ci/build-openldap.sh $OPENLDAP_RELEASE $OPENLDAP_DEST_FOLDER >$LOGS_FOLDER/build-openldap.log 2>&1
