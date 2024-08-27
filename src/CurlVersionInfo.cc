@@ -14,24 +14,24 @@
 namespace NodeLibcurl {
 namespace {
 template <typename TValue>
-void SetObjPropertyToNullOrValue(v8::Local<v8::Object> obj, std::string key, TValue value) {
-  Nan::Set(obj, Nan::New(key).ToLocalChecked(), Nan::New(value));
+void SetObjPropertyToNullOrValue(Napi::Object obj, std::string key, TValue value) {
+  (obj).Set(Napi::New(env, key), Napi::New(env, value));
 }
 
 template <>
-void SetObjPropertyToNullOrValue<v8::Local<v8::Primitive>>(v8::Local<v8::Object> obj,
+void SetObjPropertyToNullOrValue<v8::Local<v8::Primitive>>(Napi::Object obj,
                                                            std::string key,
                                                            v8::Local<v8::Primitive> value) {
-  Nan::Set(obj, Nan::New(key).ToLocalChecked(), value);
+  (obj).Set(Napi::New(env, key), value);
 }
 
 template <>
-void SetObjPropertyToNullOrValue<const char*>(v8::Local<v8::Object> obj, std::string key,
+void SetObjPropertyToNullOrValue<const char*>(Napi::Object obj, std::string key,
                                               const char* value) {
   if (value == nullptr) {
-    Nan::Set(obj, Nan::New(key).ToLocalChecked(), Nan::Null());
+    (obj).Set(Napi::New(env, key), env.Null());
   } else {
-    Nan::Set(obj, Nan::New(key).ToLocalChecked(), Nan::New(value).ToLocalChecked());
+    (obj).Set(Napi::New(env, key), Napi::New(env, value));
   }
 }
 }  // namespace
@@ -82,23 +82,23 @@ const std::vector<CurlVersionInfo::feature> CurlVersionInfo::features = {
 
 const curl_version_info_data* CurlVersionInfo::versionInfo = curl_version_info(CURLVERSION_NOW);
 
-NAN_MODULE_INIT(CurlVersionInfo::Initialize) {
-  Nan::HandleScope scope;
+Napi::Object CurlVersionInfo::Initialize(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
 
   if (!versionInfo) {
-    Nan::ThrowError("Failed to retrieve libcurl information using curl_version_info");
-    return;
+    Napi::Error::New(env, "Failed to retrieve libcurl information using curl_version_info").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   v8::PropertyAttribute attributes =
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete);
 
-  v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+  Napi::Object obj = Napi::Object::New(env);
 
-  Nan::SetAccessor(obj, Nan::New("protocols").ToLocalChecked(), GetterProtocols, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
-  Nan::SetAccessor(obj, Nan::New("features").ToLocalChecked(), GetterFeatures, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
+  Napi::SetAccessor(obj, Napi::String::New(env, "protocols"), GetterProtocols, 0,
+                   Napi::Value(), v8::DEFAULT, attributes);
+  Napi::SetAccessor(obj, Napi::String::New(env, "features"), GetterFeatures, 0,
+                   Napi::Value(), v8::DEFAULT, attributes);
   SetObjPropertyToNullOrValue(obj, "rawFeatures", versionInfo->features);
 
   SetObjPropertyToNullOrValue(obj, "version", versionInfo->version);
@@ -117,14 +117,14 @@ NAN_MODULE_INIT(CurlVersionInfo::Initialize) {
   SetObjPropertyToNullOrValue(obj, "brotliVersion", versionInfo->brotli_version);
 #else
   SetObjPropertyToNullOrValue(obj, "brotliVersionNumber", 0);
-  SetObjPropertyToNullOrValue(obj, "brotliVersion", Nan::Null());
+  SetObjPropertyToNullOrValue(obj, "brotliVersion", env.Null());
 #endif
 
-  Nan::Set(target, Nan::New("CurlVersionInfo").ToLocalChecked(), obj);
+  (target).Set(Napi::String::New(env, "CurlVersionInfo"), obj);
 }
 
-NAN_GETTER(CurlVersionInfo::GetterProtocols) {
-  Nan::HandleScope scope;
+Napi::Value CurlVersionInfo::GetterProtocols(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
   // const pointer to const char pointer
   const char* const* protocols = versionInfo->protocols;
@@ -132,30 +132,30 @@ NAN_GETTER(CurlVersionInfo::GetterProtocols) {
 
   std::vector<const char*> vec;
 
-  v8::Local<v8::Array> protocolsResult = Nan::New<v8::Array>();
+  Napi::Array protocolsResult = Napi::Array::New(env);
 
   for (i = 0; *(protocols + i); i++) {
-    v8::Local<v8::String> protocol = Nan::New<v8::String>(*(protocols + i)).ToLocalChecked();
-    Nan::Set(protocolsResult, i, protocol);
+    Napi::String protocol = Napi::String::New(env, *(protocols + i));
+    (protocolsResult).Set(i, protocol);
   }
 
-  info.GetReturnValue().Set(protocolsResult);
+  return protocolsResult;
 }
 
 // basically a copy of https://github.com/curl/curl/blob/05a131eb7740e/src/tool_help.c#L579
-NAN_GETTER(CurlVersionInfo::GetterFeatures) {
-  Nan::HandleScope scope;
+Napi::Value CurlVersionInfo::GetterFeatures(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Array> featuresResult = Nan::New<v8::Array>();
+  Napi::Array featuresResult = Napi::Array::New(env);
 
   unsigned int currentFeature = 0;
   for (auto const& feat : CurlVersionInfo::features) {
     if (versionInfo->features & feat.bitmask) {
-      v8::Local<v8::String> featureString = Nan::New<v8::String>(feat.name).ToLocalChecked();
-      Nan::Set(featuresResult, currentFeature++, featureString);
+      Napi::String featureString = Napi::String::New(env, feat.name);
+      (featuresResult).Set(currentFeature++, featureString);
     }
   }
 
-  info.GetReturnValue().Set(featuresResult);
+  return featuresResult;
 }
 }  // namespace NodeLibcurl

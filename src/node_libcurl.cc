@@ -15,8 +15,10 @@
 #include "Share.h"
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
+#include <uv.h>
+#include <napi.h>
+#include <uv.h>
 
 #include <iostream>
 
@@ -28,7 +30,7 @@ static void AtExitCallback(void* arg) {
   curl_global_cleanup();
 }
 
-NAN_MODULE_INIT(Init) {
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
   // Some background story on this commented code and other usages of setlocale
   // elsewhere on the addon: Libcurl, when built with libidn2, calls function
   // `idn2_lookup_ul` to retrieve a punycode representation
@@ -51,14 +53,14 @@ NAN_MODULE_INIT(Init) {
   // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setlocale-wsetlocale?view=vs-2019
   // setlocale(AC_ALL, "")
   Initialize(target);
-  Easy::Initialize(target);
-  Multi::Initialize(target);
-  Share::Initialize(target);
-  CurlVersionInfo::Initialize(target);
-  Http2PushFrameHeaders::Initialize(target);
+  Easy::Initialize(env, target, module);
+  Multi::Initialize(env, target, module);
+  Share::Initialize(env, target, module);
+  CurlVersionInfo::Initialize(env, target, module);
+  Http2PushFrameHeaders::Initialize(env, target, module);
 
 #if NODE_VERSION_AT_LEAST(11, 0, 0)
-  auto context = Nan::GetCurrentContext();
+  auto context = Napi::GetCurrentContext();
   node::AtExit(node::GetCurrentEnvironment(context), AtExitCallback, NULL);
 #else
 // this will stay until Node.js v10 support is dropped
@@ -68,5 +70,5 @@ NAN_MODULE_INIT(Init) {
 #endif
 }
 
-NODE_MODULE(node_libcurl, Init);
+NODE_API_MODULE(node_libcurl, Init);
 }  // namespace NodeLibcurl

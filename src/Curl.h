@@ -10,14 +10,16 @@
 #include "macros.h"
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
+#include <uv.h>
+#include <napi.h>
+#include <uv.h>
 
 #include <functional>
 #include <memory>
 #include <vector>
 
-using Nan::ObjectWrap;
+using Napi::ObjectWrap;
 
 namespace NodeLibcurl {
 
@@ -60,18 +62,18 @@ extern const std::vector<CurlConstant> curlMultiOptionStringArray;
 extern const std::vector<CurlConstant> curlMultiOptionFunction;
 
 // export Curl to js
-NAN_MODULE_INIT(Initialize);
+Napi::Object Initialize(Napi::Env env, Napi::Object exports);
 
 // js exported Methods
-NAN_METHOD(GlobalInit);
-NAN_METHOD(GlobalCleanup);
-NAN_METHOD(GetVersion);
-NAN_METHOD(GetCount);
-NAN_GETTER(GetterVersionNum);
+Napi::Value GlobalInit(const Napi::CallbackInfo& info);
+Napi::Value GlobalCleanup(const Napi::CallbackInfo& info);
+Napi::Value GetVersion(const Napi::CallbackInfo& info);
+Napi::Value GetCount(const Napi::CallbackInfo& info);
+Napi::Value GetterVersionNum(const Napi::CallbackInfo& info);
 
 // helper methods
 int32_t IsInsideCurlConstantStruct(const std::vector<CurlConstant>& curlConstants,
-                                   const v8::Local<v8::Value>& searchFor);
+                                   const Napi::Value& searchFor);
 void ThrowError(const char* message, const char* reason = nullptr);
 void AdjustMemory(ssize_t size);
 

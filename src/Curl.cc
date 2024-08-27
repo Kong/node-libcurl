@@ -712,24 +712,24 @@ const std::vector<CurlConstant> curlOptionBlob = {
 #endif
 };
 
-static void ExportConstants(v8::Local<v8::Object> obj,
+static void ExportConstants(Napi::Object obj,
                             const std::vector<NodeLibcurl::CurlConstant>& optionGroup,
                             v8::PropertyAttribute attributes) {
-  Nan::HandleScope scope;
+  Napi::HandleScope scope(env);
 
   for (std::vector<NodeLibcurl::CurlConstant>::const_iterator it = optionGroup.begin(),
                                                               end = optionGroup.end();
        it != end; ++it) {
-    Nan::DefineOwnProperty(obj, Nan::New<v8::String>(it->name).ToLocalChecked(),
-                           Nan::New<v8::Integer>(static_cast<int32_t>(it->value)), attributes);
+    Napi::DefineOwnProperty(obj, Napi::String::New(env, it->name),
+                           Napi::Number::New(env, static_cast<int32_t>(it->value)), attributes);
   }
 }
 
 // Add Curl constructor to the module exports
-NAN_MODULE_INIT(Initialize) {
-  Nan::HandleScope scope;
+Napi::Object Initialize(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+  Napi::Object obj = Napi::Object::New(env);
 
   v8::PropertyAttribute attributes =
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete);
@@ -737,7 +737,7 @@ NAN_MODULE_INIT(Initialize) {
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete | v8::DontEnum);
 
   // export options
-  v8::Local<v8::Object> optionsObj = Nan::New<v8::Object>();
+  Napi::Object optionsObj = Napi::Object::New(env);
   ExportConstants(optionsObj, curlOptionNotImplemented, attributesDontEnum);
   ExportConstants(optionsObj, curlOptionString, attributes);
   ExportConstants(optionsObj, curlOptionInteger, attributes);
@@ -747,7 +747,7 @@ NAN_MODULE_INIT(Initialize) {
   ExportConstants(optionsObj, curlOptionBlob, attributes);
 
   // export infos
-  v8::Local<v8::Object> infosObj = Nan::New<v8::Object>();
+  Napi::Object infosObj = Napi::Object::New(env);
   ExportConstants(infosObj, curlInfoNotImplemented, attributesDontEnum);
   ExportConstants(infosObj, curlInfoString, attributes);
   ExportConstants(infosObj, curlInfoOffT, attributes);
@@ -757,34 +757,34 @@ NAN_MODULE_INIT(Initialize) {
   ExportConstants(infosObj, curlInfoLinkedList, attributes);
 
   // export Curl codes
-  v8::Local<v8::Object> multiObj = Nan::New<v8::Object>();
+  Napi::Object multiObj = Napi::Object::New(env);
   ExportConstants(multiObj, curlMultiOptionNotImplemented, attributesDontEnum);
   ExportConstants(multiObj, curlMultiOptionInteger, attributes);
   ExportConstants(multiObj, curlMultiOptionStringArray, attributes);
   ExportConstants(multiObj, curlMultiOptionFunction, attributes);
 
   // static members
-  Nan::DefineOwnProperty(obj, Nan::New<v8::String>("option").ToLocalChecked(), optionsObj,
+  Napi::DefineOwnProperty(obj, Napi::String::New(env, "option"), optionsObj,
                          attributes);
-  Nan::DefineOwnProperty(obj, Nan::New<v8::String>("info").ToLocalChecked(), infosObj, attributes);
-  Nan::DefineOwnProperty(obj, Nan::New<v8::String>("multi").ToLocalChecked(), multiObj, attributes);
+  Napi::DefineOwnProperty(obj, Napi::String::New(env, "info"), infosObj, attributes);
+  Napi::DefineOwnProperty(obj, Napi::String::New(env, "multi"), multiObj, attributes);
 
-  Nan::SetMethod(obj, "globalInit", GlobalInit);
-  Nan::SetMethod(obj, "globalCleanup", GlobalCleanup);
-  Nan::SetMethod(obj, "getVersion", GetVersion);
-  Nan::SetMethod(obj, "getCount", GetCount);
-  Nan::SetAccessor(obj, Nan::New("VERSION_NUM").ToLocalChecked(), GetterVersionNum, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
+  Napi::SetMethod(obj, "globalInit", GlobalInit);
+  Napi::SetMethod(obj, "globalCleanup", GlobalCleanup);
+  Napi::SetMethod(obj, "getVersion", GetVersion);
+  Napi::SetMethod(obj, "getCount", GetCount);
+  Napi::SetAccessor(obj, Napi::String::New(env, "VERSION_NUM"), GetterVersionNum, 0,
+                   Napi::Value(), v8::DEFAULT, attributes);
 
-  Nan::Set(target, Nan::New("Curl").ToLocalChecked(), obj);
+  (target).Set(Napi::String::New(env, "Curl"), obj);
 }
 
 int32_t IsInsideCurlConstantStruct(const std::vector<CurlConstant>& curlConstants,
-                                   const v8::Local<v8::Value>& searchFor) {
-  Nan::HandleScope scope;
+                                   const Napi::Value& searchFor) {
+  Napi::HandleScope scope(env);
 
-  bool isString = searchFor->IsString();
-  bool isInt = searchFor->IsInt32();
+  bool isString = searchFor.IsString();
+  bool isInt = searchFor.IsNumber();
 
   std::string optionName = "";
   int32_t optionId = -1;
@@ -794,14 +794,14 @@ int32_t IsInsideCurlConstantStruct(const std::vector<CurlConstant>& curlConstant
   }
 
   if (isString) {
-    Nan::Utf8String optionNameV8(searchFor);
+    std::string optionNameV8 = searchFor.As<Napi::String>();
 
     optionName = std::string(*optionNameV8);
 
     std::transform(optionName.begin(), optionName.end(), optionName.begin(), ::toupper);
 
   } else {  // int
-    optionId = Nan::To<int32_t>(searchFor).FromJust();
+    optionId = searchFor.As<Napi::Number>().Int32Value();
   }
 
   for (std::vector<CurlConstant>::const_iterator it = curlConstants.begin(),
@@ -817,7 +817,7 @@ int32_t IsInsideCurlConstantStruct(const std::vector<CurlConstant>& curlConstant
 
 // based on https://github.com/libxmljs/libxmljs/blob/master/src/libxmljs.cc#L45
 void AdjustMemory(ssize_t diff) {
-  Nan::HandleScope scope;
+  Napi::HandleScope scope(env);
 
   addonAllocatedMemory += diff;
 
@@ -828,25 +828,25 @@ void AdjustMemory(ssize_t diff) {
     return;
   }
 
-  Nan::AdjustExternalMemory(static_cast<int>(diff));
+  Napi::AdjustExternalMemory(static_cast<int>(diff));
 }
 
 // Return human readable string with the version number of libcurl and some of its important
 // components (like OpenSSL version).
-NAN_METHOD(GetVersion) {
-  Nan::HandleScope scope;
+Napi::Value GetVersion(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
   const char* version = curl_version();
 
-  v8::Local<v8::Value> versionObj = Nan::New<v8::String>(version).ToLocalChecked();
+  Napi::Value versionObj = Napi::String::New(env, version);
 
-  info.GetReturnValue().Set(versionObj);
+  return versionObj;
 }
 
-NAN_METHOD(GetCount) {
-  Nan::HandleScope scope;
+Napi::Value GetCount(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  info.GetReturnValue().Set(Easy::currentOpenedHandles);
+  return Easy::currentOpenedHandles;
 }
 
 // The following memory allocation wrappers are mostly the ones at
@@ -910,11 +910,11 @@ void* CallocCallback(size_t nmemb, size_t size) {
   return ptr;
 }
 
-NAN_METHOD(GlobalInit) {
-  Nan::HandleScope scope;
+Napi::Value GlobalInit(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  long flags = info[0]->IsUndefined()                                         // NOLINT(runtime/int)
-                   ? static_cast<long>(Nan::To<int32_t>(info[0]).FromJust())  // NOLINT(runtime/int)
+  long flags = info[0].IsUndefined()                                         // NOLINT(runtime/int)
+                   ? static_cast<long>(info[0].As<Napi::Number>().Int32Value())  // NOLINT(runtime/int)
                    : CURL_GLOBAL_ALL;
 
   curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
@@ -932,24 +932,24 @@ NAN_METHOD(GlobalInit) {
     globalInitRetCode = curl_global_init(flags);
   }
 
-  info.GetReturnValue().Set(globalInitRetCode);
+  return globalInitRetCode;
 }
 
-NAN_METHOD(GlobalCleanup) {
-  Nan::HandleScope scope;
+Napi::Value GlobalCleanup(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
   curl_global_cleanup();
 
-  info.GetReturnValue().Set(Nan::Undefined());
+  return env.Undefined();
 }
 
 // Return hexdecimal representation of the libcurl version.
-NAN_GETTER(GetterVersionNum) {
-  Nan::HandleScope scope;
+Napi::Value GetterVersionNum(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Int32> version = Nan::New(LIBCURL_VERSION_NUM);
+  v8::Local<v8::Int32> version = Napi::New(env, LIBCURL_VERSION_NUM);
 
-  info.GetReturnValue().Set(version);
+  return version;
 }
 
 }  // namespace NodeLibcurl

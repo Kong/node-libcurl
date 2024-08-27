@@ -12,14 +12,16 @@
 #include "make_unique.h"
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
+#include <uv.h>
+#include <napi.h>
+#include <uv.h>
 
 #include <map>
 
 namespace NodeLibcurl {
 
-class Multi : public Nan::ObjectWrap {
+class Multi : public Napi::ObjectWrap<Multi> {
   // instance methods
   Multi();
   ~Multi();
@@ -47,10 +49,10 @@ class Multi : public Nan::ObjectWrap {
   int runningHandles = 0;
 
   // callbacks
-  typedef std::map<CURLMoption, std::shared_ptr<Nan::Callback>> CallbacksMap;
+  typedef std::map<CURLMoption, std::shared_ptr<Napi::FunctionReference>> CallbacksMap;
   CallbacksMap callbacks = CallbacksMap{};
   // required as it's not specific to a single message
-  std::shared_ptr<Nan::Callback> cbOnMessage;
+  std::shared_ptr<Napi::FunctionReference> cbOnMessage;
 
   deleted_unique_ptr<uv_timer_t> timeout;
 
@@ -58,17 +60,17 @@ class Multi : public Nan::ObjectWrap {
   static CurlSocketContext* CreateCurlSocketContext(curl_socket_t sockfd, Multi* multi);
   static void DestroyCurlSocketContext(CurlSocketContext* ctx);
   // js object constructor template
-  static Nan::Persistent<v8::FunctionTemplate> constructor;
+  static Napi::FunctionReference constructor;
 
   // js available Methods
-  static NAN_METHOD(New);
-  static NAN_METHOD(SetOpt);
-  static NAN_METHOD(AddHandle);
-  static NAN_METHOD(OnMessage);
-  static NAN_METHOD(RemoveHandle);
-  static NAN_METHOD(GetCount);
-  static NAN_METHOD(Close);
-  static NAN_METHOD(StrError);
+  static Napi::Value New(const Napi::CallbackInfo& info);
+  static Napi::Value SetOpt(const Napi::CallbackInfo& info);
+  static Napi::Value AddHandle(const Napi::CallbackInfo& info);
+  static Napi::Value OnMessage(const Napi::CallbackInfo& info);
+  static Napi::Value RemoveHandle(const Napi::CallbackInfo& info);
+  static Napi::Value GetCount(const Napi::CallbackInfo& info);
+  static Napi::Value Close(const Napi::CallbackInfo& info);
+  static Napi::Value StrError(const Napi::CallbackInfo& info);
 
   // libcurl multi_setopt callbacks
   static int HandleSocket(CURL* easy, curl_socket_t s, int action, void* userp, void* socketp);
@@ -85,7 +87,7 @@ class Multi : public Nan::ObjectWrap {
 
  public:
   // export Multi to js
-  static NAN_MODULE_INIT(Initialize);
+  static Napi::Object Initialize(Napi::Env env, Napi::Object exports);
 };
 
 }  // namespace NodeLibcurl

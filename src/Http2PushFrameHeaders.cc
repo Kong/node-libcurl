@@ -13,7 +13,7 @@
 
 namespace NodeLibcurl {
 
-Nan::Persistent<v8::ObjectTemplate> Http2PushFrameHeaders::objectTemplate;
+Napi::Persistent<v8::ObjectTemplate> Http2PushFrameHeaders::objectTemplate;
 
 Http2PushFrameHeaders::Http2PushFrameHeaders(struct curl_pushheaders* headers,
                                              size_t numberOfHeaders) {
@@ -21,11 +21,11 @@ Http2PushFrameHeaders::Http2PushFrameHeaders(struct curl_pushheaders* headers,
   this->numberOfHeaders = numberOfHeaders;
 }
 
-v8::Local<v8::Object> Http2PushFrameHeaders::NewInstance(struct curl_pushheaders* headers,
+Napi::Object Http2PushFrameHeaders::NewInstance(struct curl_pushheaders* headers,
                                                          size_t numberOfHeaders) {
-  Nan::EscapableHandleScope scope;
+  Napi::EscapableHandleScope scope(env);
 
-  v8::Local<v8::Object> jsObj = Nan::NewInstance(Nan::New(objectTemplate)).ToLocalChecked();
+  Napi::Object jsObj = Napi::NewInstance(Napi::New(env, objectTemplate));
 
   Http2PushFrameHeaders* cppObj = new Http2PushFrameHeaders(headers, numberOfHeaders);
   cppObj->Wrap(jsObj);
@@ -33,74 +33,74 @@ v8::Local<v8::Object> Http2PushFrameHeaders::NewInstance(struct curl_pushheaders
   return scope.Escape(jsObj);
 }
 
-NAN_METHOD(Http2PushFrameHeaders::GetByIndex) {
-  Nan::HandleScope scope;
+Napi::Value Http2PushFrameHeaders::GetByIndex(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Value> value = info[0];
+  Napi::Value value = info[0];
 
   if (!value->IsUint32()) {
-    Nan::ThrowTypeError("Index must be a non-negative integer");
-    return;
+    Napi::TypeError::New(env, "Index must be a non-negative integer").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  Http2PushFrameHeaders* obj = Nan::ObjectWrap::Unwrap<Http2PushFrameHeaders>(info.This());
-  uint32_t val = Nan::To<uint32_t>(value).FromJust();
+  Http2PushFrameHeaders* obj = this;
+  uint32_t val = value.As<Napi::Number>().Uint32Value();
 
   char* result = curl_pushheader_bynum(obj->headers, static_cast<size_t>(val));
 
-  v8::Local<v8::Value> returnValue =
-      result == NULL ? Nan::Null().As<v8::Value>()
-                     : Nan::New<v8::String>(result).ToLocalChecked().As<v8::Value>();
+  Napi::Value returnValue =
+      result == NULL ? env.Null().As<Napi::Value>()
+                     : Napi::String>(result).As<Napi::Value::New(env);
 
-  info.GetReturnValue().Set(returnValue);
+  return returnValue;
 }
 
-NAN_METHOD(Http2PushFrameHeaders::GetByName) {
-  Nan::HandleScope scope;
+Napi::Value Http2PushFrameHeaders::GetByName(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Value> value = info[0];
+  Napi::Value value = info[0];
 
-  if (!value->IsString()) {
-    Nan::ThrowTypeError("Name must be a string");
-    return;
+  if (!value.IsString()) {
+    Napi::TypeError::New(env, "Name must be a string").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  Http2PushFrameHeaders* obj = Nan::ObjectWrap::Unwrap<Http2PushFrameHeaders>(info.This());
+  Http2PushFrameHeaders* obj = this;
 
-  Nan::Utf8String utf8String(value);
+  std::string utf8String = value.As<Napi::String>();
 
   char* result = curl_pushheader_byname(obj->headers, *utf8String);
 
-  v8::Local<v8::Value> returnValue =
-      result == NULL ? Nan::Null().As<v8::Value>()
-                     : Nan::New<v8::String>(result).ToLocalChecked().As<v8::Value>();
+  Napi::Value returnValue =
+      result == NULL ? env.Null().As<Napi::Value>()
+                     : Napi::String>(result).As<Napi::Value::New(env);
 
-  info.GetReturnValue().Set(returnValue);
+  return returnValue;
 }
 
-NAN_GETTER(Http2PushFrameHeaders::GetterNumberOfHeaders) {
-  Nan::HandleScope scope;
+Napi::Value Http2PushFrameHeaders::GetterNumberOfHeaders(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Http2PushFrameHeaders* obj = Nan::ObjectWrap::Unwrap<Http2PushFrameHeaders>(info.This());
+  Http2PushFrameHeaders* obj = this;
 
-  info.GetReturnValue().Set(Nan::New<v8::Uint32>(static_cast<uint32_t>(obj->numberOfHeaders)));
+  return Napi::Uint32::New(env, static_cast<uint32_t>(obj->numberOfHeaders));
 }
 
-NAN_MODULE_INIT(Http2PushFrameHeaders::Initialize) {
-  Nan::HandleScope scope;
+Napi::Object Http2PushFrameHeaders::Initialize(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::ObjectTemplate> objTmpl = Nan::New<v8::ObjectTemplate>();
-  objTmpl->SetInternalFieldCount(1);
+  v8::Local<v8::ObjectTemplate> objTmpl = Napi::ObjectTemplate::New(env);
+
 
   v8::PropertyAttribute attributes =
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete);
 
-  Nan::SetAccessor(objTmpl, Nan::New("numberOfHeaders").ToLocalChecked(),
-                   Http2PushFrameHeaders::GetterNumberOfHeaders, 0, v8::Local<v8::Value>(),
+  Napi::SetAccessor(objTmpl, Napi::String::New(env, "numberOfHeaders"),
+                   Http2PushFrameHeaders::GetterNumberOfHeaders, 0, Napi::Value(),
                    v8::DEFAULT, attributes);
 
-  Nan::SetMethod(objTmpl, "getByIndex", Http2PushFrameHeaders::GetByIndex);
-  Nan::SetMethod(objTmpl, "getByName", Http2PushFrameHeaders::GetByName);
+  Napi::SetMethod(objTmpl, "getByIndex", Http2PushFrameHeaders::GetByIndex);
+  Napi::SetMethod(objTmpl, "getByName", Http2PushFrameHeaders::GetByName);
 
   Http2PushFrameHeaders::objectTemplate.Reset(objTmpl);
 

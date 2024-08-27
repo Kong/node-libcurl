@@ -10,8 +10,10 @@
 #include "Curl.h"
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
+#include <uv.h>
+#include <napi.h>
+#include <uv.h>
 
 namespace NodeLibcurl {
 
@@ -33,10 +35,10 @@ class CurlVersionInfo {
   static const curl_version_info_data* versionInfo;
 
  public:
-  static NAN_MODULE_INIT(Initialize);
+  static Napi::Object Initialize(Napi::Env env, Napi::Object exports);
 
-  static NAN_GETTER(GetterProtocols);
-  static NAN_GETTER(GetterFeatures);
+  Napi::Value GetterProtocols(const Napi::CallbackInfo& info);
+  Napi::Value GetterFeatures(const Napi::CallbackInfo& info);
 };
 }  // namespace NodeLibcurl
 #endif

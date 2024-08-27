@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "node-addon-api": "8.1.0",
     "node-libcurl": "^2.2.0",
     "protobufjs": "6.9.0"
   }
