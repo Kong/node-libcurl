@@ -292,7 +292,7 @@ Features: AsynchDNS, IDN, IPv6, Largefile, NTLM, NTLM_WB, SSL, libz, brotli, TLS
 If there is no prebuilt binary available that matches your system, or if the installation fails, then you will need an environment capable of compiling Node.js addons, which means:
 
 - [python 2.7](https://www.python.org/download/releases/2.7) installed
-- updated C++ compiler able to compile C++11, or if building Electron >= 11, C++17 (see the [Electron >= 11](#electron--11) section below).
+- updated C++ compiler able to compile C++11, or if building Electron >= 11, c++20 (see the [Electron >= 11](#electron--11) section below).
 
 If you don't want to use the prebuilt binary even if it works on your system, you can pass a flag when installing:
 
@@ -365,12 +365,12 @@ dist_url = https://atom.io/download/atom-shell
 
 #### Electron >= 11
 
-If you are building for Electron >= 11  you need to set the build process to use the C++17 std, you can do that by passing the variable `node_libcurl_cpp_std=c++17`.
+If you are building for Electron >= 11  you need to set the build process to use the c++20 std, you can do that by passing the variable `node_libcurl_cpp_std=c++20`.
 
 > If using `npm`:
 
 ```sh
-npm install node-libcurl --build-from-source --node_libcurl_cpp_std=c++17
+npm install node-libcurl --build-from-source --node_libcurl_cpp_std=c++20
 ```
 
 ### Building on Linux
