@@ -17,7 +17,7 @@ jobs:
     permissions:
       packages: write
       contents: write # publish sbom to GH releases/tag assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-latest
+          - ubuntu-20.04
         libcurl-release:
           - 7.79.1
         node-libcurl-cpp-std:
@@ -50,7 +50,7 @@ jobs:
           - 20.11.1
         include:
           # Lint
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             node: 20.11.1
             node-libcurl-cpp-std: c++17
             libcurl-release: 7.79.1
@@ -139,7 +139,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-latest
+          - ubuntu-20.04
         libcurl-release:
           - 7.79.1
         node:
