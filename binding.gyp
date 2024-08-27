@@ -58,7 +58,7 @@
         'src/CurlVersionInfo.cc',
         'src/Http2PushFrameHeaders.cc',
       ],
-      'include_dirs' : [
+      'include_dirs' : [ "<!@(node -p \"require('node-addon-api').include\")"
       ],
       'dependencies': [
         ':sslctx',
