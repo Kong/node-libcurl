@@ -51,7 +51,7 @@ jobs:
         libcurl-release:
           - 7.79.1
         node-libcurl-cpp-std:
-          - c++20
+          - c++22
         node:
           - 20.16.0
 
@@ -117,7 +117,7 @@ jobs:
       LIBCURL_RELEASE: ${{ matrix.libcurl-release }}
       LATEST_LIBCURL_RELEASE: ${{ matrix.libcurl-release }}
       ELECTRON_VERSION: ${{ matrix.electron-version }}
-      NODE_LIBCURL_CPP_STD: c++20
+      NODE_LIBCURL_CPP_STD: c++22
     steps:
       - if: runner.os == 'macOS'
         name: Install Needed packages
