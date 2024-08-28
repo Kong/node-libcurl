@@ -46,8 +46,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - macos-13
+          - ubuntu-22.04
         libcurl-release:
           - 7.79.1
         node-libcurl-cpp-std:
@@ -105,8 +105,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - macos-13
+          - ubuntu-22.04
         libcurl-release:
           - 7.79.1
         node:
