@@ -1009,7 +1009,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
         auto idxValueAsObject = idxValueChecked.As<Napi::Object>();
 
-        Napi::CopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
+        v8::NonCopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
 
         persistentValue.Reset(Napi::GetCurrentContext()->GetIsolate(), idxValueAsObject);
 

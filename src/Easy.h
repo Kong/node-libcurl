@@ -15,9 +15,11 @@
 #include <uv.h>
 #include <napi.h>
 #include <uv.h>
+#include <v8.h>
 
 #include <map>
 #include <memory>
+
 
 namespace NodeLibcurl {
 
@@ -53,7 +55,7 @@ class Easy : public Napi::ObjectWrap<Easy> {
       cbOnSocketEvent;  // still required since it's not related to any CURLOption
 
   // members
-  std::vector<Napi::CopyablePersistentTraits<v8::Object>::CopyablePersistent> hstsReadCache;
+  std::vector<v8::NonCopyablePersistentTraits<v8::Object>> hstsReadCache;
   uint32_t wasHstsReadCacheSet = false;
   uv_poll_t* socketPollHandle = nullptr;
   std::shared_ptr<ToFree> toFree = nullptr;
@@ -138,7 +140,7 @@ class Easy : public Napi::ObjectWrap<Easy> {
   bool isOpen = true;
 
   // used to return callback errors when inside Multi interface
-  Napi::Persistent<v8::Value> callbackError;
+  v8::Persistent<v8::Value> callbackError;
 
   // static members
   static uint32_t currentOpenedHandles;

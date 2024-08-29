@@ -26,7 +26,7 @@ class Http2PushFrameHeaders : public Napi::ObjectWrap<Http2PushFrameHeaders> {
   size_t numberOfHeaders;
 
   // js object template
-  static Napi::Persistent<v8::ObjectTemplate> objectTemplate;
+  static v8::Persistent<v8::ObjectTemplate> objectTemplate;
 
   // js available Methods
   static Napi::Value GetByIndex(const Napi::CallbackInfo& info);

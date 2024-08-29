@@ -13,7 +13,7 @@
 
 namespace NodeLibcurl {
 
-Napi::Persistent<v8::ObjectTemplate> Http2PushFrameHeaders::objectTemplate;
+v8::Persistent<v8::ObjectTemplate> Http2PushFrameHeaders::objectTemplate;
 
 Http2PushFrameHeaders::Http2PushFrameHeaders(struct curl_pushheaders* headers,
                                              size_t numberOfHeaders) {

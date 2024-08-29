@@ -17,8 +17,8 @@
 #include <curl/curl.h>
 #include <napi.h>
 #include <uv.h>
-#include <napi.h>
-#include <uv.h>
+#include <node.h>
+#include <v8.h>
 
 #include <iostream>
 
@@ -60,7 +60,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Http2PushFrameHeaders::Initialize(env, target, module);
 
 #if NODE_VERSION_AT_LEAST(11, 0, 0)
-  auto context = Napi::GetCurrentContext();
+  auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
   node::AtExit(node::GetCurrentEnvironment(context), AtExitCallback, NULL);
 #else
 // this will stay until Node.js v10 support is dropped
