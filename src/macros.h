@@ -57,8 +57,6 @@
   if (obj->isInsideMultiHandle) {                                          \
     obj->callbackError.Reset(typeError);                                   \
   } else {                                                                 \
-    Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-                                            \
-    tryCatch.ReThrow();                                                    \
+    Napi::Error::New(env, typeError).ThrowAsJavaScriptException();         \
   }
 #endif
