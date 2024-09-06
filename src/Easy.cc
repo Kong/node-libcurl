@@ -405,8 +405,8 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
     Napi::HandleScope scope(env);
 
     Napi::Object buf = Napi::Buffer<char>::New(env, static_cast<uint32_t>(n));
-    v8::Local<v8::Uint32> sizeArg = Napi::Uint32::New(env, static_cast<uint32_t>(size));
-    v8::Local<v8::Uint32> nmembArg = Napi::Uint32::New(env, static_cast<uint32_t>(nmemb));
+    v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+    v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
     const int argc = 3;
     Napi::Value argv[argc] = {
         buf,
@@ -496,8 +496,8 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
     if (it != obj->callbacks.end()) {
       Napi::HandleScope scope(env);
 
-      v8::Local<v8::Uint32> offsetArg = Napi::Uint32::New(env, static_cast<uint32_t>(offset));
-      v8::Local<v8::Uint32> originArg = Napi::Uint32::New(env, static_cast<uint32_t>(origin));
+      v8::Local<v8::Uint32> offsetArg = Napi::Number::New(env, static_cast<uint32_t>(offset));
+      v8::Local<v8::Uint32> originArg = Napi::Number::New(env, static_cast<uint32_t>(origin));
       const int argc = 2;
       Napi::Value argv[argc] = {
           offsetArg,
@@ -565,8 +565,8 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
 
   const int argc = 3;
   Napi::Object buf = Napi::Buffer::Copy(env, data, static_cast<uint32_t>(dataLength));
-  v8::Local<v8::Uint32> sizeArg = Napi::Uint32::New(env, static_cast<uint32_t>(size));
-  v8::Local<v8::Uint32> nmembArg = Napi::Uint32::New(env, static_cast<uint32_t>(nmemb));
+  v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+  v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
   Napi::Value argv[argc] = {buf, sizeArg, nmembArg};
 
@@ -621,8 +621,8 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
 
   const int argc = 3;
   Napi::Object buf = Napi::Buffer::Copy(env, data, static_cast<uint32_t>(dataLength));
-  v8::Local<v8::Uint32> sizeArg = Napi::Uint32::New(env, static_cast<uint32_t>(size));
-  v8::Local<v8::Uint32> nmembArg = Napi::Uint32::New(env, static_cast<uint32_t>(nmemb));
+  v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+  v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
   Napi::Value argv[argc] = {buf, sizeArg, nmembArg};
 
