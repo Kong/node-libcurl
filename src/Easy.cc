@@ -279,8 +279,7 @@ void Easy::MonitorSockets() {
   int events = 0 | UV_READABLE | UV_WRITABLE;
 
   if (this->socketPollHandle) {
-    Napi::Error::New(env, "Already monitoring sockets!").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Already monitoring sockets!");
   }
 
 #if NODE_LIBCURL_VER_GE(7, 45, 0)
@@ -288,9 +287,7 @@ void Easy::MonitorSockets() {
   retCurl = curl_easy_getinfo(this->ch, CURLINFO_ACTIVESOCKET, &socket);
 
   if (socket == CURL_SOCKET_BAD) {
-    Napi::Error::New(env, "Received invalid socket from the current connection!")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Received invalid socket from the current connection!");
   }
 #else
   long socket;  // NOLINT(runtime/int)
@@ -302,8 +299,7 @@ void Easy::MonitorSockets() {
 
     errorMsg += std::string("Failed to receive socket. Reason: ") + curl_easy_strerror(retCurl);
 
-    Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, errorMsg.c_str());
   }
 
   this->socketPollHandle = new uv_poll_t;
@@ -316,8 +312,7 @@ void Easy::MonitorSockets() {
     errorMsg +=
         std::string("Failed to poll on connection socket. Reason:") + UV_ERROR_STRING(retUv);
 
-    Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, errorMsg.c_str());
   }
 
   this->socketPollHandle->data = this;
@@ -335,8 +330,7 @@ void Easy::UnmonitorSockets() {
 
     errorMsg += std::string("Failed to stop polling on socket. Reason: ") + UV_ERROR_STRING(retUv);
 
-    Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, errorMsg.c_str());
   }
 
   uv_close(reinterpret_cast<uv_handle_t*>(this->socketPollHandle), Easy::OnSocketClose);
@@ -434,9 +428,7 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
       if (obj->isInsideMultiHandle) {
         obj->callbackError.Reset(typeError);
       } else {
-        Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-        tryCatch.ReThrow();
+        throw Napi::Error::New(env, typeError);
       }
       return returnValue;
     } else {
@@ -524,9 +516,7 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
         if (obj->isInsideMultiHandle) {
           obj->callbackError.Reset(typeError);
         } else {
-          Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-          tryCatch.ReThrow();
+          throw Napi::Error::New(env, typeError);
         }
       } else {
         returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -590,9 +580,7 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
     if (this->isInsideMultiHandle) {
       this->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
     return returnValue;
   } else {
@@ -646,9 +634,7 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
     if (this->isInsideMultiHandle) {
       this->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
     return returnValue;
   } else {
@@ -664,7 +650,7 @@ Napi::Value NullValueIfInvalidString(char* str) {
   Napi::Value ret = env.Null();
 
   if (str != NULL && str[0] != '\0') {
-    ret = Napi::New(env, str);
+    ret = Napi::String::New(env, str);
   }
 
   return scope.Escape(ret);
@@ -682,11 +668,11 @@ Napi::Object Easy::CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo) {
 
                .As<Napi::Value>();
 
-  v8::Local<v8::Uint32> perm = Napi::New(env, fileInfo->perm);
-  v8::Local<v8::Integer> uid = Napi::New(env, fileInfo->uid);
-  v8::Local<v8::Integer> gid = Napi::New(env, fileInfo->gid);
+  v8::Local<v8::Uint32> perm = Napi::Number::New(env, fileInfo->perm);
+  v8::Local<v8::Integer> uid = Napi::Number::New(env, fileInfo->uid);
+  v8::Local<v8::Integer> gid = Napi::Number::New(env, fileInfo->gid);
   Napi::Number size = Napi::Number::New(env, static_cast<double>(fileInfo->size));
-  v8::Local<v8::Integer> hardLinks = Napi::New(env, static_cast<int32_t>(fileInfo->hardlinks));
+  v8::Local<v8::Integer> hardLinks = Napi::Number::New(env, static_cast<int32_t>(fileInfo->hardlinks));
 
   Napi::Object strings = Napi::Object::New(env);
   (strings).Set(Napi::String::New(env, "time"), NullValueIfInvalidString(fileInfo->strings.time));
@@ -715,7 +701,7 @@ Napi::Object Easy::CreateV8ObjectFromCurlHstsEntry(struct curl_hstsentry* sts) {
 
   auto hasExpire = !!sts->expire[0] && !!strcmp(sts->expire, TIME_IN_THE_FUTURE);
 
-  Napi::String host = Napi::New(env, sts->name);
+  Napi::String host = Napi::Number::New(env, sts->name);
   Napi::Boolean includeSubDomains = Napi::New(env, !!sts->includeSubDomains);
   Napi::Value expire =
       hasExpire ? Napi::New(env, sts->expire).As<Napi::Value>() : env.Null().As<Napi::Value>();
@@ -764,9 +750,7 @@ long Easy::CbChunkBgn(curl_fileinfo* transferInfo, void* ptr, int remains) {  //
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -806,9 +790,7 @@ long Easy::CbChunkEnd(void* ptr) {  // NOLINT(runtime/int)
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -904,9 +886,7 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -977,7 +957,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
     cacheEntryObject = returnValueFromHstsReadCallback;
   }
 
-  if (cacheEntryObject->IsNull()) {
+  if (cacheEntryObject.IsNull()) {
     return CURLSTS_DONE;
   } else {
     // returning an array from the callback can be used to avoid multiple
@@ -1505,6 +1485,7 @@ Napi::Value Easy::IsOpenGetter(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2088,6 +2069,7 @@ Napi::Value Easy::GetInfoTmpl(const Easy* obj, int infoId) {
 }
 
 Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2248,6 +2230,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::Send(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2283,6 +2266,7 @@ Napi::Value Easy::Send(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2319,19 +2303,18 @@ Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
 
 // exec this handle
 Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
   }
 
   if (!obj->SetUrlOpts()) {
     v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(CURLE_URL_MALFORMAT));
     return ret;
-    return;
   }
 
   SETLOCALE_WRAPPER(CURLcode code = curl_easy_perform(obj->ch););
@@ -2342,13 +2325,13 @@ Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
   }
 
 #if NODE_LIBCURL_VER_GE(7, 62, 0)
@@ -2365,18 +2348,17 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::Pause(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.")
   }
 
-  if (!info[0].IsUint32()) {
-    Napi::TypeError::New(env, "Bitmask value must be an integer.").ThrowAsJavaScriptException();
-    return env.Null();
+  if (!info[0].IsNumber()) {
+    throw Napi::TypeError::New(env, "Bitmask value must be an integer.")
   }
 
   uint32_t bitmask = info[0].As<Napi::Number>().Uint32Value();
@@ -2387,13 +2369,13 @@ Napi::Value Easy::Pause(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::Reset(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle closed.")
   }
 
   curl_easy_reset(obj->ch);
@@ -2417,6 +2399,7 @@ Napi::Value Easy::Reset(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::DupHandle(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   // create a new js object using this one as the argument for the constructor.
@@ -2430,26 +2413,25 @@ Napi::Value Easy::DupHandle(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!info.Length()) {
-    Napi::Error::New(env, "You must specify the callback function.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "You must specify the callback function.")
   }
 
   Napi::Value arg = info[0];
 
-  if (arg->IsNull()) {
+  if (arg.IsNull()) {
     obj->cbOnSocketEvent = nullptr;
 
     return info.This();
-    return;
   }
 
-  if (!arg->IsFunction()) {
-    Napi::TypeError::New(env, "Invalid callback given.").ThrowAsJavaScriptException();
+  if (!arg.IsFunction()) {
+    Napi::TypeError::New(env, "Invalid callback given.")
     return env.Null();
   }
 
@@ -2461,6 +2443,7 @@ Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2478,6 +2461,7 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
@@ -2496,19 +2480,18 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
 
 Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
   // check https://github.com/php/php-src/blob/master/ext/curl/interface.c#L3196
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Easy* obj = this;
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle already closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle already closed.")
   }
 
   if (obj->isInsideMultiHandle) {
-    Napi::Error::New(env, "Curl handle is inside a Multi instance, you must remove it first.")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is inside a Multi instance, you must remove it first.")
+        
   }
 
   obj->Dispose();
@@ -2517,20 +2500,19 @@ Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::StrError(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   Napi::Value errCode = info[0];
 
   if (!errCode.IsNumber()) {
-    Napi::TypeError::New(env, "Invalid errCode passed to Easy.strError.")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::TypeError::New(env, "Invalid errCode passed to Easy.strError.")
   }
 
   const char* errorMsg =
       curl_easy_strerror(static_cast<CURLcode>(errCode.As<Napi::Number>().Int32Value()));
 
-  Napi::String ret = Napi::New(env, errorMsg);
+  Napi::String ret = Napi::String::New(env, errorMsg);
 
   return ret;
 }
