@@ -962,9 +962,9 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
   } else {
     // returning an array from the callback can be used to avoid multiple
     // context switches between v8 and js
-    if (cacheEntryObject->IsArray()) {
+    if (cacheEntryObject.IsArray()) {
       auto cacheArray = cacheEntryObject.As<Napi::Array>();
-      auto cacheArrayLength = cacheArray->Length();
+      auto cacheArrayLength = cacheArray.Length();
 
       if (cacheArrayLength == 0) {
         return CURLSTS_DONE;
@@ -982,7 +982,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         // we check for an array here too to avoid passing a child array here.
         // If that happens, the code would get to this condition again when we
         // process this cache entry in a future iteration
-        if (!idxValueChecked.IsObject() || idxValueChecked->IsArray()) {
+        if (!idxValueChecked.IsObject() || idxValueChecked.IsArray()) {
           THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
           return returnValue;
         }
@@ -1042,7 +1042,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
       std::string hostStrValue = hostPropertyValueChecked.As<Napi::String>();
 
       // make sure str len is inside the given max length
-      if (static_cast<size_t>(hostStrValue.Length()) > sts->namelen) {
+      if (static_cast<size_t>(hostStrValue.length()) > sts->namelen) {
         Napi::Value typeError = Napi::TypeError(
             "The host property value returned from the HSTSREADFUNCTION callback function was "
             "invalid. The host string is too long.\n"
@@ -1061,7 +1061,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         // make sure expire length is one expected by libcurl
         // YYYYMMDD HH:MM:SS [null-terminated]
         size_t currentSize =
-            static_cast<size_t>(expirePropertyValueChecked.As<Napi::String>()->Length());
+            static_cast<size_t>(expirePropertyValueChecked.As<Napi::String>().Length());
         size_t expectedSize = sizeof(sts->expire) / sizeof(sts->expire[0]) - 1;
 
         if (currentSize != expectedSize) {
@@ -1122,8 +1122,8 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
   // TODO(jonathan): give the option to receive an array directly?
 
   Napi::Object countObj = Napi::Object::New(env);
-  Napi::Number index = Napi::New(env, static_cast<uint32_t>(count->index));
-  Napi::Number total = Napi::New(env, static_cast<uint32_t>(count->total));
+  Napi::Number index = Napi::Number::New(env, static_cast<uint32_t>(count->index));
+  Napi::Number total = Napi::Number::New(env, static_cast<uint32_t>(count->total));
   (countObj).Set(Napi::String::New(env, "index"), index);
   (countObj).Set(Napi::String::New(env, "total"), total);
 
@@ -1210,9 +1210,7 @@ int Easy::CbProgress(void* clientp, double dltotal, double dlnow, double ultotal
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -1268,9 +1266,7 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(returnValueCbTypeError);
     } else {
-      Napi::Error::New(env, returnValueCbTypeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, returnValueCbTypeError);
     }
 
     return CURL_TRAILERFUNC_ABORT;
@@ -1278,23 +1274,21 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
 
   Napi::Value returnValueCallbackChecked = returnValueCallback;
 
-  if (returnValueCallbackChecked->IsFalse()) {
+  if (returnValueCallbackChecked.IsFalse()) {
     return CURL_TRAILERFUNC_ABORT;
   }
 
   Napi::Array rows = returnValueCallbackChecked.As<Napi::Array>();
 
   // [headerStr1, headerStr2]
-  for (uint32_t i = 0, len = rows->Length(); i < len; ++i) {
+  for (uint32_t i = 0, len = rows.Length(); i < len; ++i) {
     // not an array of objects
     Napi::Value headerStrValue = (rows).Get(i);
     if (!headerStrValue.IsString()) {
       if (obj->isInsideMultiHandle) {
         obj->callbackError.Reset(returnValueCbTypeError);
       } else {
-        Napi::Error::New(env, returnValueCbTypeError).ThrowAsJavaScriptException();
-
-        tryCatch.ReThrow();
+        throw Napi::Error::New(env, returnValueCbTypeError);
       }
 
       return CURL_TRAILERFUNC_ABORT;
@@ -1363,9 +1357,7 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError);
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -1461,34 +1453,38 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Easy::IdGetter(const Napi::CallbackInfo& info) {
-  Easy* obj = this;
+  Napi::Env env = info.Env();
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  return Napi::New(env, obj->id);
+  return Napi::Number::New(env, obj->id);
 }
 
 Napi::Value Easy::IsInsideMultiHandleGetter(const Napi::CallbackInfo& info) {
-  Easy* obj = this;
+  Napi::Env env = info.Env();
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  return Napi::New(env, obj->isInsideMultiHandle);
+  return Napi::Boolean::New(env, obj->isInsideMultiHandle);
 }
 
 Napi::Value Easy::IsMonitoringSocketsGetter(const Napi::CallbackInfo& info) {
-  Easy* obj = this;
+  Napi::Env env = info.Env();
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  return Napi::New(env, obj->isMonitoringSockets);
+  return Napi::Boolean::New(env, obj->isMonitoringSockets);
 }
 
 Napi::Value Easy::IsOpenGetter(const Napi::CallbackInfo& info) {
-  Easy* obj = this;
+  Napi::Env env = info.Env();
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  return Napi::New(env, obj->isOpen);
+  return Napi::Boolean::New(env, obj->isOpen);
 }
 
 Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -1548,7 +1544,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       std::unique_ptr<CurlHttpPost> httpPost = std::make_unique<CurlHttpPost>();
 
       // [{ key : val }]
-      for (uint32_t i = 0, len = rows->Length(); i < len; ++i) {
+      for (uint32_t i = 0, len = rows.Length(); i < len; ++i) {
         // not an array of objects
         Napi::Value obj = (rows).Get(i);
         if (!obj.IsObject()) {
@@ -1559,7 +1555,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         Napi::Object postData = obj.As<Napi::Object>();
 
         const Napi::Array props = Napi::GetPropertyNames(postData);
-        const uint32_t postDataLength = props->Length();
+        const uint32_t postDataLength = props.Length();
 
         bool hasFile = false;
         bool hasContentType = false;
@@ -1628,19 +1624,19 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           return env.Null();
         }
 
-        std::string fieldName = (postData).Get(Napi::String > ("name".As < Napi::String::New(env)));
+        std::string fieldName = (postData).Get(<Napi::String>("name".As <Napi::String::New(env)));
         CURLFORMcode curlFormCode;
 
         if (hasFile) {
-          std::string file = (postData).Get(Napi::String > ("file".As < Napi::String::New(env)));
+          std::string file = (postData).Get(<Napi::String>("file".As <Napi::String::New(env)));
 
           if (hasContentType) {
             std::string contentType =
-                (postData).Get(Napi::String > ("type".As < Napi::String::New(env)));
+                (postData).Get(<Napi::String>("type".As <Napi::String::New(env)));
 
             if (hasNewFileName) {
               std::string fileName =
-                  (postData).Get(Napi::String > ("filename".As < Napi::String::New(env)));
+                  (postData).Get(<Napi::String>("filename".As <Napi::String::New(env)));
               curlFormCode =
                   httpPost->AddFile(*fieldName, fieldName.Length(), *file, *contentType, *fileName);
             } else {
@@ -1654,7 +1650,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
                                   // be set.
 
           std::string fieldValue =
-              (postData).Get(Napi::String > ("contents".As < Napi::String::New(env)));
+              (postData).Get(<Napi::String>("contents".As <Napi::String::New(env)));
 
           curlFormCode =
               httpPost->AddField(*fieldName, fieldName.Length(), *fieldValue, fieldValue.Length());
@@ -1689,7 +1685,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       curl_slist* slist = NULL;
       Napi::Array array = value.As<Napi::Array>();
 
-      for (uint32_t i = 0, len = array->Length(); i < len; ++i) {
+      for (uint32_t i = 0, len = array.Length(); i < len; ++i) {
         slist = curl_slist_append(slist, (array).Get(i->As<Napi::String>().Utf8Value().c_str()));
       }
 
@@ -2072,7 +2068,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -2148,7 +2144,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
             curr = linkedList;
 
             while (curr) {
-              auto value = arr.Set(arr->GetCreationContext(), arr->Length(),
+              auto value = arr.Set(arr->GetCreationContext(), arr.Length(),
                                    Napi::String::New(env, curr->data));
               if (value.IsJust()) {
                 curr = curr->next;
@@ -2184,7 +2180,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
           curr = linkedList;
 
           while (curr) {
-            auto value = arr.Set(arr->GetCreationContext(), arr->Length(),
+            auto value = arr.Set(arr->GetCreationContext(), arr.Length(),
                                  Napi::String::New(env, curr->data));
             if (value.IsJust()) {
               curr = curr->next;
@@ -2233,7 +2229,7 @@ Napi::Value Easy::Send(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -2269,7 +2265,7 @@ Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -2306,7 +2302,7 @@ Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -2328,7 +2324,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
@@ -2351,7 +2347,7 @@ Napi::Value Easy::Pause(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     throw Napi::Error::New(env, "Curl handle is closed.")
@@ -2372,7 +2368,7 @@ Napi::Value Easy::Reset(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     throw Napi::Error::New(env, "Curl handle closed.")
@@ -2416,7 +2412,7 @@ Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!info.Length()) {
     throw Napi::Error::New(env, "You must specify the callback function.")
@@ -2446,7 +2442,7 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   Napi::TryCatch tryCatch;
 
@@ -2464,7 +2460,7 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   Napi::TryCatch tryCatch;
 
@@ -2483,7 +2479,7 @@ Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  Easy* obj = this;
+  Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
     throw Napi::Error::New(env, "Curl handle already closed.")
