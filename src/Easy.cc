@@ -1527,11 +1527,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   // we probably could use these here for newer libcurl versions...
 
   if ((optionId = IsInsideCurlConstantStruct(curlOptionNotImplemented, opt))) {
-    Napi::ThrowError(
-        "Unsupported option, probably because it's too complex to implement "
-        "using javascript or unecessary when using javascript (like the _DATA "
-        "options).");
-    return;
+    throw Napi::Error::New(env, "Unsupported option, probably because it's too complex to implement using javascript or unecessary when using javascript (like the _DATA options).");
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
     switch (optionId) {
       case CURLOPT_SHARE:
@@ -1539,10 +1535,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
         } else {
           if (!value.IsObject() || !Napi::New(env, Share::constructor)->HasInstance(value)) {
-            Napi::ThrowTypeError(
-                "Invalid value for the SHARE option. It must be a Share "
-                "instance.");
-            return;
+            throw Napi::Error::New(env, (
+                "Invalid value for the SHARE option. It must be a Share instance.");
           }
 
           Share* share = value.As<Napi::Object>().Unwrap<Share>();
@@ -2116,10 +2110,8 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
   // Special case for unsupported info
   if ((infoId = IsInsideCurlConstantStruct(curlInfoNotImplemented, infoVal))) {
-    Napi::ThrowError(
-        "Unsupported info, probably because it's too complex to implement "
-        "using javascript or unecessary when using javascript.");
-    return;
+    throw Napi::Error::New(env, (
+        "Unsupported info, probably because it's too complex to implement using javascript or unecessary when using javascript.");
   }
 
   Napi::TryCatch tryCatch;
@@ -2365,10 +2357,8 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
   CURLcode code = curl_easy_upkeep(obj->ch);
 #else
   CURLcode code = CURLE_FUNCTION_NOT_FOUND;
-  Napi::ThrowError(
-      "The addon was built against a libcurl version that does not support upkeep. It requires "
-      "libcurl >= 7.62");
-  return;
+  throw Napi::Error::New(env, (
+      "The addon was built against a libcurl version that does not support upkeep. It requires libcurl >= 7.62");
 #endif
 
   v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(code));
