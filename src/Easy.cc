@@ -1445,6 +1445,7 @@ Napi::Object Easy::Initialize(Napi::Env env, Napi::Object exports) {
 }
 
 Napi::Value Easy::New(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (!info.IsConstructCall()) {
     Napi::Error::New(env, "You must use \"new\" to instantiate this object.")
         .ThrowAsJavaScriptException();
@@ -1454,17 +1455,14 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
   Easy* obj = nullptr;
 
   // Copy constructor, used when duplicating handles.
-  if (!jsHandle->IsUndefined()) {
-    if (!jsHandle->IsExternal() &&
+  if (!jsHandle.IsUndefined()) {
+    if (!jsHandle.IsExternal() &&
         (!jsHandle.IsObject() || !Napi::New(env, Easy::constructor)->HasInstance(jsHandle))) {
-      Napi::Error::New(env,
-                       Napi::TypeError::New(env, "Argument must be an instance of an Easy handle."))
-          .ThrowAsJavaScriptException();
-      return env.Null();
+      throw Napi::Error::New(env, "Argument must be an instance of an Easy handle.");
     }
 
     // This is the case when calling with a curl easy handle directly
-    if (jsHandle->IsExternal()) {
+    if (jsHandle.IsExternal()) {
       CURL* curlEasyHandle = reinterpret_cast<CURL*>(info[0].As<Napi::External>()->Value());
       obj = new Easy(curlEasyHandle);
     } else {
@@ -1531,7 +1529,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
     switch (optionId) {
       case CURLOPT_SHARE:
-        if (value->IsNull()) {
+        if (value.IsNull()) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
         } else {
           if (!value.IsObject() || !Napi::New(env, Share::constructor)->HasInstance(value)) {
@@ -1552,14 +1550,14 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     }
     // linked list options
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionLinkedList, opt))) {
-    if (value->IsNull()) {
+    if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
 
       // HTTPPOST is a special case, since it's an array of objects.
     } else if (optionId == CURLOPT_HTTPPOST) {
       std::string invalidArrayMsg = "HTTPPOST option value should be an Array of Objects.";
 
-      if (!value->IsArray()) {
+      if (!value.IsArray()) {
         Napi::TypeError::New(env, invalidArrayMsg.c_str()).ThrowAsJavaScriptException();
         return env.Null();
       }
@@ -1701,7 +1699,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       }
 
     } else {
-      if (!value->IsArray()) {
+      if (!value.IsArray()) {
         Napi::TypeError::New(env, "Option value must be an Array.").ThrowAsJavaScriptException();
         return env.Null();
       }
@@ -1722,7 +1720,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     }
     // check if option is string, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionString, opt))) {
-    if (value->IsNull()) {
+    if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
     } else {
       if (!value.IsString()) {
@@ -1790,9 +1788,9 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
     // check if option is a function, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionFunction, opt))) {
-    bool isNull = value->IsNull();
+    bool isNull = value.IsNull();
 
-    if (!value->IsFunction() && !isNull) {
+    if (!value.IsFunction() && !isNull) {
       Napi::TypeError::New(env, "Option value must be a null or a function.")
           .ThrowAsJavaScriptException();
       return env.Null();
@@ -2021,7 +2019,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     // check if option is a blob, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionBlob, opt))) {
 #if NODE_LIBCURL_VER_GE(7, 71, 0)
-    if (value->IsNull()) {
+    if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
     } else if (value.IsString()) {
       std::string utf8StringValue = value.As<Napi::String>();
