@@ -259,7 +259,7 @@ CURLcode Easy::SslCtxFunction(CURL* curl, void* sslctx, void* userdata) {
 }
 
 // Dispose persistent objects and references stored during the life of this obj.
-void Easy::Dispose() {
+void Easy::Dispose(Napi::Env env) {
   // this call should only be done when the handle is still open
   assert(this->isOpen && "This handle was already closed.");
   assert(this->ch && "The curl handle ran away.");
@@ -269,7 +269,7 @@ void Easy::Dispose() {
   NODE_LIBCURL_ADJUST_MEM(-MEMORY_PER_HANDLE);
 
   if (this->isMonitoringSockets) {
-    this->UnmonitorSockets();
+    this->UnmonitorSockets(env);
   }
 
   this->isOpen = false;
@@ -279,7 +279,7 @@ void Easy::Dispose() {
   --Easy::currentOpenedHandles;
 }
 
-void Easy::MonitorSockets() {
+void Easy::MonitorSockets(Napi::Env env) {
   int retUv;
   CURLcode retCurl;
   int events = 0 | UV_READABLE | UV_WRITABLE;
@@ -327,7 +327,7 @@ void Easy::MonitorSockets() {
   this->isMonitoringSockets = true;
 }
 
-void Easy::UnmonitorSockets() {
+void Easy::UnmonitorSockets(Napi::Env env) {
   int retUv;
   retUv = uv_poll_stop(this->socketPollHandle);
 
@@ -1364,7 +1364,7 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.ToLocalChecked().As<Napi::Number>().Int32Value();
   }
 
 #if NODE_LIBCURL_VER_GE(7, 68, 0)
@@ -1381,43 +1381,35 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
 Napi::Object Easy::Initialize(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  // Easy js "class" function template initialization
-  Napi::FunctionReference tmpl = Napi::Function::New(env, Easy::New);
-  tmpl->SetClassName(Napi::String::New(env, "Easy"));
+  Napi::Function tmpl = DefineClass(env, "Easy",
+    InstanceMethod("setOpt", &Easy::SetOpt),
+    InstanceMethod("getInfo", &Easy::GetInfo),
+    InstanceMethod("send", &Easy::Send),
+    InstanceMethod("recv", &Easy::Recv),
+    InstanceMethod("perform", &Easy::Perform),
+    InstanceMethod("upkeep", &Easy::Upkeep),
+    InstanceMethod("pause", &Easy::Pause),
+    InstanceMethod("reset", &Easy::Reset),
+    InstanceMethod("dupHandle", &Easy::DupHandle),
+    InstanceMethod("onSocketEvent", &Easy::OnSocketEvent),
+    InstanceMethod("monitorSocketEvents", &Easy::MonitorSocketEvents),
+    InstanceMethod("unmonitorSocketEvents", &Easy::UnmonitorSocketEvents),
+    InstanceMethod("close", &Easy::Close),
 
-  v8::Local<v8::ObjectTemplate> proto = tmpl->PrototypeTemplate();
+    StaticMethod("strError", &Easy::StrError),
 
-  // prototype methods
-  Napi::SetPrototypeMethod(tmpl, "setOpt", Easy::SetOpt);
-  Napi::SetPrototypeMethod(tmpl, "getInfo", Easy::GetInfo);
-  Napi::SetPrototypeMethod(tmpl, "send", Easy::Send);
-  Napi::SetPrototypeMethod(tmpl, "recv", Easy::Recv);
-  Napi::SetPrototypeMethod(tmpl, "perform", Easy::Perform);
-  Napi::SetPrototypeMethod(tmpl, "upkeep", Easy::Upkeep);
-  Napi::SetPrototypeMethod(tmpl, "pause", Easy::Pause);
-  Napi::SetPrototypeMethod(tmpl, "reset", Easy::Reset);
-  Napi::SetPrototypeMethod(tmpl, "dupHandle", Easy::DupHandle);
-  Napi::SetPrototypeMethod(tmpl, "onSocketEvent", Easy::OnSocketEvent);
-  Napi::SetPrototypeMethod(tmpl, "monitorSocketEvents", Easy::MonitorSocketEvents);
-  Napi::SetPrototypeMethod(tmpl, "unmonitorSocketEvents", Easy::UnmonitorSocketEvents);
-  Napi::SetPrototypeMethod(tmpl, "close", Easy::Close);
+    InstanceAccessor("id", &Easy::IdGetter, nullptr),
+    InstanceAccessor("isInsideMultiHandle", &Easy::IsInsideMultiHandleGetter, nullptr),
+    InstanceAccessor("isMonitoringSockets", &Easy::IsMonitoringSocketsGetter, nullptr),
+    InstanceAccessor("isOpen", &Easy::IsOpenGetter, nullptr)
+  );
 
-  // static methods
-  Napi::SetMethod(tmpl, "strError", Easy::StrError);
+    // Store the class constructor in the persistent reference
+  Easy::constructor = Napi::Persistent(tmpl);
+  Easy::constructor.SuppressDestruct();
 
-  // Instance accessors
-  Napi::SetAccessor(proto, Napi::String::New(env, "id"), Easy::IdGetter, 0, Napi::Value(),
-                    v8::DEFAULT, v8::ReadOnly);
-  Napi::SetAccessor(proto, Napi::String::New(env, "isInsideMultiHandle"),
-                    Easy::IsInsideMultiHandleGetter, 0, Napi::Value(), v8::DEFAULT, v8::ReadOnly);
-  Napi::SetAccessor(proto, Napi::String::New(env, "isMonitoringSockets"),
-                    Easy::IsMonitoringSocketsGetter, 0, Napi::Value(), v8::DEFAULT, v8::ReadOnly);
-  Napi::SetAccessor(proto, Napi::String::New(env, "isOpen"), Easy::IsOpenGetter, 0, Napi::Value(),
-                    v8::DEFAULT, v8::ReadOnly);
-
-  Easy::constructor.Reset(tmpl);
-
-  (target).Set(Napi::String::New(env, "Easy"), Napi::GetFunction(tmpl));
+  // Set the class on the exports object
+  exports.Set("Easy", tmpl);
 }
 
 Napi::Value Easy::New(const Napi::CallbackInfo& info) {
@@ -1551,7 +1543,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
         Napi::Object postData = obj.As<Napi::Object>();
 
-        const Napi::Array props = Napi::GetPropertyNames(postData);
+        const Napi::Array props = postData.GetPropertyNames();
         const uint32_t postDataLength = props.Length();
 
         bool hasFile = false;
@@ -1618,19 +1610,17 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           throw Napi::Error::New(env, "Missing field \"name\".");
         }
 
-        std::string fieldName = (postData).Get(<Napi::String>("name".As <Napi::String::New(env)));
+        std::string fieldName = postData.Get("name").As<Napi::String>();
         CURLFORMcode curlFormCode;
 
         if (hasFile) {
-          std::string file = (postData).Get(<Napi::String>("file".As <Napi::String::New(env)));
+          std::string file = postData.Get("file").As<Napi::String>();
 
           if (hasContentType) {
-            std::string contentType =
-                (postData).Get(<Napi::String>("type".As <Napi::String::New(env)));
+            std::string contentType = postData.Get("type").As<Napi::String>();
 
             if (hasNewFileName) {
-              std::string fileName =
-                  (postData).Get(<Napi::String>("filename".As <Napi::String::New(env)));
+              std::string fileName = postData.Get("filename").As<Napi::String>();
               curlFormCode =
                   httpPost->AddFile(*fieldName, fieldName.Length(), *file, *contentType, *fileName);
             } else {
@@ -1643,8 +1633,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         } else if (hasContent) {  // if file is not set, the contents field MUST
                                   // be set.
 
-          std::string fieldValue =
-              (postData).Get(<Napi::String>("contents".As <Napi::String::New(env)));
+          std::string fieldValue = postData.Get("contents").As<Napi::String>();
 
           curlFormCode =
               httpPost->AddField(*fieldName, fieldName.Length(), *fieldValue, fieldValue.Length());
@@ -1677,7 +1666,9 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       Napi::Array array = value.As<Napi::Array>();
 
       for (uint32_t i = 0, len = array.Length(); i < len; ++i) {
-        slist = curl_slist_append(slist, (array).Get(i->As<Napi::String>().Utf8Value().c_str()));
+       Napi::String item = array.Get(i).As<Napi::String>();
+       std::string utf8String = item.Utf8Value();
+       slist = curl_slist_append(slist, utf8String.c_str());
       }
 
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), slist);
@@ -2420,7 +2411,7 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   try{
-    obj->MonitorSockets();
+    obj->MonitorSockets(env);
   } catch (const std::exception& e) {
     throw Napi::Error::New(env, e.what());
   }
@@ -2435,7 +2426,7 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   try{
-    obj->UnmonitorSockets();
+    obj->UnmonitorSockets(env);
   } catch (const std::exception& e) {
     throw Napi::Error::New(env, e.what());
   }
@@ -2459,7 +2450,7 @@ Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
         
   }
 
-  obj->Dispose();
+  obj->Dispose(env);
 
   return;
 }

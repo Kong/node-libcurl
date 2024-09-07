@@ -36,11 +36,11 @@ class Easy : public Napi::ObjectWrap<Easy> {
   ~Easy();
 
   // instance methods
-  void Dispose();
+  void Dispose(Napi::Env env);
   void ResetRequiredHandleOptions();
   void CallSocketEvent(int status, int events);
-  void MonitorSockets();
-  void UnmonitorSockets();
+  void MonitorSockets(Napi::Env env);
+  void UnmonitorSockets(Napi::Env env);
 
   size_t OnData(char* data, size_t size, size_t nmemb);
   size_t OnHeader(char* data, size_t size, size_t nmemb);
