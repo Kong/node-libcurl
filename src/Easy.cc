@@ -845,9 +845,7 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
     if (obj->isInsideMultiHandle) {
       obj->callbackError.Reset(typeError);
     } else {
-      Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
-
-      tryCatch.ReThrow();
+      throw Napi::Error::New(env, typeError)
     }
   } else {
     returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
@@ -1425,8 +1423,7 @@ Napi::Object Easy::Initialize(Napi::Env env, Napi::Object exports) {
 Napi::Value Easy::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   if (!info.IsConstructCall()) {
-    Napi::Error::New(env, "You must use \"new\" to instantiate this object.")
-        .ThrowAsJavaScriptException();
+    throw Napi::Error::New(env, "You must use \"new\" to instantiate this object.");
   }
 
   Napi::Value jsHandle = info[0];
@@ -1493,8 +1490,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   Napi::Value opt = info[0];
@@ -1606,8 +1602,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
               errorMsg += std::string("Invalid property given: \"") + optionName +
                           "\". Valid properties are file, type, contents, name "
                           "and filename.";
-              Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-              return env.Null();
+              throw Napi::Error::New(env, errorMsg.c_str());
           }
 
           // check if value is a string.
@@ -1620,8 +1615,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         }
 
         if (!hasName) {
-          Napi::Error::New(env, "Missing field \"name\".").ThrowAsJavaScriptException();
-          return env.Null();
+          throw Napi::Error::New(env, "Missing field \"name\".");
         }
 
         std::string fieldName = (postData).Get(<Napi::String>("name".As <Napi::String::New(env)));
@@ -1656,16 +1650,14 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
               httpPost->AddField(*fieldName, fieldName.Length(), *fieldValue, fieldValue.Length());
 
         } else {
-          Napi::Error::New(env, "Missing field \"contents\".").ThrowAsJavaScriptException();
-          return env.Null();
+          throw Napi::Error::New(env, "Missing field \"contents\".");
         }
 
         if (curlFormCode != CURL_FORMADD_OK) {
           std::string errorMsg;
 
           errorMsg += std::string("Error while adding field \"") + *fieldName + "\" to post data.";
-          Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-          return env.Null();
+          throw Napi::Error::New(env, errorMsg.c_str());
         }
       }
 
@@ -1677,8 +1669,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
     } else {
       if (!value.IsArray()) {
-        Napi::TypeError::New(env, "Option value must be an Array.").ThrowAsJavaScriptException();
-        return env.Null();
+        throw Napi::TypeError::New(env, "Option value must be an Array.");
       }
 
       // convert value to curl linked list (curl_slist)
@@ -1701,8 +1692,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
     } else {
       if (!value.IsString()) {
-        Napi::TypeError::New(env, "Option value must be a string.").ThrowAsJavaScriptException();
-        return env.Null();
+        throw Napi::TypeError::New(env, "Option value must be a string.");
       }
 
       std::string value = info[1].As<Napi::String>();
@@ -1768,9 +1758,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     bool isNull = value.IsNull();
 
     if (!value.IsFunction() && !isNull) {
-      Napi::TypeError::New(env, "Option value must be a null or a function.")
-          .ThrowAsJavaScriptException();
-      return env.Null();
+      throw Napi::TypeError::New(env, "Option value must be a null or a function.");
     }
 
     switch (optionId) {
@@ -2017,13 +2005,10 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), &blob);
     } else {
-      Napi::TypeError::New(env, "Option value must be a string or Buffer.")
-          .ThrowAsJavaScriptException();
-      return env.Null();
+      throw Napi::TypeError::New(env, "Option value must be a string or Buffer.");
     }
 #else
-    Napi::Error::New(env, "Blob options require curl 7.71 or newer.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Blob options require curl 7.71 or newer.");
 #endif
   }
 
@@ -2050,7 +2035,7 @@ Napi::Value Easy::GetInfoTmpl(const Easy* obj, int infoId) {
   if (code != CURLE_OK) {
     std::string str = std::to_string(static_cast<int>(code));
 
-    Napi::Error::New(env, str.c_str()).ThrowAsJavaScriptException();
+    throw Napi::Error::New(env, str.c_str())
 
   } else {
     // is string
@@ -2071,8 +2056,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   Napi::Value infoVal = info[0];
@@ -2164,9 +2148,8 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
         if (isValid) {
           retVal = arr;
         } else {
-          Napi::Error::New(env,
-                           "Something went wrong while trying to retrieve info from curl slist")
-              .ThrowAsJavaScriptException();
+          throw Napi::Error::New(env,
+                           "Something went wrong while trying to retrieve info from curl slist");
         }
       }
     } else {
@@ -2196,10 +2179,8 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
         if (isValid) {
           retVal = arr;
         } else {
-          Napi::Error::New(env,
-                           "Something went wrong while trying to retrieve info from curl slist")
-              .ThrowAsJavaScriptException();
-        }
+          throw Napi::Error::New(env,
+                           "Something went wrong while trying to retrieve info from curl slist");
       }
     }
   }
@@ -2232,20 +2213,17 @@ Napi::Value Easy::Send(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   if (info.Length() == 0) {
-    Napi::Error::New(env, "Missing buffer argument.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Missing buffer argument.");
   }
 
   Napi::Value buf = info[0];
 
   if (!buf.IsObject() || !buf.IsBuffer()) {
-    Napi::Error::New(env, "Invalid Buffer instance given.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Invalid Buffer instance given.");
   }
 
   const char* bufContent = buf.As<Napi::Buffer<char>>().Data();
@@ -2268,20 +2246,17 @@ Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   if (info.Length() == 0) {
-    Napi::Error::New(env, "Missing buffer argument.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Missing buffer argument.");
   }
 
   Napi::Value buf = info[0];
 
   if (!buf.IsObject() || !buf.IsBuffer()) {
-    Napi::Error::New(env, "Invalid Buffer instance given.").ThrowAsJavaScriptException();
-    return env.Null();
+    throw Napi::Error::New(env, "Invalid Buffer instance given.");
   }
 
   char* bufContent = buf.As<Napi::Buffer<char>>().Data();
@@ -2305,7 +2280,7 @@ Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
+    throw Napi::Error::New(env, "Curl handle is closed.")
   }
 
   if (!obj->SetUrlOpts()) {
@@ -2327,7 +2302,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle is closed.").ThrowAsJavaScriptException();
+    throw Napi::Error::New(env, "Curl handle is closed.")
   }
 
 #if NODE_LIBCURL_VER_GE(7, 62, 0)
@@ -2444,13 +2419,10 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  Napi::TryCatch tryCatch;
-
-  obj->MonitorSockets();
-
-  if (tryCatch.HasCaught()) {
-    tryCatch.ReThrow();
-    return;
+  try{
+    obj->MonitorSockets();
+  } catch (const std::exception& e) {
+    throw Napi::Error::New(env, e.what());
   }
 
   return info.This();
@@ -2462,13 +2434,10 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  Napi::TryCatch tryCatch;
-
-  obj->UnmonitorSockets();
-
-  if (tryCatch.HasCaught()) {
-    tryCatch.ReThrow();
-    return;
+  try{
+    obj->UnmonitorSockets();
+  } catch (const std::exception& e) {
+    throw Napi::Error::New(env, e.what());
   }
 
   return info.This();
