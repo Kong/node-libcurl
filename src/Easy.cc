@@ -197,7 +197,7 @@ bool Easy::operator!=(const Easy& other) const { return !(*this == other); }
 
 Easy::~Easy(void) {
   if (this->isOpen) {
-    this->Dispose();
+    this->Dispose(env);
   }
 
   if (this->url) {
@@ -1622,12 +1622,12 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
             if (hasNewFileName) {
               std::string fileName = postData.Get("filename").As<Napi::String>();
               curlFormCode =
-                  httpPost->AddFile(*fieldName, fieldName.Length(), *file, *contentType, *fileName);
+                  httpPost->AddFile(*fieldName, fieldName.length(), *file, *contentType, *fileName);
             } else {
-              curlFormCode = httpPost->AddFile(*fieldName, fieldName.Length(), *file, *contentType);
+              curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file, *contentType);
             }
           } else {
-            curlFormCode = httpPost->AddFile(*fieldName, fieldName.Length(), *file);
+            curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file);
           }
 
         } else if (hasContent) {  // if file is not set, the contents field MUST
@@ -1636,7 +1636,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           std::string fieldValue = postData.Get("contents").As<Napi::String>();
 
           curlFormCode =
-              httpPost->AddField(*fieldName, fieldName.Length(), *fieldValue, fieldValue.Length());
+              httpPost->AddField(*fieldName, fieldName.length(), *fieldValue, fieldValue.length());
 
         } else {
           throw Napi::Error::New(env, "Missing field \"contents\".");
@@ -1688,9 +1688,9 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
       std::string value = info[1].As<Napi::String>();
 
-      size_t length = static_cast<size_t>(value.Length());
+      size_t length = static_cast<size_t>(value.length());
 
-      std::string valueStr = std::string(*value, length);
+      std::string valueStr = std::string(value, length);
 
       // libcurl makes a copy of the strings after version 7.17, CURLOPT_POSTFIELD
       // is the only exception
@@ -1765,8 +1765,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, Easy::CbChunkBgn);
@@ -1786,8 +1785,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_CHUNK_END_FUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_CHUNK_END_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, Easy::CbChunkEnd);
@@ -1803,8 +1801,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_DEBUGFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_DEBUGFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, Easy::CbDebug);
@@ -1820,8 +1817,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_DATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_FUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_FNMATCH_FUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_FNMATCH_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_DATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_FUNCTION, Easy::CbFnMatch);
@@ -1835,8 +1831,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_HEADERFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_HEADERFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HEADERFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1849,8 +1844,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_HSTSREADDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSREADFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_HSTSREADFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HSTSREADFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_HSTSREADDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSREADFUNCTION, Easy::CbHstsRead);
@@ -1864,8 +1858,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_HSTSWRITEFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HSTSWRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEFUNCTION, Easy::CbHstsWrite);
@@ -1882,8 +1875,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_PROGRESSDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_PROGRESSFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_PROGRESSFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_PROGRESSFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_PROGRESSDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_PROGRESSFUNCTION, Easy::CbProgress);
@@ -1898,8 +1890,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_READFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_READFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_READFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1911,8 +1902,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_SEEKFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_SEEKFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_SEEKFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1926,8 +1916,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_TRAILERDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_TRAILERFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_TRAILERFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_TRAILERFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_TRAILERDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_TRAILERFUNCTION, Easy::CbTrailer);
@@ -1948,8 +1937,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_XFERINFODATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_XFERINFOFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_XFERINFOFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_XFERINFOFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_XFERINFODATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_XFERINFOFUNCTION, Easy::CbXferinfo);
@@ -1965,8 +1953,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_WRITEFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_WRITEFUNCTION].reset(
-              new Napi::FunctionReference(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_WRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1980,7 +1967,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     } else if (value.IsString()) {
       std::string utf8StringValue = value.As<Napi::String>();
 
-      size_t length = static_cast<size_t>(utf8StringValue.Length());
+      size_t length = static_cast<size_t>(utf8StringValue.length());
 
       struct curl_blob blob;
       blob.data = *utf8StringValue;
