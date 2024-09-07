@@ -48,6 +48,12 @@ class Easy::ToFree {
   }
 };
 
+void assert(bool condition, const std::string& message = "Assertion failed!") {
+    if (!condition) {
+        throw std::runtime_error(message);
+    }
+}
+
 Napi::FunctionReference Easy::constructor;
 
 uint32_t Easy::counter = 0;
@@ -1509,16 +1515,14 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (value.IsNull()) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
         } else {
-          if (!value.IsObject() || !Napi::New(env, Share::constructor)->HasInstance(value)) {
-            throw Napi::Error::New(env, (
-                "Invalid value for the SHARE option. It must be a Share instance.");
+          if (!value.IsObject() || !Share::constructor.Value().HasInstance(value)) {
+            throw Napi::Error::New(env, "Invalid value for the SHARE option. It must be a Share instance.");
           }
 
-          Share* share = value.As<Napi::Object>().Unwrap<Share>();
+          Share* share = Napi::ObjectWrap<Share>::Unwrap(value.As<Napi::Object>());
 
           if (!share->isOpen) {
-            Napi::Error::New(env, "Share handle is already closed.").ThrowAsJavaScriptException();
-            return env.Null();
+            throw Napi::Error::New(env, "Share handle is already closed.");
           }
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, share->sh);
@@ -1535,8 +1539,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       std::string invalidArrayMsg = "HTTPPOST option value should be an Array of Objects.";
 
       if (!value.IsArray()) {
-        Napi::TypeError::New(env, invalidArrayMsg.c_str()).ThrowAsJavaScriptException();
-        return env.Null();
+        throw Napi::TypeError::New(env, invalidArrayMsg.c_str());
       }
 
       Napi::Array rows = value.As<Napi::Array>();
@@ -1548,9 +1551,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         // not an array of objects
         Napi::Value obj = (rows).Get(i);
         if (!obj.IsObject()) {
-          Napi::TypeError::New(env, invalidArrayMsg.c_str()).ThrowAsJavaScriptException();
-          return env.Null();
-        }
+          throw Napi::TypeError::New(env, invalidArrayMsg.c_str());
 
         Napi::Object postData = obj.As<Napi::Object>();
 
@@ -1614,8 +1615,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
             std::string errorMsg;
 
             errorMsg += std::string("Value for property \"") + optionName + "\" must be a string.";
-            Napi::TypeError::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
-            return env.Null();
+            throw Napi::TypeError::New(env, errorMsg.c_str());
           }
         }
 
