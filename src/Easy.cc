@@ -357,7 +357,7 @@ void Easy::CallSocketEvent(int status, int events) {
   if (this->cbOnSocketEvent == nullptr) {
     return;
   }
-
+  
   Napi::HandleScope scope(env);
 
   Napi::Value err = env.Null();
@@ -438,7 +438,7 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
       }
       return returnValue;
     } else {
-      returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+      returnValue = returnValueCallback.As<Napi::Number>();
     }
 
     char* data = buf.As<Napi::Buffer<char>>().Data();
@@ -525,7 +525,7 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
           throw Napi::Error::New(env, typeError);
         }
       } else {
-        returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+        returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
       }
 
       // otherwise we can't seek directly
@@ -590,7 +590,7 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
     }
     return returnValue;
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -644,7 +644,7 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
     }
     return returnValue;
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -666,7 +666,7 @@ Napi::Object Easy::CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo) {
   Napi::EscapableHandleScope scope(env);
 
   Napi::String fileName = Napi::New(env, fileInfo->filename);
-  v8::Local<v8::Integer> fileType = Napi::New(env, fileInfo->filetype);
+  v8::Local<v8::Integer> fileType = Napi::Number::New(env, fileInfo->filetype);
   Napi::Value time = env.Null().As<Napi::Value>();
 
   if (fileInfo->time != 0)
@@ -708,9 +708,9 @@ Napi::Object Easy::CreateV8ObjectFromCurlHstsEntry(struct curl_hstsentry* sts) {
   auto hasExpire = !!sts->expire[0] && !!strcmp(sts->expire, TIME_IN_THE_FUTURE);
 
   Napi::String host = Napi::Number::New(env, sts->name);
-  Napi::Boolean includeSubDomains = Napi::New(env, !!sts->includeSubDomains);
+  Napi::Boolean includeSubDomains = Napi::Boolean::New(env, !!sts->includeSubDomains);
   Napi::Value expire =
-      hasExpire ? Napi::New(env, sts->expire).As<Napi::Value>() : env.Null().As<Napi::Value>();
+      hasExpire ? Napi::Boolean::New(env, sts->expire).As<Napi::Value>() : env.Null().As<Napi::Value>();
 
   Napi::Object obj = Napi::Object::New(env);
   (obj).Set(Napi::String::New(env, "host"), host);
@@ -759,7 +759,7 @@ long Easy::CbChunkBgn(curl_fileinfo* transferInfo, void* ptr, int remains) {  //
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -799,7 +799,7 @@ long Easy::CbChunkEnd(void* ptr) {  // NOLINT(runtime/int)
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -848,7 +848,7 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
       throw Napi::Error::New(env, typeError)
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -865,7 +865,7 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
   assert(it != obj->callbacks.end() && "FNMATCH callback not set.");
 
   const int argc = 2;
-  Napi::Value argv[argc] = {Napi::New(env, pattern), Napi::New(env, string)};
+  Napi::Value argv[argc] = {Napi::String::New(env, pattern), Napi::String::New(env, string)};
 
   int32_t returnValue = CURL_FNMATCHFUNC_FAIL;
 
@@ -893,7 +893,7 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   return returnValue;
@@ -1217,7 +1217,7 @@ int Easy::CbProgress(void* clientp, double dltotal, double dlnow, double ultotal
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
 #if NODE_LIBCURL_VER_GE(7, 68, 0)
@@ -1381,28 +1381,27 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
 Napi::Object Easy::Initialize(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  Napi::Function tmpl = DefineClass(env, "Easy",
-    InstanceMethod("setOpt", &Easy::SetOpt),
-    InstanceMethod("getInfo", &Easy::GetInfo),
-    InstanceMethod("send", &Easy::Send),
-    InstanceMethod("recv", &Easy::Recv),
-    InstanceMethod("perform", &Easy::Perform),
-    InstanceMethod("upkeep", &Easy::Upkeep),
-    InstanceMethod("pause", &Easy::Pause),
-    InstanceMethod("reset", &Easy::Reset),
-    InstanceMethod("dupHandle", &Easy::DupHandle),
-    InstanceMethod("onSocketEvent", &Easy::OnSocketEvent),
-    InstanceMethod("monitorSocketEvents", &Easy::MonitorSocketEvents),
-    InstanceMethod("unmonitorSocketEvents", &Easy::UnmonitorSocketEvents),
-    InstanceMethod("close", &Easy::Close),
-
+  Napi::Function tmpl = DefineClass(env, "Easy", {
+    InstanceMethod<&Easy::SetOpt>("setOpt"),
+    InstanceMethod<&Easy::GetInfo>("getInfo"),
+    InstanceMethod<&Easy::Send>("send"),
+    InstanceMethod<&Easy::Recv>("recv"),
+    InstanceMethod<&Easy::Perform>("perform"),
+    InstanceMethod<&Easy::Upkeep>("upkeep"),
+    InstanceMethod<&Easy::Pause>("pause"),
+    InstanceMethod<&Easy::Reset>("reset"),
+    InstanceMethod<&Easy::DupHandle>("dupHandle"),
+    InstanceMethod<&Easy::OnSocketEvent>("onSocketEvent"),
+    InstanceMethod<&Easy::MonitorSocketEvents>("monitorSocketEvents"),
+    InstanceMethod<&Easy::UnmonitorSocketEvents>("unmonitorSocketEvents"),
+    InstanceMethod<&Easy::Close>("close"),
     StaticMethod("strError", &Easy::StrError),
 
     InstanceAccessor("id", &Easy::IdGetter, nullptr),
     InstanceAccessor("isInsideMultiHandle", &Easy::IsInsideMultiHandleGetter, nullptr),
     InstanceAccessor("isMonitoringSockets", &Easy::IsMonitoringSocketsGetter, nullptr),
     InstanceAccessor("isOpen", &Easy::IsOpenGetter, nullptr)
-  );
+});
 
     // Store the class constructor in the persistent reference
   Easy::constructor = Napi::Persistent(tmpl);
@@ -1990,7 +1989,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 #endif
   }
 
-  return setOptRetCode;
+  return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
 }
 
 // traits class to determine if we need to check for null pointer first
@@ -2048,8 +2047,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
   // Special case for unsupported info
   if ((infoId = IsInsideCurlConstantStruct(curlInfoNotImplemented, infoVal))) {
-    throw Napi::Error::New(env, (
-        "Unsupported info, probably because it's too complex to implement using javascript or unecessary when using javascript.");
+    throw Napi::Error::New(env, "Unsupported info, probably because it's too complex to implement using javascript or unecessary when using javascript.");
   }
 
   Napi::TryCatch tryCatch;
@@ -2178,7 +2176,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
   }
 
   Napi::Object ret = Napi::Object::New(env);
-  (ret).Set(Napi::String::New(env, "code"), Napi::New(env, static_cast<int32_t>(code)));
+  (ret).Set(Napi::String::New(env, "code"), Napi::Number::New(env, static_cast<int32_t>(code)));
   (ret).Set(Napi::String::New(env, "data"), retVal);
 
   return ret;
@@ -2211,8 +2209,8 @@ Napi::Value Easy::Send(const Napi::CallbackInfo& info) {
   CURLcode curlRet = curl_easy_send(obj->ch, bufContent, bufLength, &n);
 
   Napi::Object ret = Napi::Object::New(env);
-  (ret).Set(Napi::String::New(env, "code"), Napi::New(env, static_cast<int32_t>(curlRet)));
-  (ret).Set(Napi::String::New(env, "bytesSent"), Napi::New(env, static_cast<int32_t>(n)));
+  (ret).Set(Napi::String::New(env, "code"), Napi::Number::New(env, static_cast<int32_t>(curlRet)));
+  (ret).Set(Napi::String::New(env, "bytesSent"), Napi::Number::New(env, static_cast<int32_t>(n)));
 
   return ret;
 }
@@ -2244,8 +2242,8 @@ Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
   CURLcode curlRet = curl_easy_recv(obj->ch, bufContent, bufLength, &n);
 
   Napi::Object ret = Napi::Object::New(env);
-  (ret).Set(Napi::String::New(env, "code"), Napi::New(env, static_cast<int32_t>(curlRet)));
-  (ret).Set(Napi::String::New(env, "bytesReceived"), Napi::New(env, static_cast<int32_t>(n)));
+  (ret).Set(Napi::String::New(env, "code"), Napi::Number::New(env, static_cast<int32_t>(curlRet)));
+  (ret).Set(Napi::String::New(env, "bytesReceived"), Napi::Number::New(env, static_cast<int32_t>(n)));
 
   return ret;
 }
@@ -2287,8 +2285,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
   CURLcode code = curl_easy_upkeep(obj->ch);
 #else
   CURLcode code = CURLE_FUNCTION_NOT_FOUND;
-  throw Napi::Error::New(env, (
-      "The addon was built against a libcurl version that does not support upkeep. It requires libcurl >= 7.62");
+  throw Napi::Error::New(env, "The addon was built against a libcurl version that does not support upkeep. It requires libcurl >= 7.62");
 #endif
 
   v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(code));
