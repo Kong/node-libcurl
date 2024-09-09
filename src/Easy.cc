@@ -560,11 +560,11 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
   int32_t returnValue = -1;
 
   const int argc = 3;
-  Napi::Object buf = Napi::Buffer::Copy(env, data, static_cast<uint32_t>(dataLength));
-  v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
-  v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
+  Napi::Buffer<char> buf = Napi::Buffer<char>::Copy(env, data, static_cast<size_t>(dataLength));
+  Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+  Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
-  Napi::Value argv[argc] = {buf, sizeArg, nmembArg};
+  std::vector<napi_value> argv = { buf, sizeArg, nmembArg };
 
   Napi::TryCatch tryCatch;
   Napi::AsyncResource asyncResource("Easy::OnData");
@@ -614,11 +614,12 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
   int32_t returnValue = -1;
 
   const int argc = 3;
-  Napi::Object buf = Napi::Buffer::Copy(env, data, static_cast<uint32_t>(dataLength));
-  v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
-  v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
+  Napi::Buffer<char> buf = Napi::Buffer<char>::Copy(env, data, static_cast<size_t>(dataLength));
+  Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+  Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
-  Napi::Value argv[argc] = {buf, sizeArg, nmembArg};
+  std::vector<napi_value> argv = { buf, sizeArg, nmembArg };
+
 
   Napi::TryCatch tryCatch;
   Napi::AsyncResource asyncResource("Easy::OnHeader");
@@ -663,22 +664,21 @@ Napi::Value NullValueIfInvalidString(char* str) {
 }
 
 Napi::Object Easy::CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo) {
+  Napi::Env env = Napi::Env();
   Napi::EscapableHandleScope scope(env);
 
-  Napi::String fileName = Napi::New(env, fileInfo->filename);
-  v8::Local<v8::Integer> fileType = Napi::Number::New(env, fileInfo->filetype);
-  Napi::Value time = env.Null().As<Napi::Value>();
+  Napi::String fileName = Napi::String:::New(env, fileInfo->filename);
+  Napi::Number fileType = Napi::Number::New(env, fileInfo->filetype);
+  Napi::Value time = env.Null();
 
   if (fileInfo->time != 0)
-    time = Napi::Date::New(env, static_cast<double>(fileInfo->time) * 1000)
+    time = Napi::Date::New(env, static_cast<double>(fileInfo->time) * 1000).As<Napi::Number>();
 
-               .As<Napi::Value>();
-
-  v8::Local<v8::Uint32> perm = Napi::Number::New(env, fileInfo->perm);
-  v8::Local<v8::Integer> uid = Napi::Number::New(env, fileInfo->uid);
-  v8::Local<v8::Integer> gid = Napi::Number::New(env, fileInfo->gid);
+  Napi::Number perm = Napi::Number::New(env, fileInfo->perm);
+  Napi::Number uid = Napi::Number::New(env, fileInfo->uid);
+  Napi::Number gid = Napi::Number::New(env, fileInfo->gid);
   Napi::Number size = Napi::Number::New(env, static_cast<double>(fileInfo->size));
-  v8::Local<v8::Integer> hardLinks = Napi::Number::New(env, static_cast<int32_t>(fileInfo->hardlinks));
+  Napi::Number hardLinks = Napi::Number::New(env, static_cast<int32_t>(fileInfo->hardlinks));
 
   Napi::Object strings = Napi::Object::New(env);
   (strings).Set(Napi::String::New(env, "time"), NullValueIfInvalidString(fileInfo->strings.time));
@@ -709,8 +709,8 @@ Napi::Object Easy::CreateV8ObjectFromCurlHstsEntry(struct curl_hstsentry* sts) {
 
   Napi::String host = Napi::Number::New(env, sts->name);
   Napi::Boolean includeSubDomains = Napi::Boolean::New(env, !!sts->includeSubDomains);
-  Napi::Value expire =
-      hasExpire ? Napi::Boolean::New(env, sts->expire).As<Napi::Value>() : env.Null().As<Napi::Value>();
+  Napi::String expire =
+      hasExpire ? Napi::String::New(env, sts->expire) : Napi::String::New(env.Null());
 
   Napi::Object obj = Napi::Object::New(env);
   (obj).Set(Napi::String::New(env, "host"), host);
@@ -816,9 +816,9 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
   assert(it != obj->callbacks.end() && "DEBUG callback not set.");
 
   const int argc = 2;
-  Napi::Object buf = Napi::Buffer::Copy(env, data, static_cast<uint32_t>(size));
+  Napi::Buffer<char> buf = Napi::Buffer<char>::Copy(env, data, static_cast<size_t>(size));
   Napi::Value argv[argc] = {
-      Napi::Number::New(env, type),
+      Napi::Number::New(env, type),  // Assuming 'type' is a number
       buf,
   };
 
@@ -927,7 +927,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
   if (obj->hstsReadCache.size() > 0) {
     auto persistentValue = obj->hstsReadCache.back();
-    cacheEntryObject = Napi::New(env, obj->hstsReadCache.back());
+    cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
 
     // reset the persistent handler so we do not leak memory
     persistentValue.Reset();
@@ -1001,7 +1001,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
       }
 
       auto persistentValue = obj->hstsReadCache.back();
-      cacheEntryObject = Napi::New(env, obj->hstsReadCache.back());
+      cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
 
       persistentValue.Reset();
       obj->hstsReadCache.pop_back();
@@ -1423,7 +1423,7 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
   // Copy constructor, used when duplicating handles.
   if (!jsHandle.IsUndefined()) {
     if (!jsHandle.IsExternal() &&
-        (!jsHandle.IsObject() || !Napi::New(env, Easy::constructor)->HasInstance(jsHandle))) {
+        (!jsHandle.IsObject() || !Napi::Function::New(env, Easy::constructor)->HasInstance(jsHandle))) {
       throw Napi::Error::New(env, "Argument must be an instance of an Easy handle.");
     }
 
@@ -1432,7 +1432,7 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
       CURL* curlEasyHandle = reinterpret_cast<CURL*>(info[0].As<Napi::External>()->Value());
       obj = new Easy(curlEasyHandle);
     } else {
-      Easy* orig = info[0].To<Napi::Object>().Unwrap<Easy>();
+      Easy* orig = info[0].As<Napi::Object>().Unwrap<Easy>();
       obj = new Easy(orig);
     }
 
@@ -1441,7 +1441,6 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
   }
 
   if (obj) {
-    obj->Wrap(info.This());
     return info.This();
   }
 }
