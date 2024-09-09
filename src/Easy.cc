@@ -404,15 +404,15 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
   if (it != obj->callbacks.end()) {
     Napi::HandleScope scope(env);
 
-    Napi::Object buf = Napi::Buffer<char>::New(env, static_cast<uint32_t>(n));
-    v8::Local<v8::Uint32> sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
-    v8::Local<v8::Uint32> nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
-    const int argc = 3;
-    Napi::Value argv[argc] = {
-        buf,
-        sizeArg,
-        nmembArg,
-    };
+  Napi::Buffer<char> buf = Napi::Buffer<char>::New(env, static_cast<size_t>(n)); 
+  Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));    
+  Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
+  const int argc = 3;
+  Napi::Value argv[argc] = {
+      buf,
+      sizeArg,
+      nmembArg,
+  };
 
     Napi::TryCatch tryCatch;
     Napi::AsyncResource asyncResource("Easy::ReadFunction");
@@ -494,8 +494,8 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
     if (it != obj->callbacks.end()) {
       Napi::HandleScope scope(env);
 
-      v8::Local<v8::Uint32> offsetArg = Napi::Number::New(env, static_cast<uint32_t>(offset));
-      v8::Local<v8::Uint32> originArg = Napi::Number::New(env, static_cast<uint32_t>(origin));
+      Napi::Number offsetArg = Napi::Number::New(env, static_cast<uint32_t>(offset));
+      Napi::Number originArg = Napi::Number::New(env, static_cast<uint32_t>(origin));
       const int argc = 2;
       Napi::Value argv[argc] = {
           offsetArg,
@@ -1299,7 +1299,7 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
     }
 
     *headerList =
-        curl_slist_append(*headerList, headerStrValue->As<Napi::String>().Utf8Value().c_str());
+        curl_slist_append(*headerList, headerStrValue.As<Napi::String>().Utf8Value().c_str());
   }
 
   return CURL_TRAILERFUNC_OK;
@@ -1364,7 +1364,7 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.ToLocalChecked().As<Napi::Number>().Int32Value();
+    returnValue = returnValueCallback.Int32Value().As<Napi::Number>();
   }
 
 #if NODE_LIBCURL_VER_GE(7, 68, 0)
@@ -1432,7 +1432,7 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
       CURL* curlEasyHandle = reinterpret_cast<CURL*>(info[0].As<Napi::External>()->Value());
       obj = new Easy(curlEasyHandle);
     } else {
-      Easy* orig = info[0].As<Napi::Object>().Unwrap<Easy>();
+      Easy* orig = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
       obj = new Easy(orig);
     }
 
