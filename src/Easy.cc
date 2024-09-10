@@ -2094,8 +2094,6 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
       if (code == CURLE_OK) {
         Napi::Array arr = Napi::Array::New(env);
-        bool isValid = true;
-
         for (int i = 0; i < ci->num_of_certs; i++) {
           linkedList = ci->certinfo[i];
 
@@ -2103,28 +2101,10 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
             curr = linkedList;
 
             while (curr) {
-              auto value = arr.Set(arr->GetCreationContext(), arr.Length(),
-                                   Napi::String::New(env, curr->data));
-              if (value.IsJust()) {
-                curr = curr->next;
-              } else {
-                curr = NULL;
-                isValid = false;
-              }
-            }
-
-            // stop the loop if we found an invalid value
-            if (!isValid) {
-              break;
+              arr.Set(arr.Length(), Napi::String::New(env, curr->data));
+              curr = curr->next;
             }
           }
-        }
-
-        if (isValid) {
-          retVal = arr;
-        } else {
-          throw Napi::Error::New(env,
-                           "Something went wrong while trying to retrieve info from curl slist");
         }
       }
     } else {
@@ -2132,31 +2112,16 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
       if (code == CURLE_OK) {
         Napi::Array arr = Napi::Array::New(env);
-        bool isValid = true;
-
         if (linkedList) {
           curr = linkedList;
 
           while (curr) {
-            auto value = arr.Set(arr->GetCreationContext(), arr.Length(),
-                                 Napi::String::New(env, curr->data));
-            if (value.IsJust()) {
-              curr = curr->next;
-            } else {
-              curr = NULL;
-              isValid = false;
-            }
+            arr.Set(arr.Length(), Napi::String::New(env, curr->data));
+            curr = curr->next;
           }
 
           curl_slist_free_all(linkedList);
         }
-
-        if (isValid) {
-          retVal = arr;
-        } else {
-          throw Napi::Error::New(env,
-                           "Something went wrong while trying to retrieve info from curl slist");
-      }
     }
   }
 
