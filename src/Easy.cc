@@ -1487,7 +1487,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
   if ((optionId = IsInsideCurlConstantStruct(curlOptionNotImplemented, opt))) {
     throw Napi::Error::New(env, "Unsupported option, probably because it's too complex to implement using javascript or unecessary when using javascript (like the _DATA options).");
-  } else if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
+  }
+  if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
     if (optionId == CURLOPT_SHARE) {
         if (value.IsNull()) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
@@ -2030,49 +2031,64 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
     throw Napi::Error::New(env, "Unsupported info, probably because it's too complex to implement using javascript or unecessary when using javascript.");
   }
 
-  Napi::TryCatch tryCatch;
+  try{
 
-  // String
-  if ((infoId = IsInsideCurlConstantStruct(curlInfoString, infoVal))) {
-    retVal = Easy::GetInfoTmpl<char*, v8::String>(obj, infoId);
-    // curl_off_t
-  } else if ((infoId = IsInsideCurlConstantStruct(curlInfoOffT, infoVal))) {
-    retVal = Easy::GetInfoTmpl<curl_off_t, v8::Number>(obj, infoId);
-    // Double
-  } else if ((infoId = IsInsideCurlConstantStruct(curlInfoDouble, infoVal))) {
-    retVal = Easy::GetInfoTmpl<double, v8::Number>(obj, infoId);
-    // Integer
-  } else if ((infoId = IsInsideCurlConstantStruct(curlInfoInteger, infoVal))) {
-    retVal = Easy::GetInfoTmpl<long, v8::Number>(obj, infoId);  // NOLINT(runtime/int)
-    // ACTIVESOCKET and alike
-  } else if ((infoId = IsInsideCurlConstantStruct(curlInfoSocket, infoVal))) {
-    curl_socket_t socket;
+    // String
+    if ((infoId = IsInsideCurlConstantStruct(curlInfoString, infoVal))) {
+      retVal = Easy::GetInfoTmpl<char*, v8::String>(obj, infoId);
+      // curl_off_t
+    } else if ((infoId = IsInsideCurlConstantStruct(curlInfoOffT, infoVal))) {
+      retVal = Easy::GetInfoTmpl<curl_off_t, v8::Number>(obj, infoId);
+      // Double
+    } else if ((infoId = IsInsideCurlConstantStruct(curlInfoDouble, infoVal))) {
+      retVal = Easy::GetInfoTmpl<double, v8::Number>(obj, infoId);
+      // Integer
+    } else if ((infoId = IsInsideCurlConstantStruct(curlInfoInteger, infoVal))) {
+      retVal = Easy::GetInfoTmpl<long, v8::Number>(obj, infoId);  // NOLINT(runtime/int)
+      // ACTIVESOCKET and alike
+    } else if ((infoId = IsInsideCurlConstantStruct(curlInfoSocket, infoVal))) {
+      curl_socket_t socket;
 
-    code = curl_easy_getinfo(obj->ch, static_cast<CURLINFO>(infoId), &socket);
-
-    if (code == CURLE_OK) {
-      // curl_socket_t is of type SOCKET on Windows,
-      //  casting it to int32_t can be dangerous, only if Microsoft ever decides
-      //  to change the underlying architecture behind it.
-      // https://stackoverflow.com/a/26496808/710693
-      retVal = Napi::Number::New(env, static_cast<int32_t>(socket));
-    }
-
-    // Linked list
-  } else if ((infoId = IsInsideCurlConstantStruct(curlInfoLinkedList, infoVal))) {
-    curl_slist* linkedList;
-    curl_slist* curr;
-
-    curlInfo = static_cast<CURLINFO>(infoId);
-    if (curlInfo == CURLINFO_CERTINFO) {
-      curl_certinfo* ci = NULL;
-      code = curl_easy_getinfo(obj->ch, curlInfo, &ci);
+      code = curl_easy_getinfo(obj->ch, static_cast<CURLINFO>(infoId), &socket);
 
       if (code == CURLE_OK) {
-        Napi::Array arr = Napi::Array::New(env);
-        for (int i = 0; i < ci->num_of_certs; i++) {
-          linkedList = ci->certinfo[i];
+        // curl_socket_t is of type SOCKET on Windows,
+        //  casting it to int32_t can be dangerous, only if Microsoft ever decides
+        //  to change the underlying architecture behind it.
+        // https://stackoverflow.com/a/26496808/710693
+        retVal = Napi::Number::New(env, static_cast<int32_t>(socket));
+      }
 
+      // Linked list
+    } else if ((infoId = IsInsideCurlConstantStruct(curlInfoLinkedList, infoVal))) {
+      curl_slist* linkedList;
+      curl_slist* curr;
+
+      curlInfo = static_cast<CURLINFO>(infoId);
+      if (curlInfo == CURLINFO_CERTINFO) {
+        curl_certinfo* ci = NULL;
+        code = curl_easy_getinfo(obj->ch, curlInfo, &ci);
+
+        if (code == CURLE_OK) {
+          Napi::Array arr = Napi::Array::New(env);
+          for (int i = 0; i < ci->num_of_certs; i++) {
+            linkedList = ci->certinfo[i];
+
+            if (linkedList) {
+              curr = linkedList;
+
+              while (curr) {
+                arr.Set(arr.Length(), Napi::String::New(env, curr->data));
+                curr = curr->next;
+              }
+            }
+          }
+        }
+      } else {
+        code = curl_easy_getinfo(obj->ch, curlInfo, &linkedList);
+
+        if (code == CURLE_OK) {
+          Napi::Array arr = Napi::Array::New(env);
           if (linkedList) {
             curr = linkedList;
 
@@ -2080,30 +2096,15 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
               arr.Set(arr.Length(), Napi::String::New(env, curr->data));
               curr = curr->next;
             }
+
+            curl_slist_free_all(linkedList);
           }
-        }
-      }
-    } else {
-      code = curl_easy_getinfo(obj->ch, curlInfo, &linkedList);
-
-      if (code == CURLE_OK) {
-        Napi::Array arr = Napi::Array::New(env);
-        if (linkedList) {
-          curr = linkedList;
-
-          while (curr) {
-            arr.Set(arr.Length(), Napi::String::New(env, curr->data));
-            curr = curr->next;
-          }
-
-          curl_slist_free_all(linkedList);
         }
       }
     }
-  }
 
-  if (tryCatch.HasCaught()) {
-    std::string msg = tryCatch.Message().As<Napi::String>()->Get());
+  } catch (const std::exception& e) {
+    std::string msg = e.what();
 
     std::string errCode = std::string(*msg);
     // based on this interesting answer
@@ -2113,7 +2114,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
                   errCode.end());
 
     // 43 is CURLE_BAD_FUNCTION_ARGUMENT
-    code = static_cast<CURLcode>(std::stoi(errCode.Length() > 0 ? errCode : "43"));
+    code = static_cast<CURLcode>(std::stoi(errCode.length() > 0 ? errCode : "43"));
   }
 
   Napi::Object ret = Napi::Object::New(env);
@@ -2287,9 +2288,9 @@ Napi::Value Easy::DupHandle(const Napi::CallbackInfo& info) {
   // create a new js object using this one as the argument for the constructor.
   const int argc = 1;
   Napi::Value argv[argc] = {info.This()};
-  Napi::Function cons = Napi::GetFunction(Napi::New(env, Easy::constructor));
+  Napi::Function cons = Easy::constructor.Value();
 
-  Napi::Object newInstance = Napi::NewInstance(cons, argc, argv);
+  Napi::Object newInstance = cons.New(argc, argv);
 
   return newInstance;
 }
