@@ -2197,7 +2197,7 @@ Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle is closed.")
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   if (!obj->SetUrlOpts()) {
@@ -2219,7 +2219,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle is closed.")
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   CURLcode code = curl_easy_upkeep(obj->ch);
@@ -2236,11 +2236,11 @@ Napi::Value Easy::Pause(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle is closed.")
+    throw Napi::Error::New(env, "Curl handle is closed.");
   }
 
   if (!info[0].IsNumber()) {
-    throw Napi::TypeError::New(env, "Bitmask value must be an integer.")
+    throw Napi::TypeError::New(env, "Bitmask value must be an integer.");
   }
 
   uint32_t bitmask = info[0].As<Napi::Number>().Uint32Value();
@@ -2257,7 +2257,7 @@ Napi::Value Easy::Reset(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle closed.")
+    throw Napi::Error::New(env, "Curl handle closed.");
   }
 
   curl_easy_reset(obj->ch);
@@ -2301,7 +2301,7 @@ Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!info.Length()) {
-    throw Napi::Error::New(env, "You must specify the callback function.")
+    throw Napi::Error::New(env, "You must specify the callback function.");
   }
 
   Napi::Value arg = info[0];
@@ -2313,7 +2313,7 @@ Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
   }
 
   if (!arg.IsFunction()) {
-    Napi::TypeError::New(env, "Invalid callback given.")
+    Napi::TypeError::New(env, "Invalid callback given.");
     return env.Null();
   }
 
@@ -2362,17 +2362,17 @@ Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
   if (!obj->isOpen) {
-    throw Napi::Error::New(env, "Curl handle already closed.")
+    throw Napi::Error::New(env, "Curl handle already closed.");
   }
 
   if (obj->isInsideMultiHandle) {
-    throw Napi::Error::New(env, "Curl handle is inside a Multi instance, you must remove it first.")
+    throw Napi::Error::New(env, "Curl handle is inside a Multi instance, you must remove it first.");
         
   }
 
   obj->Dispose(env);
 
-  return;
+  return env.Undefined();
 }
 
 Napi::Value Easy::StrError(const Napi::CallbackInfo& info) {
@@ -2382,7 +2382,7 @@ Napi::Value Easy::StrError(const Napi::CallbackInfo& info) {
   Napi::Value errCode = info[0];
 
   if (!errCode.IsNumber()) {
-    throw Napi::TypeError::New(env, "Invalid errCode passed to Easy.strError.")
+    throw Napi::TypeError::New(env, "Invalid errCode passed to Easy.strError.");
   }
 
   const char* errorMsg =
