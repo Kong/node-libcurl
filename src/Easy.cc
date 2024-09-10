@@ -2103,7 +2103,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
   }
 
   if (tryCatch.HasCaught()) {
-    std::string msg = tryCatch.Message(.As<Napi::String>()->Get());
+    std::string msg = tryCatch.Message().As<Napi::String>()->Get());
 
     std::string errCode = std::string(*msg);
     // based on this interesting answer
@@ -2201,13 +2201,13 @@ Napi::Value Easy::Perform(const Napi::CallbackInfo& info) {
   }
 
   if (!obj->SetUrlOpts()) {
-    v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(CURLE_URL_MALFORMAT));
-    return ret;
+    Napi::Number ret = Napi::Number::New(env, static_cast<int32_t>(CURLE_URL_MALFORMAT));
+    return Napi::Number::New(env, static_cast<int32_t>(CURLE_URL_MALFORMAT));
   }
 
   SETLOCALE_WRAPPER(CURLcode code = curl_easy_perform(obj->ch););
 
-  v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(code));
+  Napi::Number ret = Napi::Number::New(env, static_cast<int32_t>(code));
 
   return ret;
 }
@@ -2224,7 +2224,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
 
   CURLcode code = curl_easy_upkeep(obj->ch);
 
-  v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(code));
+  Napi::Number ret = Napi::Number::New(env, static_cast<int32_t>(code));
 
   return ret;
 }
@@ -2247,7 +2247,7 @@ Napi::Value Easy::Pause(const Napi::CallbackInfo& info) {
 
   CURLcode code = curl_easy_pause(obj->ch, static_cast<int>(bitmask));
 
-  return static_cast<int32_t>(code);
+  return Napi::Number::New(env, static_cast<int32_t>(code));
 }
 
 Napi::Value Easy::Reset(const Napi::CallbackInfo& info) {
@@ -2318,8 +2318,7 @@ Napi::Value Easy::OnSocketEvent(const Napi::CallbackInfo& info) {
   }
 
   Napi::Function callback = arg.As<Napi::Function>();
-
-  obj->cbOnSocketEvent.reset(new Napi::FunctionReference(callback));
+  obj->cbOnSocketEvent = std::make_unique<Napi::FunctionReference>(Napi::Persistent(callback));
 
   return info.This();
 }
