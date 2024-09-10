@@ -1488,8 +1488,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   if ((optionId = IsInsideCurlConstantStruct(curlOptionNotImplemented, opt))) {
     throw Napi::Error::New(env, "Unsupported option, probably because it's too complex to implement using javascript or unecessary when using javascript (like the _DATA options).");
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
-    switch (optionId) {
-      case CURLOPT_SHARE:
+    if (optionId == CURLOPT_SHARE) {
         if (value.IsNull()) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
         } else {
@@ -1505,7 +1504,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, share->sh);
         }
-        break;
     }
     // linked list options
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionLinkedList, opt))) {
@@ -1826,7 +1824,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
         break;
 
-#if NODE_LIBCURL_VER_GE(7, 74, 0)
       case CURLOPT_HSTSREADFUNCTION:
         if (isNull) {
           obj->callbacks.erase(CURLOPT_HSTSREADFUNCTION);
@@ -1855,7 +1852,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         }
 
         break;
-#endif
 
       case CURLOPT_PROGRESSFUNCTION:
 
@@ -1897,7 +1893,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
         break;
 
-#if NODE_LIBCURL_VER_GE(7, 64, 0)
       case CURLOPT_TRAILERFUNCTION:
 
         if (isNull) {
@@ -1913,9 +1908,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         }
 
         break;
-#endif
 
-#if NODE_LIBCURL_VER_GE(7, 32, 0)
       /* xferinfo was introduced in 7.32.0.
          New libcurls will prefer the new callback and instead use that one even
          if both callbacks are set. */
@@ -1934,7 +1927,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         }
 
         break;
-#endif
 
       case CURLOPT_WRITEFUNCTION:
 
@@ -1951,7 +1943,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
     // check if option is a blob, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionBlob, opt))) {
-#if NODE_LIBCURL_VER_GE(7, 71, 0)
     if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
     } else if (value.IsString()) {
@@ -1975,9 +1966,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     } else {
       throw Napi::TypeError::New(env, "Option value must be a string or Buffer.");
     }
-#else
-    throw Napi::Error::New(env, "Blob options require curl 7.71 or newer.");
-#endif
+
   }
 
   return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
@@ -2057,13 +2046,8 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
     retVal = Easy::GetInfoTmpl<long, v8::Number>(obj, infoId);  // NOLINT(runtime/int)
     // ACTIVESOCKET and alike
   } else if ((infoId = IsInsideCurlConstantStruct(curlInfoSocket, infoVal))) {
-#if NODE_LIBCURL_VER_GE(7, 45, 0)
     curl_socket_t socket;
-#else
-    // this should never really used tho, as it's only possible to have
-    // an curlInfoSocket value with libcurl >= 7.45.0
-    long socket;  // NOLINT(runtime/int)
-#endif
+
     code = curl_easy_getinfo(obj->ch, static_cast<CURLINFO>(infoId), &socket);
 
     if (code == CURLE_OK) {
