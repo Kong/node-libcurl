@@ -1492,7 +1492,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     if (optionId == CURLOPT_SHARE) {
         if (value.IsNull()) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
-        } else {
+          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
+        } 
           if (!value.IsObject() || !Share::constructor.Value().HasInstance(value)) {
             throw Napi::Error::New(env, "Invalid value for the SHARE option. It must be a Share instance.");
           }
@@ -1504,15 +1505,17 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           }
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, share->sh);
-        }
+          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
     }
     // linked list options
-  } else if ((optionId = IsInsideCurlConstantStruct(curlOptionLinkedList, opt))) {
+  }
+  if ((optionId = IsInsideCurlConstantStruct(curlOptionLinkedList, opt))) {
     if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
-
+      return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
       // HTTPPOST is a special case, since it's an array of objects.
-    } else if (optionId == CURLOPT_HTTPPOST) {
+    }
+    if (optionId == CURLOPT_HTTPPOST) {
       std::string invalidArrayMsg = "HTTPPOST option value should be an Array of Objects.";
 
       if (!value.IsArray()) {
@@ -1670,38 +1673,39 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionString, opt))) {
     if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
-    } else {
-      if (!value.IsString()) {
-        throw Napi::TypeError::New(env, "Option value must be a string.");
-      }
-
-      std::string value = info[1].As<Napi::String>();
-
-      size_t length = static_cast<size_t>(value.length());
-
-      std::string valueStr = std::string(value, length);
-
-      // libcurl makes a copy of the strings after version 7.17, CURLOPT_POSTFIELD
-      // is the only exception
-      if (static_cast<CURLoption>(optionId) == CURLOPT_POSTFIELDS) {
-        std::vector<char> valueChar = std::vector<char>(valueStr.begin(), valueStr.end());
-        valueChar.push_back(0);
-
-        setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), &valueChar[0]);
-
-        if (setOptRetCode == CURLE_OK) {
-          obj->toFree->str.push_back(std::move(valueChar));
-        }
-
-      } else if (static_cast<CURLoption>(optionId) == CURLOPT_URL) {
-        obj->urlData = std::vector<char>(valueStr.begin(), valueStr.end());
-        obj->urlData.push_back(0);
-        setOptRetCode = CURLE_OK;
-      } else {
-        setOptRetCode =
-            curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), valueStr.c_str());
-      }
+      return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
     }
+    if (!value.IsString()) {
+      throw Napi::TypeError::New(env, "Option value must be a string.");
+    }
+
+    std::string value = info[1].As<Napi::String>();
+
+    size_t length = static_cast<size_t>(value.length());
+
+    std::string valueStr = std::string(value, length);
+
+    // libcurl makes a copy of the strings after version 7.17, CURLOPT_POSTFIELD
+    // is the only exception
+    if (static_cast<CURLoption>(optionId) == CURLOPT_POSTFIELDS) {
+      std::vector<char> valueChar = std::vector<char>(valueStr.begin(), valueStr.end());
+      valueChar.push_back(0);
+
+      setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), &valueChar[0]);
+
+      if (setOptRetCode == CURLE_OK) {
+        obj->toFree->str.push_back(std::move(valueChar));
+      }
+
+    } else if (static_cast<CURLoption>(optionId) == CURLOPT_URL) {
+      obj->urlData = std::vector<char>(valueStr.begin(), valueStr.end());
+      obj->urlData.push_back(0);
+      setOptRetCode = CURLE_OK;
+    } else {
+      setOptRetCode =
+          curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), valueStr.c_str());
+    }
+    
 
     // check if option is an integer, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionInteger, opt))) {
@@ -1753,12 +1757,13 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           obj->callbacks.erase(CURLOPT_CHUNK_BGN_FUNCTION);
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, NULL);
-        } else {
-          obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
-
-          curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
-          setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, Easy::CbChunkBgn);
+          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
         }
+        obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+
+        curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
+        setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, Easy::CbChunkBgn);
+      
 
         break;
 
@@ -1773,12 +1778,13 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           obj->callbacks.erase(CURLOPT_CHUNK_END_FUNCTION);
 
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, NULL);
-        } else {
-          obj->callbacks[CURLOPT_CHUNK_END_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
-
-          curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
-          setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, Easy::CbChunkEnd);
+          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
         }
+        obj->callbacks[CURLOPT_CHUNK_END_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+
+        curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
+        setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, Easy::CbChunkEnd);
+      
 
         break;
 
@@ -1789,12 +1795,13 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
 
           curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, NULL);
-        } else {
-          obj->callbacks[CURLOPT_DEBUGFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
+        } 
+        obj->callbacks[CURLOPT_DEBUGFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
-          curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, obj);
-          setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, Easy::CbDebug);
-        }
+        curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, obj);
+        setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, Easy::CbDebug);
+      
 
         break;
 
@@ -1946,7 +1953,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionBlob, opt))) {
     if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
-    } else if (value.IsString()) {
+      return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
+    }else if (value.IsString()) {
       std::string utf8StringValue = value.As<Napi::String>();
 
       size_t length = static_cast<size_t>(utf8StringValue.length());
@@ -1957,6 +1965,7 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       blob.flags = CURL_BLOB_COPY;
 
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), &blob);
+      return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
     } else if (value.IsBuffer()) {
       struct curl_blob blob;
       blob.data = value.As<Napi::Buffer<char>>().Data();
