@@ -2098,6 +2098,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
           curl_slist_free_all(linkedList);
         }
+      }
     }
   }
 
@@ -2221,12 +2222,7 @@ Napi::Value Easy::Upkeep(const Napi::CallbackInfo& info) {
     throw Napi::Error::New(env, "Curl handle is closed.")
   }
 
-#if NODE_LIBCURL_VER_GE(7, 62, 0)
   CURLcode code = curl_easy_upkeep(obj->ch);
-#else
-  CURLcode code = CURLE_FUNCTION_NOT_FOUND;
-  throw Napi::Error::New(env, "The addon was built against a libcurl version that does not support upkeep. It requires libcurl >= 7.62");
-#endif
 
   v8::Local<v8::Integer> ret = Napi::Number::New(env, static_cast<int32_t>(code));
 
