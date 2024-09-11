@@ -11,15 +11,12 @@
 #include "libcurl_compat.h"
 
 #include <curl/curl.h>
-#include <napi.h>
-#include <uv.h>
-#include <napi.h>
-#include <uv.h>
-#include <v8.h>
 
 #include <map>
 #include <memory>
-
+#include <napi.h>
+#include <uv.h>
+#include <v8.h>
 
 namespace NodeLibcurl {
 
@@ -140,7 +137,7 @@ class Easy : public Napi::ObjectWrap<Easy> {
   bool isOpen = true;
 
   // used to return callback errors when inside Multi interface
-  v8::Persistent<v8::Value> callbackError;
+  Napi::Reference<Napi::Value> callbackError;
 
   // static members
   static uint32_t currentOpenedHandles;

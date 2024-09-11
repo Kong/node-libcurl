@@ -370,8 +370,8 @@ void Easy::CallSocketEvent(int status, int events) {
   Napi::Value argv[argc] = {err, Napi::Number::New(env, events)};
 
   // **(this->cbOnSocketEvent.get()) is the same than this->cbOnSocketEvent->GetFunction()
-  Napi::AsyncResource asyncResource("Easy::CallSocketEvent");
-  asyncResource.runInAsyncScope(this->handle(), this->cbOnSocketEvent->GetFunction(), argc, argv);
+  Napi::AsyncContext asyncContext("Easy::CallSocketEvent");
+  asyncContext.runInAsyncScope(this->handle(), this->cbOnSocketEvent->GetFunction(), argc, argv);
 }
 
 // Called by libcurl when some chunk of data (from body) is available
@@ -415,13 +415,13 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
     };
 
     try {
-      Napi::AsyncResource asyncResource("Easy::ReadFunction");
-      Napi::MaybeLocal<v8::Value> returnValueCallback =
-          asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+      Napi::AsyncContext asyncContext(env, "Easy::ReadFunction");
+      Napi::Value returnValueCallback =
+          asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
     } catch (const Napi::Error& e) {
       if (obj->isInsideMultiHandle) {
-        obj->callbackError.Reset(e.Message());
+        obj->callbackError.Reset(Napi::String::New(env, e.Message()));
       } else {
         throw e;
       }
@@ -503,13 +503,13 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
       };
 
       try {
-        Napi::AsyncResource asyncResource("Easy::SeekFunction");
-        Napi::MaybeLocal<v8::Value> returnValueCallback =
-            asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+        Napi::AsyncContext asyncContext("Easy::SeekFunction");
+        Napi::Value returnValueCallback =
+            asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
       } catch (const Napi::Error& e) {
         if (obj->isInsideMultiHandle) {
-          obj->callbackError.Reset(e.Message());
+          obj->callbackError.Reset(Napi::String::New(env, e.Message()));
         } else {
           throw e;
         }
@@ -567,9 +567,9 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
   try {
-    Napi::AsyncResource asyncResource("Easy::OnData");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::OnData");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
@@ -621,9 +621,9 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
   try {
-    Napi::AsyncResource asyncResource("Easy::OnHeader");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::OnHeader");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
@@ -734,13 +734,13 @@ long Easy::CbChunkBgn(curl_fileinfo* transferInfo, void* ptr, int remains) {  //
   int32_t returnValue = CURL_CHUNK_BGN_FUNC_FAIL;
 
   try {
-    Napi::AsyncResource asyncResource("Easy::CbChunkBgn");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbChunkBgn");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -772,15 +772,15 @@ long Easy::CbChunkEnd(void* ptr) {  // NOLINT(runtime/int)
   assert(it != obj->callbacks.end() && "CHUNK_END callback not set.");
 
   int32_t returnValue = CURL_CHUNK_END_FUNC_FAIL;
-
+  Napi::Value returnValueCallback;
   try {
-    Napi::AsyncResource asyncResource("Easy::CbChunkEnd");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
+    Napi::AsyncContext asyncContext("Easy::CbChunkEnd");
+    returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -822,13 +822,13 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
   int32_t returnValue = 1;
 
   try {
-    Napi::AsyncResource asyncResource("Easy::CbDebug");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbDebug");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -866,13 +866,13 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
   int32_t returnValue = CURL_FNMATCHFUNC_FAIL;
 
   try {
-    Napi::AsyncResource asyncResource("Easy::CbFnMatch");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbFnMatch");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -895,7 +895,6 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
 }
 
 int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
-#if NODE_LIBCURL_VER_GE(7, 74, 0)
   Napi::HandleScope scope(env);
 
   Easy* obj = static_cast<Easy*>(userdata);
@@ -906,10 +905,9 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
   assert(it != obj->callbacks.end() && "HSTSREADFUNCTION callback not set.");
 
   int32_t returnValue = CURLSTS_FAIL;
+  Napi::Value cacheEntryObject;
 
   try {
-    Napi::Value cacheEntryObject;
-
     Napi::Value typeError = Napi::TypeError(
         "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
         "  - Object matching the type CurlHstsEntry\n"
@@ -935,117 +933,139 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         return CURLSTS_DONE;
       }
 
-      Napi::AsyncResource asyncResource("Easy::CbHstsRead");
-      Napi::MaybeLocal<v8::Value> returnValueFromHstsReadCallback =
-          asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
-    }
-    catch (const Napi::Error& e) {
-      if (obj->isInsideMultiHandle) {
-        obj->callbackError.Reset(e.Message());
-      } else {
-        throw e;
-      }
-      return returnValue;
-    }
-
-    if (returnValueFromHstsReadCallback.IsEmpty()) {
-      THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
-      return returnValue;
-    }
-
-    cacheEntryObject = returnValueFromHstsReadCallback;
-  }
-
-  if (cacheEntryObject.IsNull()) {
-    return CURLSTS_DONE;
-  } else {
-    // returning an array from the callback can be used to avoid multiple
-    // context switches between v8 and js
-    if (cacheEntryObject.IsArray()) {
-      auto cacheArray = cacheEntryObject.As<Napi::Array>();
-      auto cacheArrayLength = cacheArray.Length();
-
-      if (cacheArrayLength == 0) {
-        return CURLSTS_DONE;
-      }
-
-      // inserting in reverse order as we are processing the hstsReadCache stack from back to front
-      for (int i = cacheArrayLength - 1; i >= 0; i--) {
-        auto idxValue = (cacheArray).Get(i);
-
-        assert(!idxValue.IsEmpty() &&
-               "Value inside array could not be found - Process may be running out of memory");
-
-        auto idxValueChecked = idxValue;
-
-        // we check for an array here too to avoid passing a child array here.
-        // If that happens, the code would get to this condition again when we
-        // process this cache entry in a future iteration
-        if (!idxValueChecked.IsObject() || idxValueChecked.IsArray()) {
-          THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
-          return returnValue;
-        }
-
-        auto idxValueAsObject = idxValueChecked.As<Napi::Object>();
-
-        v8::NonCopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
-
-        persistentValue.Reset(Napi::GetCurrentContext()->GetIsolate(), idxValueAsObject);
-
-        obj->hstsReadCache.push_back(persistentValue);
-      }
-
-      auto persistentValue = obj->hstsReadCache.back();
-      cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
-
-      persistentValue.Reset();
-      obj->hstsReadCache.pop_back();
-      obj->wasHstsReadCacheSet = true;
-    }
-
-    if (cacheEntryObject.IsObject()) {
-      // napi would make this so much cleaner...
-
-      auto cacheEntry = cacheEntryObject.As<Napi::Object>();
-
-      auto hostPropertyStr = Napi::String::New(env, "host");
-      auto includeSubDomainsPropertyStr = Napi::String::New(env, "includeSubDomains");
-      auto expirePropertyStr = Napi::String::New(env, "expire");
-
-      auto hostPropertyValue = (cacheEntry).Get(hostPropertyStr);
-      auto includeSubDomainsPropertyValue = (cacheEntry).Get(includeSubDomainsPropertyStr);
-      auto expirePropertyValue = (cacheEntry).Get(expirePropertyStr);
-
-      if (hostPropertyValue.IsEmpty() || includeSubDomainsPropertyValue.IsEmpty() ||
-          expirePropertyValue.IsEmpty()) {
-        assert("Process ran out of memory - fields returned from HSTSREADFUNCTION were empty");
-      }
-
-      auto hostPropertyValueChecked = hostPropertyValue;
-      auto includeSubDomainsPropertyValueChecked = includeSubDomainsPropertyValue;
-      auto expirePropertyValueChecked = expirePropertyValue;
-
-      // the validation here is pretty basic, and we are not really validating
-      // the format of the expire string - libcurl should do that
-
-      // make sure the provided data is valid
-      if (!hostPropertyValueChecked.IsString() ||
-          (!includeSubDomainsPropertyValueChecked->IsNullOrUndefined() &&
-           !includeSubDomainsPropertyValueChecked->IsBoolean()) ||
-          (!expirePropertyValueChecked->IsNullOrUndefined() &&
-           !expirePropertyValueChecked.IsString())) {
+      Napi::AsyncContext asyncContext("Easy::CbHstsRead");
+      Napi::Value returnValueFromHstsReadCallback =
+          asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
+      if (returnValueFromHstsReadCallback.IsEmpty()) {
         THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
         return returnValue;
       }
 
-      std::string hostStrValue = hostPropertyValueChecked.As<Napi::String>();
+      cacheEntryObject = returnValueFromHstsReadCallback;
+    }
 
-      // make sure str len is inside the given max length
-      if (static_cast<size_t>(hostStrValue.length()) > sts->namelen) {
+  } catch (const Napi::Error& e) {
+    if (obj->isInsideMultiHandle) {
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
+    } else {
+      throw e;
+    }
+    return returnValue;
+  }
+
+  if (cacheEntryObject.IsNull()) {
+    return CURLSTS_DONE;
+  }
+  // returning an array from the callback can be used to avoid multiple
+  // context switches between v8 and js
+  if (cacheEntryObject.IsArray()) {
+    auto cacheArray = cacheEntryObject.As<Napi::Array>();
+    auto cacheArrayLength = cacheArray.Length();
+
+    if (cacheArrayLength == 0) {
+      return CURLSTS_DONE;
+    }
+
+    // inserting in reverse order as we are processing the hstsReadCache stack from back to front
+    for (int i = cacheArrayLength - 1; i >= 0; i--) {
+      auto idxValue = (cacheArray).Get(i);
+
+      assert(!idxValue.IsEmpty() &&
+             "Value inside array could not be found - Process may be running out of memory");
+
+      auto idxValueChecked = idxValue;
+
+      // we check for an array here too to avoid passing a child array here.
+      // If that happens, the code would get to this condition again when we
+      // process this cache entry in a future iteration
+      if (!idxValueChecked.IsObject() || idxValueChecked.IsArray()) {
+        THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
+        return returnValue;
+      }
+
+      auto idxValueAsObject = idxValueChecked.As<Napi::Object>();
+
+      v8::NonCopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
+
+      persistentValue.Reset(Napi::GetCurrentContext()->GetIsolate(), idxValueAsObject);
+
+      obj->hstsReadCache.push_back(persistentValue);
+    }
+
+    auto persistentValue = obj->hstsReadCache.back();
+    cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
+
+    persistentValue.Reset();
+    obj->hstsReadCache.pop_back();
+    obj->wasHstsReadCacheSet = true;
+  }
+
+  if (cacheEntryObject.IsObject()) {
+    // napi would make this so much cleaner...
+
+    auto cacheEntry = cacheEntryObject.As<Napi::Object>();
+
+    auto hostPropertyStr = Napi::String::New(env, "host");
+    auto includeSubDomainsPropertyStr = Napi::String::New(env, "includeSubDomains");
+    auto expirePropertyStr = Napi::String::New(env, "expire");
+
+    auto hostPropertyValue = (cacheEntry).Get(hostPropertyStr);
+    auto includeSubDomainsPropertyValue = (cacheEntry).Get(includeSubDomainsPropertyStr);
+    auto expirePropertyValue = (cacheEntry).Get(expirePropertyStr);
+
+    if (hostPropertyValue.IsEmpty() || includeSubDomainsPropertyValue.IsEmpty() ||
+        expirePropertyValue.IsEmpty()) {
+      assert("Process ran out of memory - fields returned from HSTSREADFUNCTION were empty");
+    }
+
+    auto hostPropertyValueChecked = hostPropertyValue;
+    auto includeSubDomainsPropertyValueChecked = includeSubDomainsPropertyValue;
+    auto expirePropertyValueChecked = expirePropertyValue;
+
+    // the validation here is pretty basic, and we are not really validating
+    // the format of the expire string - libcurl should do that
+
+    // make sure the provided data is valid
+    if (!hostPropertyValueChecked.IsString() ||
+        (!includeSubDomainsPropertyValueChecked->IsNullOrUndefined() &&
+         !includeSubDomainsPropertyValueChecked->IsBoolean()) ||
+        (!expirePropertyValueChecked->IsNullOrUndefined() &&
+         !expirePropertyValueChecked.IsString())) {
+      THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
+      return returnValue;
+    }
+
+    std::string hostStrValue = hostPropertyValueChecked.As<Napi::String>();
+
+    // make sure str len is inside the given max length
+    if (static_cast<size_t>(hostStrValue.length()) > sts->namelen) {
+      Napi::Value typeError = Napi::TypeError(
+          "The host property value returned from the HSTSREADFUNCTION callback function was "
+          "invalid. The host string is too long.\n"
+          "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
+          "callback, thus you may be receiving an error while the request did in fact work. "
+          "Please fix the HSTS callback to return the correct data to avoid this.");
+      THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
+
+      return returnValue;
+    }
+
+    sts->name = *hostStrValue;
+    sts->includeSubDomains = includeSubDomainsPropertyValueChecked.As<Napi::Boolean>().Value();
+
+    if (expirePropertyValueChecked.IsString()) {
+      // make sure expire length is one expected by libcurl
+      // YYYYMMDD HH:MM:SS [null-terminated]
+      size_t currentSize =
+          static_cast<size_t>(expirePropertyValueChecked.As<Napi::String>().Length());
+      size_t expectedSize = sizeof(sts->expire) / sizeof(sts->expire[0]) - 1;
+
+      if (currentSize != expectedSize) {
         Napi::Value typeError = Napi::TypeError(
-            "The host property value returned from the HSTSREADFUNCTION callback function was "
-            "invalid. The host string is too long.\n"
-            "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
+            "The expire property value returned from the HSTSREADFUNCTION callback function was "
+            "invalid. String is either too long, or too short.\n"
+            "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the "
+            "HSTS "
             "callback, thus you may be receiving an error while the request did in fact work. "
             "Please fix the HSTS callback to return the correct data to avoid this.");
         THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
@@ -1053,49 +1073,22 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         return returnValue;
       }
 
-      sts->name = *hostStrValue;
-      sts->includeSubDomains = includeSubDomainsPropertyValueChecked.As<Napi::Boolean>().Value();
+      std::string expireStrValue = expirePropertyValueChecked.As<Napi::String>();
+      auto expireCharValue = *expireStrValue;
 
-      if (expirePropertyValueChecked.IsString()) {
-        // make sure expire length is one expected by libcurl
-        // YYYYMMDD HH:MM:SS [null-terminated]
-        size_t currentSize =
-            static_cast<size_t>(expirePropertyValueChecked.As<Napi::String>().Length());
-        size_t expectedSize = sizeof(sts->expire) / sizeof(sts->expire[0]) - 1;
-
-        if (currentSize != expectedSize) {
-          Napi::Value typeError = Napi::TypeError(
-              "The expire property value returned from the HSTSREADFUNCTION callback function was "
-              "invalid. String is either too long, or too short.\n"
-              "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the "
-              "HSTS "
-              "callback, thus you may be receiving an error while the request did in fact work. "
-              "Please fix the HSTS callback to return the correct data to avoid this.");
-          THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
-
-          return returnValue;
-        }
-
-        std::string expireStrValue = expirePropertyValueChecked.As<Napi::String>();
-        auto expireCharValue = *expireStrValue;
-
-        strcpy(sts->expire, expireCharValue);
-      } else {
-        // TODO(jonathan): libcurl <= 7.79 has a bug when expire is not set, see:
-        // https://github.com/curl/curl/issues/7720 - to avoid this bug we are setting it manually
-        // to a future date here
-        strcpy(sts->expire, TIME_IN_THE_FUTURE);
-      }
-      returnValue = CURLSTS_OK;
+      strcpy(sts->expire, expireCharValue);
     } else {
-      THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
+      // TODO(jonathan): libcurl <= 7.79 has a bug when expire is not set, see:
+      // https://github.com/curl/curl/issues/7720 - to avoid this bug we are setting it manually
+      // to a future date here
+      strcpy(sts->expire, TIME_IN_THE_FUTURE);
     }
+    returnValue = CURLSTS_OK;
+  } else {
+    THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
   }
 
   return returnValue;
-#else
-  return 0;
-#endif
 }
 
 int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_index* count,
@@ -1129,13 +1122,13 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
     const int argc = 2;
     Napi::Value argv[argc] = {Easy::CreateV8ObjectFromCurlHstsEntry(sts), countObj};
 
-    Napi::AsyncResource asyncResource("Easy::CbHstsWrite");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbHstsWrite");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -1189,13 +1182,13 @@ int Easy::CbProgress(void* clientp, double dltotal, double dlnow, double ultotal
                             Napi::Number::New(env, static_cast<double>(ulnow))};
 
   try {
-    Napi::AsyncResource asyncResource("Easy::CbProgress");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbProgress");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -1236,13 +1229,13 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
   assert(it != obj->callbacks.end() && "Trailer callback not set.");
 
   try {
-    Napi::AsyncResource asyncResource("Easy::CbTrailer");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
+    Napi::AsyncContext asyncContext("Easy::CbTrailer");
+    Napi::Value returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -1328,15 +1321,15 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
                             Napi::Number::New(env, static_cast<double>(dlnow)),
                             Napi::Number::New(env, static_cast<double>(ultotal)),
                             Napi::Number::New(env, static_cast<double>(ulnow))};
-
+  Napi::Value returnValueCallback;
   try {
-    Napi::AsyncResource asyncResource("Easy::CbXferinfo");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncContext asyncContext("Easy::CbXferinfo");
+    returnValueCallback =
+        asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(e.Message());
+      obj->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
