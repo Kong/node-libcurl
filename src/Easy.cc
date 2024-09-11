@@ -913,7 +913,8 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
   int32_t returnValue = CURLSTS_FAIL;
   Napi::Value cacheEntryObject;
-  Napi::Value typeError = Napi::TypeError(
+  Napi::Value typeError = Napi::Error::New(
+      env,
       "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
       "  - Object matching the type CurlHstsEntry\n"
       "  - An array matching the type CurlHstsEntry[]\n"
@@ -991,9 +992,9 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
       auto idxValueAsObject = idxValueChecked.As<Napi::Object>();
 
-      v8::NonCopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
+      Napi::ObjectReference persistentValue;
 
-      persistentValue.Reset(Napi::GetCurrentContext()->GetIsolate(), idxValueAsObject);
+      persistentValue.Reset(idxValueAsObject);
 
       obj->hstsReadCache.push_back(persistentValue);
     }
@@ -1015,37 +1016,37 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
     auto includeSubDomainsPropertyStr = Napi::String::New(env, "includeSubDomains");
     auto expirePropertyStr = Napi::String::New(env, "expire");
 
-    auto hostPropertyValue = (cacheEntry).Get(hostPropertyStr);
-    auto includeSubDomainsPropertyValue = (cacheEntry).Get(includeSubDomainsPropertyStr);
-    auto expirePropertyValue = (cacheEntry).Get(expirePropertyStr);
+    Napi::Value hostPropertyValue = cacheEntry.Get(hostPropertyStr);
+    Napi::Value includeSubDomainsPropertyValue = cacheEntry.Get(includeSubDomainsPropertyStr);
+    Napi::Value expirePropertyValue = cacheEntry.Get(expirePropertyStr);
 
     if (hostPropertyValue.IsEmpty() || includeSubDomainsPropertyValue.IsEmpty() ||
         expirePropertyValue.IsEmpty()) {
       assert("Process ran out of memory - fields returned from HSTSREADFUNCTION were empty");
     }
 
-    auto hostPropertyValueChecked = hostPropertyValue;
-    auto includeSubDomainsPropertyValueChecked = includeSubDomainsPropertyValue;
-    auto expirePropertyValueChecked = expirePropertyValue;
+    Napi::Value hostPropertyValueChecked = hostPropertyValue;
+    Napi::Value includeSubDomainsPropertyValueChecked = includeSubDomainsPropertyValue;
+    Napi::Value expirePropertyValueChecked = expirePropertyValue;
 
     // the validation here is pretty basic, and we are not really validating
     // the format of the expire string - libcurl should do that
 
     // make sure the provided data is valid
     if (!hostPropertyValueChecked.IsString() ||
-        (!includeSubDomainsPropertyValueChecked->IsNullOrUndefined() &&
-         !includeSubDomainsPropertyValueChecked->IsBoolean()) ||
-        (!expirePropertyValueChecked->IsNullOrUndefined() &&
-         !expirePropertyValueChecked.IsString())) {
+        (!includeSubDomainsPropertyValueChecked.IsNull() &&
+         !includeSubDomainsPropertyValueChecked.IsBoolean()) ||
+        (!expirePropertyValueChecked.IsNull() && !expirePropertyValueChecked.IsString())) {
       THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError)
       return returnValue;
     }
 
-    std::string hostStrValue = hostPropertyValueChecked.As<Napi::String>();
+    std::string hostStrValue = hostPropertyValue.As<Napi::String>().Utf8Value();
 
     // make sure str len is inside the given max length
     if (static_cast<size_t>(hostStrValue.length()) > sts->namelen) {
-      Napi::Value typeError = Napi::TypeError(
+      Napi::Value typeError = Napi::Error::New(
+          env,
           "The host property value returned from the HSTSREADFUNCTION callback function was "
           "invalid. The host string is too long.\n"
           "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
@@ -1056,18 +1057,19 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
       return returnValue;
     }
 
-    sts->name = *hostStrValue;
+    sts->name = strdup(hostStrValue.c_str());
     sts->includeSubDomains = includeSubDomainsPropertyValueChecked.As<Napi::Boolean>().Value();
 
     if (expirePropertyValueChecked.IsString()) {
       // make sure expire length is one expected by libcurl
       // YYYYMMDD HH:MM:SS [null-terminated]
-      size_t currentSize =
-          static_cast<size_t>(expirePropertyValueChecked.As<Napi::String>().Length());
+      std::string expireStrValue = expirePropertyValue.As<Napi::String>().Utf8Value();
+      size_t currentSize = expireStrValue.size();
       size_t expectedSize = sizeof(sts->expire) / sizeof(sts->expire[0]) - 1;
 
       if (currentSize != expectedSize) {
-        Napi::Value typeError = Napi::TypeError(
+        Napi::Value typeError = Napi::Error::New(
+            env,
             "The expire property value returned from the HSTSREADFUNCTION callback function was "
             "invalid. String is either too long, or too short.\n"
             "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the "
@@ -1249,8 +1251,8 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
     return CURL_TRAILERFUNC_ABORT;
   }
 
-  Napi::Value returnValueCbTypeError = Napi::TypeError(
-      "Return value from the Trailer callback must be an array of strings or false.");
+  Napi::Value returnValueCbTypeError = Napi::Error::New(
+      env, "Return value from the Trailer callback must be an array of strings or false.");
 
   bool isInvalid =
       returnValueCallback.IsEmpty() ||
@@ -1354,7 +1356,7 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
       throw Napi::Error::New(env, typeError);
     }
   } else {
-    returnValue = returnValueCallback.Int32Value().As<Napi::Number>();
+    returnValue = returnValueCallback.As<Napi::Number>().Int32Value();
   }
 
   if (returnValue && returnValue != CURL_PROGRESSFUNC_CONTINUE) {

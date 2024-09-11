@@ -52,7 +52,8 @@ class Easy : public Napi::ObjectWrap<Easy> {
       cbOnSocketEvent;  // still required since it's not related to any CURLOption
 
   // members
-  std::vector<v8::NonCopyablePersistentTraits<v8::Object>> hstsReadCache;
+  std::vector<Napi::ObjectReference> hstsReadCache;
+
   uint32_t wasHstsReadCacheSet = false;
   uv_poll_t* socketPollHandle = nullptr;
   std::shared_ptr<ToFree> toFree = nullptr;
