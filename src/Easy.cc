@@ -414,16 +414,16 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
         nmembArg,
     };
 
-    Napi::TryCatch tryCatch;
-    Napi::AsyncResource asyncResource("Easy::ReadFunction");
-    Napi::MaybeLocal<v8::Value> returnValueCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    try {
+      Napi::AsyncResource asyncResource("Easy::ReadFunction");
+      Napi::MaybeLocal<v8::Value> returnValueCallback =
+          asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-    if (tryCatch.HasCaught()) {
+    } catch (const Napi::Error& e) {
       if (obj->isInsideMultiHandle) {
-        obj->callbackError.Reset(tryCatch.Exception());
+        obj->callbackError.Reset(e.Message());
       } else {
-        tryCatch.ReThrow();
+        throw e;
       }
       return returnValue;
     }
@@ -502,16 +502,16 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
           originArg,
       };
 
-      Napi::TryCatch tryCatch;
-      Napi::AsyncResource asyncResource("Easy::SeekFunction");
-      Napi::MaybeLocal<v8::Value> returnValueCallback =
-          asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+      try {
+        Napi::AsyncResource asyncResource("Easy::SeekFunction");
+        Napi::MaybeLocal<v8::Value> returnValueCallback =
+            asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-      if (tryCatch.HasCaught()) {
+      } catch (const Napi::Error& e) {
         if (obj->isInsideMultiHandle) {
-          obj->callbackError.Reset(tryCatch.Exception());
+          obj->callbackError.Reset(e.Message());
         } else {
-          tryCatch.ReThrow();
+          throw e;
         }
         return returnValue;
       }
@@ -566,16 +566,16 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
 
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
-  Napi::TryCatch tryCatch;
-  Napi::AsyncResource asyncResource("Easy::OnData");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
+  try {
+    Napi::AsyncResource asyncResource("Easy::OnData");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
-      this->callbackError.Reset(tryCatch.Exception());
+      this->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -620,16 +620,16 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
 
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
-  Napi::TryCatch tryCatch;
-  Napi::AsyncResource asyncResource("Easy::OnHeader");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
+  try {
+    Napi::AsyncResource asyncResource("Easy::OnHeader");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
-      this->callbackError.Reset(tryCatch.Exception());
+      this->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -733,17 +733,16 @@ long Easy::CbChunkBgn(curl_fileinfo* transferInfo, void* ptr, int remains) {  //
 
   int32_t returnValue = CURL_CHUNK_BGN_FUNC_FAIL;
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbChunkBgn");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  Napi::AsyncResource asyncResource("Easy::CbChunkBgn");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -774,17 +773,16 @@ long Easy::CbChunkEnd(void* ptr) {  // NOLINT(runtime/int)
 
   int32_t returnValue = CURL_CHUNK_END_FUNC_FAIL;
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbChunkEnd");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
 
-  Napi::AsyncResource asyncResource("Easy::CbChunkEnd");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -823,17 +821,16 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
 
   int32_t returnValue = 1;
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbDebug");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  Napi::AsyncResource asyncResource("Easy::CbDebug");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -868,17 +865,16 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
 
   int32_t returnValue = CURL_FNMATCHFUNC_FAIL;
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbFnMatch");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  Napi::AsyncResource asyncResource("Easy::CbFnMatch");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -911,43 +907,43 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
   int32_t returnValue = CURLSTS_FAIL;
 
-  Napi::TryCatch tryCatch;
-  Napi::Value cacheEntryObject;
+  try {
+    Napi::Value cacheEntryObject;
 
-  Napi::Value typeError = Napi::TypeError(
-      "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
-      "  - Object matching the type CurlHstsEntry\n"
-      "  - An array matching the type CurlHstsEntry[]\n"
-      "  - null\n"
-      "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
-      "callback, thus you may be receiving an error while the request did in fact work. Please "
-      "fix "
-      "the HSTS callback to return the correct data to avoid this.");
+    Napi::Value typeError = Napi::TypeError(
+        "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
+        "  - Object matching the type CurlHstsEntry\n"
+        "  - An array matching the type CurlHstsEntry[]\n"
+        "  - null\n"
+        "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
+        "callback, thus you may be receiving an error while the request did in fact work. Please "
+        "fix "
+        "the HSTS callback to return the correct data to avoid this.");
 
-  if (obj->hstsReadCache.size() > 0) {
-    auto persistentValue = obj->hstsReadCache.back();
-    cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
+    if (obj->hstsReadCache.size() > 0) {
+      auto persistentValue = obj->hstsReadCache.back();
+      cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
 
-    // reset the persistent handler so we do not leak memory
-    persistentValue.Reset();
-    // remove it from the stack
-    obj->hstsReadCache.pop_back();
-  } else {
-    // if this is true, this means we got all the entries in the cache provided by the user
-    if (obj->wasHstsReadCacheSet) {
-      obj->wasHstsReadCacheSet = false;
-      return CURLSTS_DONE;
+      // reset the persistent handler so we do not leak memory
+      persistentValue.Reset();
+      // remove it from the stack
+      obj->hstsReadCache.pop_back();
+    } else {
+      // if this is true, this means we got all the entries in the cache provided by the user
+      if (obj->wasHstsReadCacheSet) {
+        obj->wasHstsReadCacheSet = false;
+        return CURLSTS_DONE;
+      }
+
+      Napi::AsyncResource asyncResource("Easy::CbHstsRead");
+      Napi::MaybeLocal<v8::Value> returnValueFromHstsReadCallback =
+          asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
     }
-
-    Napi::AsyncResource asyncResource("Easy::CbHstsRead");
-    Napi::MaybeLocal<v8::Value> returnValueFromHstsReadCallback =
-        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
-
-    if (tryCatch.HasCaught()) {
+    catch (const Napi::Error& e) {
       if (obj->isInsideMultiHandle) {
-        obj->callbackError.Reset(tryCatch.Exception());
+        obj->callbackError.Reset(e.Message());
       } else {
-        tryCatch.ReThrow();
+        throw e;
       }
       return returnValue;
     }
@@ -1116,32 +1112,32 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
 
   int32_t returnValue = CURLSTS_FAIL;
 
-  Napi::TryCatch tryCatch;
-  Napi::Value value;
+  try {
+    Napi::Value value;
 
-  Napi::Value typeError = Napi::TypeError::New(
-      env, "Return value from the HSTSWRITEFUNCTION callback must be an integer.");
+    Napi::Value typeError = Napi::TypeError::New(
+        env, "Return value from the HSTSWRITEFUNCTION callback must be an integer.");
 
-  // TODO(jonathan): give the option to receive an array directly?
+    // TODO(jonathan): give the option to receive an array directly?
 
-  Napi::Object countObj = Napi::Object::New(env);
-  Napi::Number index = Napi::Number::New(env, static_cast<uint32_t>(count->index));
-  Napi::Number total = Napi::Number::New(env, static_cast<uint32_t>(count->total));
-  (countObj).Set(Napi::String::New(env, "index"), index);
-  (countObj).Set(Napi::String::New(env, "total"), total);
+    Napi::Object countObj = Napi::Object::New(env);
+    Napi::Number index = Napi::Number::New(env, static_cast<uint32_t>(count->index));
+    Napi::Number total = Napi::Number::New(env, static_cast<uint32_t>(count->total));
+    (countObj).Set(Napi::String::New(env, "index"), index);
+    (countObj).Set(Napi::String::New(env, "total"), total);
 
-  const int argc = 2;
-  Napi::Value argv[argc] = {Easy::CreateV8ObjectFromCurlHstsEntry(sts), countObj};
+    const int argc = 2;
+    Napi::Value argv[argc] = {Easy::CreateV8ObjectFromCurlHstsEntry(sts), countObj};
 
-  Napi::AsyncResource asyncResource("Easy::CbHstsWrite");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
+    Napi::AsyncResource asyncResource("Easy::CbHstsWrite");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -1192,17 +1188,16 @@ int Easy::CbProgress(void* clientp, double dltotal, double dlnow, double ultotal
                             Napi::Number::New(env, static_cast<double>(ultotal)),
                             Napi::Number::New(env, static_cast<double>(ulnow))};
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbProgress");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  Napi::AsyncResource asyncResource("Easy::CbProgress");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -1240,17 +1235,16 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
   it = obj->callbacks.find(CURLOPT_TRAILERFUNCTION);
   assert(it != obj->callbacks.end() && "Trailer callback not set.");
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbTrailer");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
 
-  Napi::AsyncResource asyncResource("Easy::CbTrailer");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return CURL_TRAILERFUNC_ABORT;
   }
@@ -1335,17 +1329,16 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
                             Napi::Number::New(env, static_cast<double>(ultotal)),
                             Napi::Number::New(env, static_cast<double>(ulnow))};
 
-  Napi::TryCatch tryCatch;
+  try {
+    Napi::AsyncResource asyncResource("Easy::CbXferinfo");
+    Napi::MaybeLocal<v8::Value> returnValueCallback =
+        asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
-  Napi::AsyncResource asyncResource("Easy::CbXferinfo");
-  Napi::MaybeLocal<v8::Value> returnValueCallback =
-      asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
-
-  if (tryCatch.HasCaught()) {
+  } catch (const Napi::Error& e) {
     if (obj->isInsideMultiHandle) {
-      obj->callbackError.Reset(tryCatch.Exception());
+      obj->callbackError.Reset(e.Message());
     } else {
-      tryCatch.ReThrow();
+      throw e;
     }
     return returnValue;
   }
@@ -2018,9 +2011,9 @@ Napi::Value Easy::GetInfoTmpl(const Easy* obj, int infoId) {
   } else {
     // is string
     if (ResultTypeIsChar<TResultType>::value && !result) {
-      retVal = Napi::MakeMaybe(Napi::EmptyString());
+      retVal = Napi::String::New(env, "");
     } else {
-      retVal = Napi::MakeMaybe(Napi::Tv8MappingType::New(env, result));
+      retVal = Napi::Value::From(env, result);
     }
   }
 
@@ -2124,7 +2117,7 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
       }
     }
 
-  } catch (const std::exception& e) {
+  } catch (const Napi::Error& e) {
     std::string msg = e.what();
 
     std::string errCode = std::string(*msg);
@@ -2354,7 +2347,7 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   try {
     obj->MonitorSockets(env);
-  } catch (const std::exception& e) {
+  } catch (const Napi::Error& e) {
     throw Napi::Error::New(env, e.what());
   }
 
@@ -2369,7 +2362,7 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   try {
     obj->UnmonitorSockets(env);
-  } catch (const std::exception& e) {
+  } catch (const Napi::Error& e) {
     throw Napi::Error::New(env, e.what());
   }
 
