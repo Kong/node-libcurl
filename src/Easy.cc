@@ -1954,7 +1954,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     if (value.IsNull()) {
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), NULL);
       return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
-    }else if (value.IsString()) {
+    }
+    if (value.IsString()) {
       std::string utf8StringValue = value.As<Napi::String>();
 
       size_t length = static_cast<size_t>(utf8StringValue.length());
