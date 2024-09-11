@@ -575,7 +575,7 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
 
   } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
-      this->callbackError.Reset(e.Message());
+      this->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -630,7 +630,7 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
 
   } catch (const Napi::Error& e) {
     if (this->isInsideMultiHandle) {
-      this->callbackError.Reset(e.Message());
+      this->callbackError.Reset(Napi::String::New(env, e.Message()));
     } else {
       throw e;
     }
@@ -1111,21 +1111,19 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
 
   int32_t returnValue = CURLSTS_FAIL;
   Napi::Value returnValueCallback;
+  Napi::Value value;
 
+  Napi::Value typeError = Napi::TypeError::New(
+      env, "Return value from the HSTSWRITEFUNCTION callback must be an integer.");
+
+  // TODO(jonathan): give the option to receive an array directly?
+
+  Napi::Object countObj = Napi::Object::New(env);
+  Napi::Number index = Napi::Number::New(env, static_cast<uint32_t>(count->index));
+  Napi::Number total = Napi::Number::New(env, static_cast<uint32_t>(count->total));
+  (countObj).Set(Napi::String::New(env, "index"), index);
+  (countObj).Set(Napi::String::New(env, "total"), total);
   try {
-    Napi::Value value;
-
-    Napi::Value typeError = Napi::TypeError::New(
-        env, "Return value from the HSTSWRITEFUNCTION callback must be an integer.");
-
-    // TODO(jonathan): give the option to receive an array directly?
-
-    Napi::Object countObj = Napi::Object::New(env);
-    Napi::Number index = Napi::Number::New(env, static_cast<uint32_t>(count->index));
-    Napi::Number total = Napi::Number::New(env, static_cast<uint32_t>(count->total));
-    (countObj).Set(Napi::String::New(env, "index"), index);
-    (countObj).Set(Napi::String::New(env, "total"), total);
-
     const int argc = 2;
     Napi::Value argv[argc] = {Easy::CreateV8ObjectFromCurlHstsEntry(sts), countObj};
 
@@ -1254,8 +1252,9 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
   Napi::Value returnValueCbTypeError = Napi::TypeError(
       "Return value from the Trailer callback must be an array of strings or false.");
 
-  bool isInvalid = returnValueCallback.IsEmpty() ||
-                   (!returnValueCallback->IsArray() && !returnValueCallback->IsFalse());
+  bool isInvalid =
+      returnValueCallback.IsEmpty() ||
+      (!returnValueCallback.IsArray() && !Napi::Boolean(env, returnValueCallback).Value());
 
   if (isInvalid) {
     if (obj->isInsideMultiHandle) {
@@ -1267,9 +1266,9 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
     return CURL_TRAILERFUNC_ABORT;
   }
 
-  returnValueCallbackChecked = returnValueCallback;
+  Napi::Boolean returnValueCallbackChecked = Napi::Boolean(env, returnValueCallback);
 
-  if (returnValueCallbackChecked.IsFalse()) {
+  if (returnValueCallbackChecked.Value()) {
     return CURL_TRAILERFUNC_ABORT;
   }
 
