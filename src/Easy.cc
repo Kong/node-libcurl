@@ -49,9 +49,9 @@ class Easy::ToFree {
 };
 
 void assert(bool condition, const std::string& message = "Assertion failed!") {
-    if (!condition) {
-        throw std::runtime_error(message);
-    }
+  if (!condition) {
+    throw std::runtime_error(message);
+  }
 }
 
 Napi::FunctionReference Easy::constructor;
@@ -357,7 +357,7 @@ void Easy::CallSocketEvent(int status, int events) {
   if (this->cbOnSocketEvent == nullptr) {
     return;
   }
-  
+
   Napi::HandleScope scope(env);
 
   Napi::Value err = env.Null();
@@ -404,15 +404,15 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
   if (it != obj->callbacks.end()) {
     Napi::HandleScope scope(env);
 
-  Napi::Buffer<char> buf = Napi::Buffer<char>::New(env, static_cast<size_t>(n)); 
-  Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));    
-  Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
-  const int argc = 3;
-  Napi::Value argv[argc] = {
-      buf,
-      sizeArg,
-      nmembArg,
-  };
+    Napi::Buffer<char> buf = Napi::Buffer<char>::New(env, static_cast<size_t>(n));
+    Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
+    Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
+    const int argc = 3;
+    Napi::Value argv[argc] = {
+        buf,
+        sizeArg,
+        nmembArg,
+    };
 
     Napi::TryCatch tryCatch;
     Napi::AsyncResource asyncResource("Easy::ReadFunction");
@@ -564,7 +564,7 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
   Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
   Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
-  std::vector<napi_value> argv = { buf, sizeArg, nmembArg };
+  std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
   Napi::TryCatch tryCatch;
   Napi::AsyncResource asyncResource("Easy::OnData");
@@ -618,8 +618,7 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
   Napi::Number sizeArg = Napi::Number::New(env, static_cast<uint32_t>(size));
   Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
-  std::vector<napi_value> argv = { buf, sizeArg, nmembArg };
-
+  std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
 
   Napi::TryCatch tryCatch;
   Napi::AsyncResource asyncResource("Easy::OnHeader");
@@ -1373,29 +1372,24 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
 Napi::Object Easy::Initialize(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  Napi::Function tmpl = DefineClass(env, "Easy", {
-    InstanceMethod<&Easy::SetOpt>("setOpt"),
-    InstanceMethod<&Easy::GetInfo>("getInfo"),
-    InstanceMethod<&Easy::Send>("send"),
-    InstanceMethod<&Easy::Recv>("recv"),
-    InstanceMethod<&Easy::Perform>("perform"),
-    InstanceMethod<&Easy::Upkeep>("upkeep"),
-    InstanceMethod<&Easy::Pause>("pause"),
-    InstanceMethod<&Easy::Reset>("reset"),
-    InstanceMethod<&Easy::DupHandle>("dupHandle"),
-    InstanceMethod<&Easy::OnSocketEvent>("onSocketEvent"),
-    InstanceMethod<&Easy::MonitorSocketEvents>("monitorSocketEvents"),
-    InstanceMethod<&Easy::UnmonitorSocketEvents>("unmonitorSocketEvents"),
-    InstanceMethod<&Easy::Close>("close"),
-    StaticMethod("strError", &Easy::StrError),
+  Napi::Function tmpl = DefineClass(
+      env, "Easy",
+      {InstanceMethod<&Easy::SetOpt>("setOpt"), InstanceMethod<&Easy::GetInfo>("getInfo"),
+       InstanceMethod<&Easy::Send>("send"), InstanceMethod<&Easy::Recv>("recv"),
+       InstanceMethod<&Easy::Perform>("perform"), InstanceMethod<&Easy::Upkeep>("upkeep"),
+       InstanceMethod<&Easy::Pause>("pause"), InstanceMethod<&Easy::Reset>("reset"),
+       InstanceMethod<&Easy::DupHandle>("dupHandle"),
+       InstanceMethod<&Easy::OnSocketEvent>("onSocketEvent"),
+       InstanceMethod<&Easy::MonitorSocketEvents>("monitorSocketEvents"),
+       InstanceMethod<&Easy::UnmonitorSocketEvents>("unmonitorSocketEvents"),
+       InstanceMethod<&Easy::Close>("close"), StaticMethod("strError", &Easy::StrError),
 
-    InstanceAccessor("id", &Easy::IdGetter, nullptr),
-    InstanceAccessor("isInsideMultiHandle", &Easy::IsInsideMultiHandleGetter, nullptr),
-    InstanceAccessor("isMonitoringSockets", &Easy::IsMonitoringSocketsGetter, nullptr),
-    InstanceAccessor("isOpen", &Easy::IsOpenGetter, nullptr)
-});
+       InstanceAccessor("id", &Easy::IdGetter, nullptr),
+       InstanceAccessor("isInsideMultiHandle", &Easy::IsInsideMultiHandleGetter, nullptr),
+       InstanceAccessor("isMonitoringSockets", &Easy::IsMonitoringSocketsGetter, nullptr),
+       InstanceAccessor("isOpen", &Easy::IsOpenGetter, nullptr)});
 
-    // Store the class constructor in the persistent reference
+  // Store the class constructor in the persistent reference
   Easy::constructor = Napi::Persistent(tmpl);
   Easy::constructor.SuppressDestruct();
 
@@ -1415,7 +1409,8 @@ Napi::Value Easy::New(const Napi::CallbackInfo& info) {
   // Copy constructor, used when duplicating handles.
   if (!jsHandle.IsUndefined()) {
     if (!jsHandle.IsExternal() &&
-        (!jsHandle.IsObject() || !Napi::Function::New(env, Easy::constructor)->HasInstance(jsHandle))) {
+        (!jsHandle.IsObject() ||
+         !Napi::Function::New(env, Easy::constructor)->HasInstance(jsHandle))) {
       throw Napi::Error::New(env, "Argument must be an instance of an Easy handle.");
     }
 
@@ -1486,26 +1481,30 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
   // we probably could use these here for newer libcurl versions...
 
   if ((optionId = IsInsideCurlConstantStruct(curlOptionNotImplemented, opt))) {
-    throw Napi::Error::New(env, "Unsupported option, probably because it's too complex to implement using javascript or unecessary when using javascript (like the _DATA options).");
+    throw Napi::Error::New(
+        env,
+        "Unsupported option, probably because it's too complex to implement using javascript or "
+        "unecessary when using javascript (like the _DATA options).");
   }
   if ((optionId = IsInsideCurlConstantStruct(curlOptionSpecific, opt))) {
     if (optionId == CURLOPT_SHARE) {
-        if (value.IsNull()) {
-          setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
-          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
-        } 
-          if (!value.IsObject() || !Share::constructor.Value().HasInstance(value)) {
-            throw Napi::Error::New(env, "Invalid value for the SHARE option. It must be a Share instance.");
-          }
+      if (value.IsNull()) {
+        setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, NULL);
+        return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
+      }
+      if (!value.IsObject() || !Share::constructor.Value().HasInstance(value)) {
+        throw Napi::Error::New(env,
+                               "Invalid value for the SHARE option. It must be a Share instance.");
+      }
 
-          Share* share = Napi::ObjectWrap<Share>::Unwrap(value.As<Napi::Object>());
+      Share* share = Napi::ObjectWrap<Share>::Unwrap(value.As<Napi::Object>());
 
-          if (!share->isOpen) {
-            throw Napi::Error::New(env, "Share handle is already closed.");
-          }
+      if (!share->isOpen) {
+        throw Napi::Error::New(env, "Share handle is already closed.");
+      }
 
-          setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, share->sh);
-          return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
+      setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_SHARE, share->sh);
+      return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
     }
     // linked list options
   }
@@ -1533,121 +1532,124 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (!obj.IsObject()) {
           throw Napi::TypeError::New(env, invalidArrayMsg.c_str());
 
-        Napi::Object postData = obj.As<Napi::Object>();
+          Napi::Object postData = obj.As<Napi::Object>();
 
-        const Napi::Array props = postData.GetPropertyNames();
-        const uint32_t postDataLength = props.Length();
+          const Napi::Array props = postData.GetPropertyNames();
+          const uint32_t postDataLength = props.Length();
 
-        bool hasFile = false;
-        bool hasContentType = false;
-        bool hasContent = false;
-        bool hasName = false;
-        bool hasNewFileName = false;
+          bool hasFile = false;
+          bool hasContentType = false;
+          bool hasContent = false;
+          bool hasName = false;
+          bool hasNewFileName = false;
 
-        // loop through the properties names, making sure they are valid.
-        for (uint32_t j = 0; j < postDataLength; ++j) {
-          int32_t httpPostId = -1;
+          // loop through the properties names, making sure they are valid.
+          for (uint32_t j = 0; j < postDataLength; ++j) {
+            int32_t httpPostId = -1;
 
-          const Napi::Value postDataKey = (props).Get(j);
-          const Napi::Value postDataValue = (postData).Get(postDataKey);
+            const Napi::Value postDataKey = (props).Get(j);
+            const Napi::Value postDataValue = (postData).Get(postDataKey);
 
-          // convert postDataKey to httppost id
-          std::string fieldName = postDataKey.As<Napi::String>();
-          std::string optionName = std::string(*fieldName);
-          std::transform(optionName.begin(), optionName.end(), optionName.begin(), ::toupper);
+            // convert postDataKey to httppost id
+            std::string fieldName = postDataKey.As<Napi::String>();
+            std::string optionName = std::string(*fieldName);
+            std::transform(optionName.begin(), optionName.end(), optionName.begin(), ::toupper);
 
-          for (std::vector<CurlConstant>::const_iterator it = curlOptionHttpPost.begin(),
-                                                         end = curlOptionHttpPost.end();
-               it != end; ++it) {
-            if (it->name == optionName) {
-              httpPostId = static_cast<int32_t>(it->value);
+            for (std::vector<CurlConstant>::const_iterator it = curlOptionHttpPost.begin(),
+                                                           end = curlOptionHttpPost.end();
+                 it != end; ++it) {
+              if (it->name == optionName) {
+                httpPostId = static_cast<int32_t>(it->value);
+              }
             }
-          }
 
-          switch (httpPostId) {
-            case CurlHttpPost::FILE:
-              hasFile = true;
-              break;
-            case CurlHttpPost::TYPE:
-              hasContentType = true;
-              break;
-            case CurlHttpPost::CONTENTS:
-              hasContent = true;
-              break;
-            case CurlHttpPost::NAME:
-              hasName = true;
-              break;
-            case CurlHttpPost::FILENAME:
-              hasNewFileName = true;
-              break;
-            case -1:  // property not found
+            switch (httpPostId) {
+              case CurlHttpPost::FILE:
+                hasFile = true;
+                break;
+              case CurlHttpPost::TYPE:
+                hasContentType = true;
+                break;
+              case CurlHttpPost::CONTENTS:
+                hasContent = true;
+                break;
+              case CurlHttpPost::NAME:
+                hasName = true;
+                break;
+              case CurlHttpPost::FILENAME:
+                hasNewFileName = true;
+                break;
+              case -1:  // property not found
+                std::string errorMsg;
+
+                errorMsg += std::string("Invalid property given: \"") + optionName +
+                            "\". Valid properties are file, type, contents, name "
+                            "and filename.";
+                throw Napi::Error::New(env, errorMsg.c_str());
+            }
+
+            // check if value is a string.
+            if (!postDataValue.IsString()) {
               std::string errorMsg;
 
-              errorMsg += std::string("Invalid property given: \"") + optionName +
-                          "\". Valid properties are file, type, contents, name "
-                          "and filename.";
-              throw Napi::Error::New(env, errorMsg.c_str());
+              errorMsg +=
+                  std::string("Value for property \"") + optionName + "\" must be a string.";
+              throw Napi::TypeError::New(env, errorMsg.c_str());
+            }
           }
 
-          // check if value is a string.
-          if (!postDataValue.IsString()) {
+          if (!hasName) {
+            throw Napi::Error::New(env, "Missing field \"name\".");
+          }
+
+          std::string fieldName = postData.Get("name").As<Napi::String>();
+          CURLFORMcode curlFormCode;
+
+          if (hasFile) {
+            std::string file = postData.Get("file").As<Napi::String>();
+
+            if (hasContentType) {
+              std::string contentType = postData.Get("type").As<Napi::String>();
+
+              if (hasNewFileName) {
+                std::string fileName = postData.Get("filename").As<Napi::String>();
+                curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file,
+                                                 *contentType, *fileName);
+              } else {
+                curlFormCode =
+                    httpPost->AddFile(*fieldName, fieldName.length(), *file, *contentType);
+              }
+            } else {
+              curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file);
+            }
+
+          } else if (hasContent) {  // if file is not set, the contents field MUST
+                                    // be set.
+
+            std::string fieldValue = postData.Get("contents").As<Napi::String>();
+
+            curlFormCode = httpPost->AddField(*fieldName, fieldName.length(), *fieldValue,
+                                              fieldValue.length());
+
+          } else {
+            throw Napi::Error::New(env, "Missing field \"contents\".");
+          }
+
+          if (curlFormCode != CURL_FORMADD_OK) {
             std::string errorMsg;
 
-            errorMsg += std::string("Value for property \"") + optionName + "\" must be a string.";
-            throw Napi::TypeError::New(env, errorMsg.c_str());
+            errorMsg +=
+                std::string("Error while adding field \"") + *fieldName + "\" to post data.";
+            throw Napi::Error::New(env, errorMsg.c_str());
           }
         }
 
-        if (!hasName) {
-          throw Napi::Error::New(env, "Missing field \"name\".");
-        }
+        setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HTTPPOST, httpPost->first);
 
-        std::string fieldName = postData.Get("name").As<Napi::String>();
-        CURLFORMcode curlFormCode;
-
-        if (hasFile) {
-          std::string file = postData.Get("file").As<Napi::String>();
-
-          if (hasContentType) {
-            std::string contentType = postData.Get("type").As<Napi::String>();
-
-            if (hasNewFileName) {
-              std::string fileName = postData.Get("filename").As<Napi::String>();
-              curlFormCode =
-                  httpPost->AddFile(*fieldName, fieldName.length(), *file, *contentType, *fileName);
-            } else {
-              curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file, *contentType);
-            }
-          } else {
-            curlFormCode = httpPost->AddFile(*fieldName, fieldName.length(), *file);
-          }
-
-        } else if (hasContent) {  // if file is not set, the contents field MUST
-                                  // be set.
-
-          std::string fieldValue = postData.Get("contents").As<Napi::String>();
-
-          curlFormCode =
-              httpPost->AddField(*fieldName, fieldName.length(), *fieldValue, fieldValue.length());
-
-        } else {
-          throw Napi::Error::New(env, "Missing field \"contents\".");
-        }
-
-        if (curlFormCode != CURL_FORMADD_OK) {
-          std::string errorMsg;
-
-          errorMsg += std::string("Error while adding field \"") + *fieldName + "\" to post data.";
-          throw Napi::Error::New(env, errorMsg.c_str());
+        if (setOptRetCode == CURLE_OK) {
+          obj->toFree->post.push_back(std::move(httpPost));
         }
       }
-
-      setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HTTPPOST, httpPost->first);
-
-      if (setOptRetCode == CURLE_OK) {
-        obj->toFree->post.push_back(std::move(httpPost));
-      }
-
     } else {
       if (!value.IsArray()) {
         throw Napi::TypeError::New(env, "Option value must be an Array.");
@@ -1658,9 +1660,9 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       Napi::Array array = value.As<Napi::Array>();
 
       for (uint32_t i = 0, len = array.Length(); i < len; ++i) {
-       Napi::String item = array.Get(i).As<Napi::String>();
-       std::string utf8String = item.Utf8Value();
-       slist = curl_slist_append(slist, utf8String.c_str());
+        Napi::String item = array.Get(i).As<Napi::String>();
+        std::string utf8String = item.Utf8Value();
+        slist = curl_slist_append(slist, utf8String.c_str());
       }
 
       setOptRetCode = curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), slist);
@@ -1705,7 +1707,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
       setOptRetCode =
           curl_easy_setopt(obj->ch, static_cast<CURLoption>(optionId), valueStr.c_str());
     }
-    
 
     // check if option is an integer, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlOptionInteger, opt))) {
@@ -1759,11 +1760,11 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, NULL);
           return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
         }
-        obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+        obj->callbacks[CURLOPT_CHUNK_BGN_FUNCTION] =
+            std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
         curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
         setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_BGN_FUNCTION, Easy::CbChunkBgn);
-      
 
         break;
 
@@ -1780,11 +1781,11 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, NULL);
           return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
         }
-        obj->callbacks[CURLOPT_CHUNK_END_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+        obj->callbacks[CURLOPT_CHUNK_END_FUNCTION] =
+            std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
         curl_easy_setopt(obj->ch, CURLOPT_CHUNK_DATA, obj);
         setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_CHUNK_END_FUNCTION, Easy::CbChunkEnd);
-      
 
         break;
 
@@ -1796,12 +1797,12 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, NULL);
           return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
-        } 
-        obj->callbacks[CURLOPT_DEBUGFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+        }
+        obj->callbacks[CURLOPT_DEBUGFUNCTION] =
+            std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
 
         curl_easy_setopt(obj->ch, CURLOPT_DEBUGDATA, obj);
         setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_DEBUGFUNCTION, Easy::CbDebug);
-      
 
         break;
 
@@ -1813,7 +1814,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_DATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_FUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_FNMATCH_FUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_FNMATCH_FUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_DATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_FNMATCH_FUNCTION, Easy::CbFnMatch);
@@ -1827,7 +1829,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_HEADERFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_HEADERFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HEADERFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1839,7 +1842,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_HSTSREADDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSREADFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_HSTSREADFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HSTSREADFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_HSTSREADDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSREADFUNCTION, Easy::CbHstsRead);
@@ -1853,7 +1857,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_HSTSWRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_HSTSWRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_HSTSWRITEFUNCTION, Easy::CbHstsWrite);
@@ -1869,7 +1874,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_PROGRESSDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_PROGRESSFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_PROGRESSFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_PROGRESSFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_PROGRESSDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_PROGRESSFUNCTION, Easy::CbProgress);
@@ -1884,7 +1890,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_READFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_READFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_READFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1896,7 +1903,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_SEEKFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_SEEKFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_SEEKFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1909,7 +1917,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_TRAILERDATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_TRAILERFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_TRAILERFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_TRAILERFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_TRAILERDATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_TRAILERFUNCTION, Easy::CbTrailer);
@@ -1928,7 +1937,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
           curl_easy_setopt(obj->ch, CURLOPT_XFERINFODATA, NULL);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_XFERINFOFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLOPT_XFERINFOFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_XFERINFOFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
 
           curl_easy_setopt(obj->ch, CURLOPT_XFERINFODATA, obj);
           setOptRetCode = curl_easy_setopt(obj->ch, CURLOPT_XFERINFOFUNCTION, Easy::CbXferinfo);
@@ -1943,7 +1953,8 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
         if (isNull) {
           obj->callbacks.erase(CURLOPT_WRITEFUNCTION);
         } else {
-          obj->callbacks[CURLOPT_WRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(Napi::Persistent(value.As<Napi::Function>()));
+          obj->callbacks[CURLOPT_WRITEFUNCTION] = std::make_unique<Napi::FunctionReference>(
+              Napi::Persistent(value.As<Napi::Function>()));
         }
 
         break;
@@ -1977,7 +1988,6 @@ Napi::Value Easy::SetOpt(const Napi::CallbackInfo& info) {
     } else {
       throw Napi::TypeError::New(env, "Option value must be a string or Buffer.");
     }
-
   }
 
   return Napi::Number::New(info.Env(), static_cast<int>(setOptRetCode));
@@ -2038,11 +2048,12 @@ Napi::Value Easy::GetInfo(const Napi::CallbackInfo& info) {
 
   // Special case for unsupported info
   if ((infoId = IsInsideCurlConstantStruct(curlInfoNotImplemented, infoVal))) {
-    throw Napi::Error::New(env, "Unsupported info, probably because it's too complex to implement using javascript or unecessary when using javascript.");
+    throw Napi::Error::New(env,
+                           "Unsupported info, probably because it's too complex to implement "
+                           "using javascript or unecessary when using javascript.");
   }
 
-  try{
-
+  try {
     // String
     if ((infoId = IsInsideCurlConstantStruct(curlInfoString, infoVal))) {
       retVal = Easy::GetInfoTmpl<char*, v8::String>(obj, infoId);
@@ -2195,7 +2206,8 @@ Napi::Value Easy::Recv(const Napi::CallbackInfo& info) {
 
   Napi::Object ret = Napi::Object::New(env);
   (ret).Set(Napi::String::New(env, "code"), Napi::Number::New(env, static_cast<int32_t>(curlRet)));
-  (ret).Set(Napi::String::New(env, "bytesReceived"), Napi::Number::New(env, static_cast<int32_t>(n)));
+  (ret).Set(Napi::String::New(env, "bytesReceived"),
+            Napi::Number::New(env, static_cast<int32_t>(n)));
 
   return ret;
 }
@@ -2340,7 +2352,7 @@ Napi::Value Easy::MonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  try{
+  try {
     obj->MonitorSockets(env);
   } catch (const std::exception& e) {
     throw Napi::Error::New(env, e.what());
@@ -2355,7 +2367,7 @@ Napi::Value Easy::UnmonitorSocketEvents(const Napi::CallbackInfo& info) {
 
   Easy* obj = Napi::ObjectWrap<Easy>::Unwrap(info.This().As<Napi::Object>());
 
-  try{
+  try {
     obj->UnmonitorSockets(env);
   } catch (const std::exception& e) {
     throw Napi::Error::New(env, e.what());
@@ -2376,8 +2388,8 @@ Napi::Value Easy::Close(const Napi::CallbackInfo& info) {
   }
 
   if (obj->isInsideMultiHandle) {
-    throw Napi::Error::New(env, "Curl handle is inside a Multi instance, you must remove it first.");
-        
+    throw Napi::Error::New(env,
+                           "Curl handle is inside a Multi instance, you must remove it first.");
   }
 
   obj->Dispose(env);
