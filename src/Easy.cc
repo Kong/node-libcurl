@@ -667,7 +667,7 @@ Napi::Object Easy::CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo) {
   Napi::Env env = Napi::Env();
   Napi::EscapableHandleScope scope(env);
 
-  Napi::String fileName = Napi::String:::New(env, fileInfo->filename);
+  Napi::String fileName = Napi::String::New(env, fileInfo->filename);
   Napi::Number fileType = Napi::Number::New(env, fileInfo->filetype);
   Napi::Value time = env.Null();
 
