@@ -413,10 +413,10 @@ size_t Easy::ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata) 
         sizeArg,
         nmembArg,
     };
-
+    Napi::Value returnValueCallback;
     try {
       Napi::AsyncContext asyncContext(env, "Easy::ReadFunction");
-      Napi::Value returnValueCallback =
+      returnValueCallback =
           asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
     } catch (const Napi::Error& e) {
@@ -501,10 +501,11 @@ size_t Easy::SeekFunction(void* userdata, curl_off_t offset, int origin) {
           offsetArg,
           originArg,
       };
+      Napi::Value returnValueCallback;
 
       try {
         Napi::AsyncContext asyncContext("Easy::SeekFunction");
-        Napi::Value returnValueCallback =
+        returnValueCallback =
             asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
       } catch (const Napi::Error& e) {
@@ -565,10 +566,11 @@ size_t Easy::OnData(char* data, size_t size, size_t nmemb) {
   Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::OnData");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -619,10 +621,11 @@ size_t Easy::OnHeader(char* data, size_t size, size_t nmemb) {
   Napi::Number nmembArg = Napi::Number::New(env, static_cast<uint32_t>(nmemb));
 
   std::vector<napi_value> argv = {buf, sizeArg, nmembArg};
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::OnHeader");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(this->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -732,10 +735,11 @@ long Easy::CbChunkBgn(curl_fileinfo* transferInfo, void* ptr, int remains) {  //
                             Napi::Number::New(env, remains)};
 
   int32_t returnValue = CURL_CHUNK_BGN_FUNC_FAIL;
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::CbChunkBgn");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -773,6 +777,7 @@ long Easy::CbChunkEnd(void* ptr) {  // NOLINT(runtime/int)
 
   int32_t returnValue = CURL_CHUNK_END_FUNC_FAIL;
   Napi::Value returnValueCallback;
+
   try {
     Napi::AsyncContext asyncContext("Easy::CbChunkEnd");
     returnValueCallback =
@@ -820,10 +825,11 @@ int Easy::CbDebug(CURL* handle, curl_infotype type, char* data, size_t size, voi
   };
 
   int32_t returnValue = 1;
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::CbDebug");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -864,10 +870,11 @@ int Easy::CbFnMatch(void* ptr, const char* pattern, const char* string) {
   Napi::Value argv[argc] = {Napi::String::New(env, pattern), Napi::String::New(env, string)};
 
   int32_t returnValue = CURL_FNMATCHFUNC_FAIL;
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::CbFnMatch");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -906,18 +913,17 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
 
   int32_t returnValue = CURLSTS_FAIL;
   Napi::Value cacheEntryObject;
+  Napi::Value typeError = Napi::TypeError(
+      "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
+      "  - Object matching the type CurlHstsEntry\n"
+      "  - An array matching the type CurlHstsEntry[]\n"
+      "  - null\n"
+      "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
+      "callback, thus you may be receiving an error while the request did in fact work. Please "
+      "fix "
+      "the HSTS callback to return the correct data to avoid this.");
 
   try {
-    Napi::Value typeError = Napi::TypeError(
-        "Return value from the HSTSREADFUNCTION callback must be one of the following:\n"
-        "  - Object matching the type CurlHstsEntry\n"
-        "  - An array matching the type CurlHstsEntry[]\n"
-        "  - null\n"
-        "Libcurl <= 7.79.0 does not stop requests from firing if there are errors in the HSTS "
-        "callback, thus you may be receiving an error while the request did in fact work. Please "
-        "fix "
-        "the HSTS callback to return the correct data to avoid this.");
-
     if (obj->hstsReadCache.size() > 0) {
       auto persistentValue = obj->hstsReadCache.back();
       cacheEntryObject = Napi::Object::New(env, obj->hstsReadCache.back());
@@ -1104,6 +1110,7 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
   assert(it != obj->callbacks.end() && "HSTSWRITEFUNCTION callback not set.");
 
   int32_t returnValue = CURLSTS_FAIL;
+  Napi::Value returnValueCallback;
 
   try {
     Napi::Value value;
@@ -1123,7 +1130,7 @@ int Easy::CbHstsWrite(CURL* handle, struct curl_hstsentry* sts, struct curl_inde
     Napi::Value argv[argc] = {Easy::CreateV8ObjectFromCurlHstsEntry(sts), countObj};
 
     Napi::AsyncContext asyncContext("Easy::CbHstsWrite");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -1180,10 +1187,11 @@ int Easy::CbProgress(void* clientp, double dltotal, double dlnow, double ultotal
                             Napi::Number::New(env, static_cast<double>(dlnow)),
                             Napi::Number::New(env, static_cast<double>(ultotal)),
                             Napi::Number::New(env, static_cast<double>(ulnow))};
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::CbProgress");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   } catch (const Napi::Error& e) {
@@ -1227,10 +1235,11 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
   // make sure the callback was set
   it = obj->callbacks.find(CURLOPT_TRAILERFUNCTION);
   assert(it != obj->callbacks.end() && "Trailer callback not set.");
+  Napi::Value returnValueCallback;
 
   try {
     Napi::AsyncContext asyncContext("Easy::CbTrailer");
-    Napi::Value returnValueCallback =
+    returnValueCallback =
         asyncContext.runInAsyncScope(obj->handle(), it->second->GetFunction(), 0, NULL);
 
   } catch (const Napi::Error& e) {
@@ -1258,7 +1267,7 @@ int Easy::CbTrailer(struct curl_slist** headerList, void* userdata) {
     return CURL_TRAILERFUNC_ABORT;
   }
 
-  Napi::Value returnValueCallbackChecked = returnValueCallback;
+  returnValueCallbackChecked = returnValueCallback;
 
   if (returnValueCallbackChecked.IsFalse()) {
     return CURL_TRAILERFUNC_ABORT;
@@ -1322,6 +1331,7 @@ int Easy::CbXferinfo(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_o
                             Napi::Number::New(env, static_cast<double>(ultotal)),
                             Napi::Number::New(env, static_cast<double>(ulnow))};
   Napi::Value returnValueCallback;
+
   try {
     Napi::AsyncContext asyncContext("Easy::CbXferinfo");
     returnValueCallback =
