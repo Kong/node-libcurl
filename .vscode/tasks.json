@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "command": "make",
+    "tasks": [
+        {
+          "label": "Build with Make",
+          "type": "shell",
+          "command": "make",
+          "options": {
+              "cwd": "${workspaceFolder}/build"
+            },
+          "group": {
+            "kind": "build",
+            "isDefault": true
+          },
+          "presentation": {
+              "echo": true,
+              "reveal": "always",
+              "focus": false,
+              "panel": "shared"
+          },
+          // arg passing example: in this case is executed make QUIET=0
+          "args": ["QUIET=0"],
+          // Use the standard less compilation problem matcher.
+          "problemMatcher": {
+              "owner": "cpp",
+              "fileLocation": ["relative","${workspaceFolder}/build"],
+              "pattern": {
+                  "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                  "file": 1,
+                  "line": 2,
+                  "column": 3,
+                  "severity": 4,
+                  "message": 5
+              }
+          }
+      }
+    ]
+  }

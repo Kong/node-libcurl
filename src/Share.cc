@@ -18,7 +18,7 @@
 
 namespace NodeLibcurl {
 
-Nan::Persistent<v8::FunctionTemplate> Share::constructor;
+Napi::FunctionReference Share::constructor;
 
 Share::Share() : isOpen(true) {
   this->sh = curl_share_init();
@@ -42,62 +42,63 @@ void Share::Dispose() {
   this->isOpen = false;
 }
 
-NAN_MODULE_INIT(Share::Initialize) {
-  Nan::HandleScope scope;
+Napi::Object Share::Initialize(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
 
   // Easy js "class" function template initialization
-  v8::Local<v8::FunctionTemplate> tmpl = Nan::New<v8::FunctionTemplate>(Share::New);
-  tmpl->SetClassName(Nan::New("Share").ToLocalChecked());
-  tmpl->InstanceTemplate()->SetInternalFieldCount(1);
+  Napi::FunctionReference tmpl = Napi::Function::New(env, Share::New);
+  tmpl->SetClassName(Napi::String::New(env, "Share"));
+
 
   // prototype methods
-  Nan::SetPrototypeMethod(tmpl, "setOpt", Share::SetOpt);
-  Nan::SetPrototypeMethod(tmpl, "close", Share::Close);
+  Napi::SetPrototypeMethod(tmpl, "setOpt", Share::SetOpt);
+  Napi::SetPrototypeMethod(tmpl, "close", Share::Close);
 
   // static methods
-  Nan::SetMethod(tmpl, "strError", Share::StrError);
+  Napi::SetMethod(tmpl, "strError", Share::StrError);
 
   Share::constructor.Reset(tmpl);
 
-  Nan::Set(target, Nan::New("Share").ToLocalChecked(), Nan::GetFunction(tmpl).ToLocalChecked());
+  (target).Set(Napi::String::New(env, "Share"), Napi::GetFunction(tmpl));
 }
 
-NAN_METHOD(Share::New) {
+Napi::Value Share::New(const Napi::CallbackInfo& info) {
   if (!info.IsConstructCall()) {
-    Nan::ThrowError("You must use \"new\" to instantiate this object.");
+    Napi::Error::New(env, "You must use \"new\" to instantiate this object.").ThrowAsJavaScriptException();
+
   }
 
   Share* obj = new Share();
 
   obj->Wrap(info.This());
-  info.GetReturnValue().Set(info.This());
+  return info.This();
 }
 
-NAN_METHOD(Share::SetOpt) {
-  Nan::HandleScope scope;
+Napi::Value Share::SetOpt(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Share* obj = Nan::ObjectWrap::Unwrap<Share>(info.This());
+  Share* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Share handle is closed.");
-    return;
+    Napi::Error::New(env, "Share handle is closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  v8::Local<v8::Value> opt = info[0];
-  v8::Local<v8::Value> value = info[1];
+  Napi::Value opt = info[0];
+  Napi::Value value = info[1];
 
   CURLSHcode setOptRetCode = CURLSHE_BAD_OPTION;
   int32_t optionId = -1;
 
-  if (!value->IsInt32()) {
-    Nan::ThrowError("Option value must be an integer.");
-    return;
+  if (!value.IsNumber()) {
+    Napi::Error::New(env, "Option value must be an integer.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  if (opt->IsInt32()) {
-    optionId = Nan::To<int32_t>(opt).FromJust();
-  } else if (opt->IsString()) {
-    Nan::Utf8String option(opt);
+  if (opt.IsNumber()) {
+    optionId = opt.As<Napi::Number>().Int32Value();
+  } else if (opt.IsString()) {
+    std::string option = opt.As<Napi::String>();
 
     std::string optionString(*option);
 
@@ -109,19 +110,19 @@ NAN_METHOD(Share::SetOpt) {
   }
 
   setOptRetCode = curl_share_setopt(obj->sh, static_cast<CURLSHoption>(optionId),
-                                    Nan::To<int32_t>(value).FromJust());
+                                    value.As<Napi::Number>().Int32Value());
 
-  info.GetReturnValue().Set(setOptRetCode);
+  return setOptRetCode;
 }
 
-NAN_METHOD(Share::Close) {
-  Nan::HandleScope scope;
+Napi::Value Share::Close(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Share* obj = Nan::ObjectWrap::Unwrap<Share>(info.This());
+  Share* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Share handle already closed.");
-    return;
+    Napi::Error::New(env, "Share handle already closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   obj->Dispose();
@@ -129,22 +130,22 @@ NAN_METHOD(Share::Close) {
   return;
 }
 
-NAN_METHOD(Share::StrError) {
-  Nan::HandleScope scope;
+Napi::Value Share::StrError(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Value> errCode = info[0];
+  Napi::Value errCode = info[0];
 
-  if (!errCode->IsInt32()) {
-    Nan::ThrowTypeError("Invalid errCode passed to Share.strError.");
-    return;
+  if (!errCode.IsNumber()) {
+    Napi::TypeError::New(env, "Invalid errCode passed to Share.strError.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   const char* errorMsg =
-      curl_share_strerror(static_cast<CURLSHcode>(Nan::To<int32_t>(errCode).FromJust()));
+      curl_share_strerror(static_cast<CURLSHcode>(errCode.As<Napi::Number>().Int32Value()));
 
-  v8::Local<v8::String> ret = Nan::New(errorMsg).ToLocalChecked();
+  Napi::String ret = Napi::New(env, errorMsg);
 
-  info.GetReturnValue().Set(ret);
+  return ret;
 }
 
 }  // namespace NodeLibcurl

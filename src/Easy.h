@@ -11,15 +11,16 @@
 #include "libcurl_compat.h"
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
 
 #include <map>
 #include <memory>
+#include <napi.h>
+#include <uv.h>
+#include <v8.h>
 
 namespace NodeLibcurl {
 
-class Easy : public Nan::ObjectWrap {
+class Easy : public Napi::ObjectWrap<Easy> {
   class ToFree;
 
   Easy();
@@ -32,11 +33,11 @@ class Easy : public Nan::ObjectWrap {
   ~Easy();
 
   // instance methods
-  void Dispose();
+  void Dispose(Napi::Env env);
   void ResetRequiredHandleOptions();
   void CallSocketEvent(int status, int events);
-  void MonitorSockets();
-  void UnmonitorSockets();
+  void MonitorSockets(Napi::Env env);
+  void UnmonitorSockets(Napi::Env env);
 
   size_t OnData(char* data, size_t size, size_t nmemb);
   size_t OnHeader(char* data, size_t size, size_t nmemb);
@@ -45,13 +46,14 @@ class Easy : public Nan::ObjectWrap {
   static uint32_t counter;
 
   // callbacks
-  typedef std::map<CURLoption, std::shared_ptr<Nan::Callback>> CallbacksMap;
+  typedef std::map<CURLoption, std::shared_ptr<Napi::FunctionReference>> CallbacksMap;
   CallbacksMap callbacks = CallbacksMap{};
-  std::shared_ptr<Nan::Callback>
+  std::shared_ptr<Napi::FunctionReference>
       cbOnSocketEvent;  // still required since it's not related to any CURLOption
 
   // members
-  std::vector<Nan::CopyablePersistentTraits<v8::Object>::CopyablePersistent> hstsReadCache;
+  std::vector<Napi::ObjectReference> hstsReadCache;
+
   uint32_t wasHstsReadCacheSet = false;
   uv_poll_t* socketPollHandle = nullptr;
   std::shared_ptr<ToFree> toFree = nullptr;
@@ -70,30 +72,30 @@ class Easy : public Nan::ObjectWrap {
 
   // static methods
   template <typename TResultType, typename Tv8MappingType>
-  static v8::Local<v8::Value> GetInfoTmpl(const Easy* obj, int infoId);
-  static v8::Local<v8::Object> CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo);
-  static v8::Local<v8::Object> CreateV8ObjectFromCurlHstsEntry(struct curl_hstsentry* sts);
+  static Napi::Value GetInfoTmpl(const Easy* obj, int infoId);
+  static Napi::Object CreateV8ObjectFromCurlFileInfo(curl_fileinfo* fileInfo);
+  static Napi::Object CreateV8ObjectFromCurlHstsEntry(struct curl_hstsentry* sts);
 
   // js available methods
-  static NAN_METHOD(New);
-  static NAN_GETTER(IdGetter);
-  static NAN_GETTER(IsInsideMultiHandleGetter);
-  static NAN_GETTER(IsMonitoringSocketsGetter);
-  static NAN_GETTER(IsOpenGetter);
-  static NAN_METHOD(SetOpt);
-  static NAN_METHOD(GetInfo);
-  static NAN_METHOD(Send);
-  static NAN_METHOD(Recv);
-  static NAN_METHOD(Perform);
-  static NAN_METHOD(Upkeep);
-  static NAN_METHOD(Pause);
-  static NAN_METHOD(Reset);
-  static NAN_METHOD(DupHandle);
-  static NAN_METHOD(OnSocketEvent);
-  static NAN_METHOD(MonitorSocketEvents);
-  static NAN_METHOD(UnmonitorSocketEvents);
-  static NAN_METHOD(Close);
-  static NAN_METHOD(StrError);
+  static Napi::Value New(const Napi::CallbackInfo& info);
+  Napi::Value IdGetter(const Napi::CallbackInfo& info);
+  Napi::Value IsInsideMultiHandleGetter(const Napi::CallbackInfo& info);
+  Napi::Value IsMonitoringSocketsGetter(const Napi::CallbackInfo& info);
+  Napi::Value IsOpenGetter(const Napi::CallbackInfo& info);
+  static Napi::Value SetOpt(const Napi::CallbackInfo& info);
+  static Napi::Value GetInfo(const Napi::CallbackInfo& info);
+  static Napi::Value Send(const Napi::CallbackInfo& info);
+  static Napi::Value Recv(const Napi::CallbackInfo& info);
+  static Napi::Value Perform(const Napi::CallbackInfo& info);
+  static Napi::Value Upkeep(const Napi::CallbackInfo& info);
+  static Napi::Value Pause(const Napi::CallbackInfo& info);
+  static Napi::Value Reset(const Napi::CallbackInfo& info);
+  static Napi::Value DupHandle(const Napi::CallbackInfo& info);
+  static Napi::Value OnSocketEvent(const Napi::CallbackInfo& info);
+  static Napi::Value MonitorSocketEvents(const Napi::CallbackInfo& info);
+  static Napi::Value UnmonitorSocketEvents(const Napi::CallbackInfo& info);
+  static Napi::Value Close(const Napi::CallbackInfo& info);
+  static Napi::Value StrError(const Napi::CallbackInfo& info);
 
   // cURL callbacks
   static size_t ReadFunction(char* ptr, size_t size, size_t nmemb, void* userdata);
@@ -125,10 +127,10 @@ class Easy : public Nan::ObjectWrap {
   bool operator==(const Easy& easy) const;
   bool operator!=(const Easy& other) const;
 
-  static v8::Local<v8::Object> FromCURLHandle(CURL* handle);
+  static Napi::Object FromCURLHandle(CURL* handle);
 
   // js object constructor template
-  static Nan::Persistent<v8::FunctionTemplate> constructor;
+  static Napi::FunctionReference constructor;
 
   // members
   CURL* ch;
@@ -136,13 +138,13 @@ class Easy : public Nan::ObjectWrap {
   bool isOpen = true;
 
   // used to return callback errors when inside Multi interface
-  Nan::Persistent<v8::Value> callbackError;
+  Napi::Reference<Napi::Value> callbackError;
 
   // static members
   static uint32_t currentOpenedHandles;
 
   // export Easy to js
-  static NAN_MODULE_INIT(Initialize);
+  static Napi::Object Initialize(Napi::Env env, Napi::Object exports);
 };
 }  // namespace NodeLibcurl
 #endif

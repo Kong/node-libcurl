@@ -15,6 +15,15 @@
   'targets': [
     {
       'target_name': 'sslctx',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'type': 'static_library',
       'sources': [
         'src/sslctx.c',
@@ -29,6 +38,15 @@
     },
     {
       'target_name': '<(module_name)',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'type': 'loadable_module',
       'sources': [
         'src/node_libcurl.cc',
@@ -40,8 +58,7 @@
         'src/CurlVersionInfo.cc',
         'src/Http2PushFrameHeaders.cc',
       ],
-      'include_dirs' : [
-        "<!(node -e \"require('nan')\")",
+      'include_dirs' : [ "<!@(node -p \"require('node-addon-api').include\")"
       ],
       'dependencies': [
         ':sslctx',
@@ -53,7 +70,8 @@
           ]
         }],
         ['curl_include_dirs!=""', {
-          'include_dirs': ['<@(curl_include_dirs)']
+          'include_dirs': [
+            '<!(node -p "require(\'node-addon-api\').include_dir")','<@(curl_include_dirs)']
         }],
         ['curl_libraries!=""', {
           'libraries': ['<@(curl_libraries)']
@@ -250,6 +268,15 @@
     },
     {
       'target_name': 'action_after_build',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'type': 'none',
       'dependencies': [ '<(module_name)' ],
       'copies': [

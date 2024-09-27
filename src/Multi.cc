@@ -20,7 +20,7 @@
 
 namespace NodeLibcurl {
 
-Nan::Persistent<v8::FunctionTemplate> Multi::constructor;
+Napi::FunctionReference Multi::constructor;
 
 Multi::Multi() {
   // init uv timer to be used with HandleTimeout
@@ -174,8 +174,8 @@ void Multi::OnSocket(uv_poll_t* handle, int status, int events) {
     errorMsg +=
         std::string("curl_multi_socket_action failed. Reason: ") + curl_multi_strerror(code);
 
-    Nan::ThrowError(errorMsg.c_str());
-    return;
+    Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   ctx->multi->ProcessMessages();
@@ -196,8 +196,8 @@ UV_TIMER_CB(Multi::OnTimeout) {
     errorMsg +=
         std::string("curl_multi_socket_action failed. Reason: ") + curl_multi_strerror(code);
 
-    Nan::ThrowError(errorMsg.c_str());
-    return;
+    Napi::Error::New(env, errorMsg.c_str()).ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   obj->ProcessMessages();
@@ -255,7 +255,7 @@ void Multi::OnSocketClose(uv_handle_t* handle) {
 }
 
 void Multi::CallOnMessageCallback(CURL* easy, CURLcode statusCode) {
-  Nan::HandleScope scope;
+  Napi::HandleScope scope(env);
 
   // we don't have an on message callback, just return.
   if (this->cbOnMessage == nullptr) {
@@ -268,8 +268,8 @@ void Multi::CallOnMessageCallback(CURL* easy, CURLcode statusCode) {
   char* ptr = nullptr;
   CURLcode code = curl_easy_getinfo(easy, CURLINFO_PRIVATE, &ptr);
   if (code != CURLE_OK) {
-    Nan::ThrowError("Error retrieving current handle instance.");
-    return;
+    Napi::Error::New(env, "Error retrieving current handle instance.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   assert(ptr != nullptr && "Invalid handle returned from CURLINFO_PRIVATE.");
@@ -277,20 +277,20 @@ void Multi::CallOnMessageCallback(CURL* easy, CURLcode statusCode) {
 
   bool hasError = !obj->callbackError.IsEmpty();
 
-  v8::Local<v8::Object> easyArg = obj->handle();
+  Napi::Object easyArg = obj->handle();
 
-  v8::Local<v8::Value> err = Nan::Null();
-  v8::Local<v8::Int32> errCode = Nan::New(static_cast<int32_t>(
+  Napi::Value err = env.Null();
+  v8::Local<v8::Int32> errCode = Napi::New(env, static_cast<int32_t>(
       statusCode == CURLE_OK && hasError ? CURLE_ABORTED_BY_CALLBACK : statusCode));
 
   if (statusCode != CURLE_OK || hasError) {
-    err = hasError ? Nan::New(obj->callbackError) : Nan::Error(curl_easy_strerror(statusCode));
+    err = hasError ? Napi::New(env, obj->callbackError) : Napi::Error::New(env, curl_easy_strerror(statusCode));
   }
 
-  v8::Local<v8::Value> argv[] = {err, easyArg, errCode};
+  Napi::Value argv[] = {err, easyArg, errCode};
   const int argc = 3;
 
-  Nan::AsyncResource asyncResource("Multi::CallOnMessageCallback");
+  Napi::AsyncResource asyncResource("Multi::CallOnMessageCallback");
   asyncResource.runInAsyncScope(obj->handle(), this->cbOnMessage->GetFunction(), argc, argv);
 }
 
@@ -305,7 +305,7 @@ int Multi::CbPushFunction(CURL* parent, CURL* child, size_t numberOfHeaders,  //
   //   this means that we must not rethrow errors we catch from user land.
   //   doing so would cause the whole library code to fall apart as it would not be safe to
   //   use other v8 objects.
-  Nan::HandleScope scope;
+  Napi::HandleScope scope(env);
 
   int returnValue = -1;
 
@@ -326,25 +326,25 @@ int Multi::CbPushFunction(CURL* parent, CURL* child, size_t numberOfHeaders,  //
   assert(parentEasyObj->isOpen &&
          "The Easy instance doing the current request was closed prematurely");
 
-  v8::Local<v8::Object> parentEasyJsObj = obj->handle();
+  Napi::Object parentEasyJsObj = obj->handle();
 
   // create new Easy instance to be used with the easy curl handle passed
   //  as second parameter
-  v8::Local<v8::Object> childEasyJsObj = Easy::FromCURLHandle(child);
+  Napi::Object childEasyJsObj = Easy::FromCURLHandle(child);
 
   auto http2PushFrameJsObj = Http2PushFrameHeaders::NewInstance(headers, numberOfHeaders);
 
   const int argc = 3;
-  v8::Local<v8::Value> argv[argc] = {
+  Napi::Value argv[argc] = {
       parentEasyJsObj,
       childEasyJsObj,
       http2PushFrameJsObj,
   };
 
-  Nan::TryCatch tryCatch;
+  Napi::TryCatch tryCatch;
 
-  Nan::AsyncResource asyncResource("Multi::CbPushFunction");
-  Nan::MaybeLocal<v8::Value> returnValueCallback =
+  Napi::AsyncResource asyncResource("Multi::CbPushFunction");
+  Napi::MaybeLocal<v8::Value> returnValueCallback =
       asyncResource.runInAsyncScope(obj->handle(), it->second->GetFunction(), argc, argv);
 
   if (tryCatch.HasCaught()) {
@@ -353,67 +353,69 @@ int Multi::CbPushFunction(CURL* parent, CURL* child, size_t numberOfHeaders,  //
     return returnValue;
   }
 
-  if (returnValueCallback.IsEmpty() || !returnValueCallback.ToLocalChecked()->IsInt32()) {
+  if (returnValueCallback.IsEmpty() || !returnValueCallback.IsNumber()) {
     // Nothing we can do - Let's just ignore it
-    // v8::Local<v8::Value> typeError =
-    //     Nan::TypeError("Return value from the PUSHFUNCTION callback must be an integer.");
-    // Nan::ThrowError(typeError);
+    // Napi::Value typeError =
+    //     Napi::TypeError::New(env, "Return value from the PUSHFUNCTION callback must be an integer.");
+    // Napi::Error::New(env, typeError).ThrowAsJavaScriptException();
+
   } else {
-    returnValue = Nan::To<int>(returnValueCallback.ToLocalChecked()).FromJust();
+    returnValue = returnValueCallback.ToLocalChecked(.As<Napi::Number>().Int32Value());
   }
 
   return returnValue;
 }
 
 // Add Curl constructor to the module exports
-NAN_MODULE_INIT(Multi::Initialize) {
-  Nan::HandleScope scope;
+Napi::Object Multi::Initialize(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
 
   // Multi js "class" function template initialization
-  v8::Local<v8::FunctionTemplate> tmpl = Nan::New<v8::FunctionTemplate>(Multi::New);
-  tmpl->SetClassName(Nan::New("Multi").ToLocalChecked());
-  tmpl->InstanceTemplate()->SetInternalFieldCount(1);
+  Napi::FunctionReference tmpl = Napi::Function::New(env, Multi::New);
+  tmpl->SetClassName(Napi::String::New(env, "Multi"));
+
 
   // prototype methods
-  Nan::SetPrototypeMethod(tmpl, "setOpt", Multi::SetOpt);
-  Nan::SetPrototypeMethod(tmpl, "addHandle", Multi::AddHandle);
-  Nan::SetPrototypeMethod(tmpl, "onMessage", Multi::OnMessage);
-  Nan::SetPrototypeMethod(tmpl, "removeHandle", Multi::RemoveHandle);
-  Nan::SetPrototypeMethod(tmpl, "getCount", Multi::GetCount);
-  Nan::SetPrototypeMethod(tmpl, "close", Multi::Close);
+  Napi::SetPrototypeMethod(tmpl, "setOpt", Multi::SetOpt);
+  Napi::SetPrototypeMethod(tmpl, "addHandle", Multi::AddHandle);
+  Napi::SetPrototypeMethod(tmpl, "onMessage", Multi::OnMessage);
+  Napi::SetPrototypeMethod(tmpl, "removeHandle", Multi::RemoveHandle);
+  Napi::SetPrototypeMethod(tmpl, "getCount", Multi::GetCount);
+  Napi::SetPrototypeMethod(tmpl, "close", Multi::Close);
 
   // static methods
-  Nan::SetMethod(tmpl, "strError", Multi::StrError);
+  Napi::SetMethod(tmpl, "strError", Multi::StrError);
 
   Multi::constructor.Reset(tmpl);
 
-  Nan::Set(target, Nan::New("Multi").ToLocalChecked(), Nan::GetFunction(tmpl).ToLocalChecked());
+  (target).Set(Napi::String::New(env, "Multi"), Napi::GetFunction(tmpl));
 }
 
-NAN_METHOD(Multi::New) {
+Napi::Value Multi::New(const Napi::CallbackInfo& info) {
   if (!info.IsConstructCall()) {
-    Nan::ThrowError("You must use \"new\" to instantiate this object.");
+    Napi::Error::New(env, "You must use \"new\" to instantiate this object.").ThrowAsJavaScriptException();
+
   }
 
   Multi* obj = new Multi();
 
   obj->Wrap(info.This());
 
-  info.GetReturnValue().Set(info.This());
+  return info.This();
 }
 
-NAN_METHOD(Multi::SetOpt) {
-  Nan::HandleScope scope;
+Napi::Value Multi::SetOpt(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Multi handle is closed.");
-    return;
+    Napi::Error::New(env, "Multi handle is closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  v8::Local<v8::Value> opt = info[0];
-  v8::Local<v8::Value> value = info[1];
+  Napi::Value opt = info[0];
+  Napi::Value value = info[1];
 
   CURLMcode setOptRetCode = CURLM_UNKNOWN_OPTION;
 
@@ -421,7 +423,7 @@ NAN_METHOD(Multi::SetOpt) {
 
   // array of strings option
   if ((optionId = IsInsideCurlConstantStruct(curlMultiOptionNotImplemented, opt))) {
-    Nan::ThrowError(
+    Napi::ThrowError(
         "Unsupported option, probably because it's too complex to implement "
         "using javascript or unecessary when using javascript.");
     return;
@@ -431,16 +433,16 @@ NAN_METHOD(Multi::SetOpt) {
 
     } else {
       if (!value->IsArray()) {
-        Nan::ThrowTypeError("Option value must be an Array.");
-        return;
+        Napi::TypeError::New(env, "Option value must be an Array.").ThrowAsJavaScriptException();
+        return env.Null();
       }
 
-      v8::Local<v8::Array> array = v8::Local<v8::Array>::Cast(value);
+      Napi::Array array = value.As<Napi::Array>();
       uint32_t arrayLength = array->Length();
       std::vector<char*> strings;
 
       for (uint32_t i = 0; i < arrayLength; ++i) {
-        strings.push_back(*Nan::Utf8String(Nan::Get(array, i).ToLocalChecked()));
+        strings.push_back((array).Get(i->As<Napi::String>().Utf8Value().c_str()));
       }
 
       strings.push_back(NULL);
@@ -451,20 +453,20 @@ NAN_METHOD(Multi::SetOpt) {
     // check if option is integer, and the value is correct
   } else if ((optionId = IsInsideCurlConstantStruct(curlMultiOptionInteger, opt))) {
     // If not an integer, throw error
-    if (!value->IsInt32()) {
-      Nan::ThrowTypeError("Option value must be an integer.");
-      return;
+    if (!value.IsNumber()) {
+      Napi::TypeError::New(env, "Option value must be an integer.").ThrowAsJavaScriptException();
+      return env.Null();
     }
 
-    int32_t val = Nan::To<int32_t>(value).FromJust();
+    int32_t val = value.As<Napi::Number>().Int32Value();
 
     setOptRetCode = curl_multi_setopt(obj->mh, static_cast<CURLMoption>(optionId), val);
   } else if ((optionId = IsInsideCurlConstantStruct(curlMultiOptionFunction, opt))) {
     bool isNull = value->IsNull();
 
     if (!value->IsFunction() && !isNull) {
-      Nan::ThrowTypeError("Option value must be null or a function.");
-      return;
+      Napi::TypeError::New(env, "Option value must be null or a function.").ThrowAsJavaScriptException();
+      return env.Null();
     }
 
     switch (optionId) {
@@ -477,7 +479,7 @@ NAN_METHOD(Multi::SetOpt) {
           curl_multi_setopt(obj->mh, CURLMOPT_PUSHDATA, NULL);
           setOptRetCode = curl_multi_setopt(obj->mh, CURLMOPT_PUSHFUNCTION, NULL);
         } else {
-          obj->callbacks[CURLMOPT_PUSHFUNCTION].reset(new Nan::Callback(value.As<v8::Function>()));
+          obj->callbacks[CURLMOPT_PUSHFUNCTION].reset(new Napi::FunctionReference(value.As<Napi::Function>()));
 
           curl_multi_setopt(obj->mh, CURLMOPT_PUSHDATA, obj);
           setOptRetCode = curl_multi_setopt(obj->mh, CURLMOPT_PUSHFUNCTION, Multi::CbPushFunction);
@@ -488,27 +490,27 @@ NAN_METHOD(Multi::SetOpt) {
     }
   }
 
-  info.GetReturnValue().Set(setOptRetCode);
+  return setOptRetCode;
 }
 
-NAN_METHOD(Multi::OnMessage) {
-  Nan::HandleScope scope;
+Napi::Value Multi::OnMessage(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
   if (!info.Length()) {
-    Nan::ThrowError(
+    Napi::ThrowError(
         "You must specify the callback function. If you want to remove the "
         "current one you can pass null.");
     return;
   }
 
-  v8::Local<v8::Value> arg = info[0];
+  Napi::Value arg = info[0];
 
   bool isNull = arg->IsNull();
 
   if (!arg->IsFunction() && !isNull) {
-    Nan::ThrowTypeError(
+    Napi::ThrowTypeError(
         "Argument must be a Function. If you want to remove the current one "
         "you can pass null.");
     return;
@@ -517,33 +519,33 @@ NAN_METHOD(Multi::OnMessage) {
   if (isNull) {
     obj->cbOnMessage = nullptr;
   } else {
-    obj->cbOnMessage.reset(new Nan::Callback(arg.As<v8::Function>()));
+    obj->cbOnMessage.reset(new Napi::FunctionReference(arg.As<Napi::Function>()));
   }
 
-  info.GetReturnValue().Set(info.This());
+  return info.This();
 }
 
-NAN_METHOD(Multi::AddHandle) {
-  Nan::HandleScope scope;
+Napi::Value Multi::AddHandle(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Multi handle is closed.");
-    return;
+    Napi::Error::New(env, "Multi handle is closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  v8::Local<v8::Value> handle = info[0];
+  Napi::Value handle = info[0];
 
-  if (!handle->IsObject() || !Nan::New(Easy::constructor)->HasInstance(handle)) {
-    Nan::ThrowError(Nan::TypeError("Argument must be an instance of an Easy handle."));
-    return;
+  if (!handle.IsObject() || !Napi::New(env, Easy::constructor)->HasInstance(handle)) {
+    Napi::Error::New(env, Napi::TypeError::New(env, "Argument must be an instance of an Easy handle.")).ThrowAsJavaScriptException();
+    return env.Null();
   } else {
-    Easy* easy = Nan::ObjectWrap::Unwrap<Easy>(handle.As<v8::Object>());
+    Easy* easy = handle.As<Napi::Object>().Unwrap<Easy>();
 
     if (!easy->isOpen) {
-      Nan::ThrowError("Cannot add an Easy handle that is closed.");
-      return;
+      Napi::Error::New(env, "Cannot add an Easy handle that is closed.").ThrowAsJavaScriptException();
+      return env.Null();
     }
 
     easy->SetUrlOpts();
@@ -556,91 +558,91 @@ NAN_METHOD(Multi::AddHandle) {
                           curl_multi_add_handle(obj->mh, easy->ch););  // NOLINT(whitespace/newline)
 
     if (code != CURLM_OK) {
-      Nan::ThrowError(Nan::TypeError("Could not add easy handle to the multi handle."));
-      return;
+      Napi::Error::New(env, Napi::TypeError::New(env, "Could not add easy handle to the multi handle.")).ThrowAsJavaScriptException();
+      return env.Null();
     }
 
     ++obj->amountOfHandles;
     easy->isInsideMultiHandle = true;
 
-    v8::Local<v8::Int32> ret = Nan::New(static_cast<int32_t>(code));
+    v8::Local<v8::Int32> ret = Napi::New(env, static_cast<int32_t>(code));
 
-    info.GetReturnValue().Set(ret);
+    return ret;
   }
 }
 
-NAN_METHOD(Multi::RemoveHandle) {
-  Nan::HandleScope scope;
+Napi::Value Multi::RemoveHandle(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Multi handle is closed.");
-    return;
+    Napi::Error::New(env, "Multi handle is closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  v8::Local<v8::Value> handle = info[0];
+  Napi::Value handle = info[0];
 
-  if (!handle->IsObject() || !Nan::New(Easy::constructor)->HasInstance(handle)) {
-    Nan::ThrowError(Nan::TypeError("Argument must be an instance of an Easy handle."));
-    return;
+  if (!handle.IsObject() || !Napi::New(env, Easy::constructor)->HasInstance(handle)) {
+    Napi::Error::New(env, Napi::TypeError::New(env, "Argument must be an instance of an Easy handle.")).ThrowAsJavaScriptException();
+    return env.Null();
   } else {
-    Easy* easy = Nan::ObjectWrap::Unwrap<Easy>(handle.As<v8::Object>());
+    Easy* easy = handle.As<Napi::Object>().Unwrap<Easy>();
 
     CURLMcode code = curl_multi_remove_handle(obj->mh, easy->ch);
 
     if (code != CURLM_OK) {
-      Nan::ThrowError(Nan::TypeError("Could not remove easy handle from multi handle."));
-      return;
+      Napi::Error::New(env, Napi::TypeError::New(env, "Could not remove easy handle from multi handle.")).ThrowAsJavaScriptException();
+      return env.Null();
     }
 
     --obj->amountOfHandles;
     easy->isInsideMultiHandle = false;
 
-    v8::Local<v8::Int32> ret = Nan::New(static_cast<int32_t>(code));
+    v8::Local<v8::Int32> ret = Napi::New(env, static_cast<int32_t>(code));
 
-    info.GetReturnValue().Set(ret);
+    return ret;
   }
 }
 
-NAN_METHOD(Multi::GetCount) {
-  Nan::HandleScope scope;
+Napi::Value Multi::GetCount(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
-  v8::Local<v8::Uint32> ret = Nan::New(static_cast<uint32_t>(obj->amountOfHandles));
+  v8::Local<v8::Uint32> ret = Napi::New(env, static_cast<uint32_t>(obj->amountOfHandles));
 
-  info.GetReturnValue().Set(ret);
+  return ret;
 }
 
-NAN_METHOD(Multi::Close) {
-  Nan::HandleScope scope;
+Napi::Value Multi::Close(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  Multi* obj = Nan::ObjectWrap::Unwrap<Multi>(info.This());
+  Multi* obj = this;
 
   if (!obj->isOpen) {
-    Nan::ThrowError("Multi handle already closed.");
-    return;
+    Napi::Error::New(env, "Multi handle already closed.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   obj->Dispose();
 }
 
-NAN_METHOD(Multi::StrError) {
-  Nan::HandleScope scope;
+Napi::Value Multi::StrError(const Napi::CallbackInfo& info) {
+  Napi::HandleScope scope(env);
 
-  v8::Local<v8::Value> errCode = info[0];
+  Napi::Value errCode = info[0];
 
-  if (!errCode->IsInt32()) {
-    Nan::ThrowTypeError("Invalid errCode passed to Multi.strError.");
-    return;
+  if (!errCode.IsNumber()) {
+    Napi::TypeError::New(env, "Invalid errCode passed to Multi.strError.").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   const char* errorMsg =
-      curl_multi_strerror(static_cast<CURLMcode>(Nan::To<int32_t>(errCode).FromJust()));
+      curl_multi_strerror(static_cast<CURLMcode>(errCode.As<Napi::Number>().Int32Value()));
 
-  v8::Local<v8::String> ret = Nan::New(errorMsg).ToLocalChecked();
+  Napi::String ret = Napi::New(env, errorMsg);
 
-  info.GetReturnValue().Set(ret);
+  return ret;
 }
 }  // namespace NodeLibcurl

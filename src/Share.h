@@ -9,12 +9,14 @@
 #define NODELIBCURL_SHARE_H
 
 #include <curl/curl.h>
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
+#include <uv.h>
+#include <napi.h>
+#include <uv.h>
 
 namespace NodeLibcurl {
 
-class Share : public Nan::ObjectWrap {
+class Share : public Napi::ObjectWrap<Share> {
   Share();
 
   Share(const Share& that);
@@ -27,20 +29,20 @@ class Share : public Nan::ObjectWrap {
 
  public:
   // js object constructor template
-  static Nan::Persistent<v8::FunctionTemplate> constructor;
+  static Napi::FunctionReference constructor;
 
   // members
   CURLSH* sh;
   bool isOpen;
 
   // export Easy to js
-  static NAN_MODULE_INIT(Initialize);
+  static Napi::Object Initialize(Napi::Env env, Napi::Object exports);
 
   // js available methods
-  static NAN_METHOD(New);
-  static NAN_METHOD(SetOpt);
-  static NAN_METHOD(Close);
-  static NAN_METHOD(StrError);
+  static Napi::Value New(const Napi::CallbackInfo& info);
+  static Napi::Value SetOpt(const Napi::CallbackInfo& info);
+  static Napi::Value Close(const Napi::CallbackInfo& info);
+  static Napi::Value StrError(const Napi::CallbackInfo& info);
 };
 }  // namespace NodeLibcurl
 #endif

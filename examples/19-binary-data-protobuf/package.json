@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "node-addon-api": "8.1.0",
     "koa": "^2.12.1",
     "@koa/router": "^9.0.1",
     "stoppable": "1.1.0",
