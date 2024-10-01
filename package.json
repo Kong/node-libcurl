@@ -56,7 +56,7 @@
     "preversion": "npm run lint && npm run clean:dist && npm run build:dist"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "1.0.11",
+    "@mapbox/node-pre-gyp": "br0p0p/node-pre-gyp#replace-npmlog",
     "env-paths": "2.2.0",
     "nan": "2.20.0",
     "node-gyp": "10.2.0",
