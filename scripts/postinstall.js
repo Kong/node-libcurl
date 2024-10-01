@@ -9,9 +9,9 @@ const util = require('util')
 // dependency of the package no dev dependencies are allowed.
 const log = require('./log.js')
 const envPaths = require('env-paths')
-const rimraf = require('rimraf')
 
 const buildFlags = require('./utils/buildFlags')
+const { rm } = require('fs/promises');
 
 const homeDir = os.homedir()
 
@@ -51,9 +51,9 @@ function cleanup() {
   // If we're using node-libcurl from a package manager then let's clean up after
   // ourselves when we install successfully - unless specified not to.
   if (!(buildFlags.mustBuild || buildFlags.skipCleanup)) {
-    rimraf.sync(path.join(rootPath, 'build'))
+    rm(path.join(rootPath, 'build'), { recursive: true, force: true });
     if (fs.existsSync(path.join(rootPath, 'curl-for-windows'))) {
-      rimraf.sync(path.join(rootPath, 'curl-for-windows'))
+      rm(path.join(rootPath, 'curl-for-windows'), { recursive: true, force: true })
     }
   }
 }
