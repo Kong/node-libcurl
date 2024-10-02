@@ -110,10 +110,6 @@ jobs:
       - name: 'Run tsc'
         if: matrix.run-lint-and-tsc && steps.run_result.outputs.run_result != 'success'
         run: npm run build:dist
-      # we do run tests in all matrix jobs
-      - name: 'Run tests'
-        if: steps.run_result.outputs.run_result != 'success'
-        run: npm run test:coverage
       # but coverage is only sent for the run-lint-and-tsc job
       - name: Upload coverage to Codecov
         if: matrix.run-lint-and-tsc && steps.run_result.outputs.run_result != 'success'
