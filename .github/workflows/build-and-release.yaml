@@ -53,7 +53,7 @@ jobs:
         node-libcurl-cpp-std:
           - c++17
         node:
-          - 20.16.0
+          - 20.17.0
 
     env:
       LIBCURL_RELEASE: ${{ matrix.libcurl-release }}
@@ -110,7 +110,7 @@ jobs:
         libcurl-release:
           - 7.79.1
         node:
-          - 20.16.0
+          - 20.17.0
         electron-version:
           - 32.1.2
     env:
@@ -173,7 +173,7 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 20.16.0
+          - 20.17.0
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
@@ -216,7 +216,7 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 20.16.0
+          - 20.17.0
         electron-version:
           - 32.1.2
     env:
