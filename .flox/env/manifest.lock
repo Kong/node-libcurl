@@ -1,0 +1,1023 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "cmake": {
+        "pkg-path": "cmake"
+      },
+      "coreutils-prefixed": {
+        "pkg-path": "coreutils-prefixed"
+      },
+      "electron": {
+        "pkg-path": "electron",
+        "version": "32.1.2"
+      },
+      "groff": {
+        "pkg-path": "groff"
+      },
+      "nodejs": {
+        "pkg-path": "nodejs",
+        "version": "20.17.0"
+      },
+      "python3": {
+        "pkg-path": "python3"
+      },
+      "wget": {
+        "pkg-path": "wget"
+      },
+      "zlib": {
+        "pkg-path": "zlib"
+      }
+    },
+    "vars": {
+      "ELECTRON_SKIP_BINARY_DOWNLOAD": "1"
+    },
+    "hook": {},
+    "profile": {},
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "aarch64-linux",
+        "x86_64-darwin",
+        "x86_64-linux"
+      ],
+      "allow": {
+        "licenses": []
+      },
+      "semver": {}
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/dlzvcbb2w8rjsvc3ba6cm2447jg0x4fl-cmake-3.29.6.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "cmake-3.29.6",
+      "pname": "cmake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.29.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bnw436hkmrzi6wa2i8n6swyc35hw63zk-cmake-3.29.6"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/mrwx6fwlwq574z109f9399icplnchmjk-cmake-3.29.6.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "cmake-3.29.6",
+      "pname": "cmake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.29.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/nxhkn6c32i7rvjw3i12bffb3q911g7hj-cmake-3.29.6-debug",
+        "out": "/nix/store/rd3byxvm1pxl923nc5vx79pykq4wh4li-cmake-3.29.6"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/bs20vsf82cglpgsablpkq0ihr1is1akc-cmake-3.29.6.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "cmake-3.29.6",
+      "pname": "cmake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.29.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/zjv124gn2b7zkxjf97plmf9hl5fxnpvi-cmake-3.29.6"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/1rchq3x4xj3kns8v0i680g12129x9wbm-cmake-3.29.6.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "cmake-3.29.6",
+      "pname": "cmake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.29.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/rjyfyyrfshs95b5mj6spr0ywgkiajidw-cmake-3.29.6-debug",
+        "out": "/nix/store/yzi080r2c1zn2jzrhcfdv7dmr92yw07l-cmake-3.29.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils-prefixed",
+      "broken": false,
+      "derivation": "/nix/store/3dw7a9k9bnvdn8lv1757nkd5bmiccp2l-coreutils-9.5.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils-prefixed",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "coreutils-9.5",
+      "pname": "coreutils-prefixed",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "coreutils-9.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/0zfyqahcrjdaqv664l611zhz1lgsgn3p-coreutils-9.5-info",
+        "out": "/nix/store/5hssbidkdpwacb5f80az7n38n7slxa3r-coreutils-9.5"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils-prefixed",
+      "broken": false,
+      "derivation": "/nix/store/md8cjgfrm3n9969dk7p2kyk7sqdcjhi9-coreutils-9.5.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils-prefixed",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "coreutils-9.5",
+      "pname": "coreutils-prefixed",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "coreutils-9.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/y82bx0g08hgsbwkbkpzcjfxf31q0xih6-coreutils-9.5-debug",
+        "info": "/nix/store/7kfaxh9jfndzz4cfl73ms8sgv9mjyhkb-coreutils-9.5-info",
+        "out": "/nix/store/dnim7dqwsm4cb6wn04nigmw0729w0vkg-coreutils-9.5"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils-prefixed",
+      "broken": false,
+      "derivation": "/nix/store/v1vbl9kcf3vgakgkh7mvsksrg78am09r-coreutils-9.5.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils-prefixed",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "coreutils-9.5",
+      "pname": "coreutils-prefixed",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "coreutils-9.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/4h74mm2drfxxigrfnznpc6kinm6q86yl-coreutils-9.5-info",
+        "out": "/nix/store/svb9l08j2s36xvcj47b02msl0fg03lii-coreutils-9.5"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils-prefixed",
+      "broken": false,
+      "derivation": "/nix/store/ki8nbsn50svcryjkzqkc6cyr8fj5p874-coreutils-9.5.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils-prefixed",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "coreutils-9.5",
+      "pname": "coreutils-prefixed",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "coreutils-9.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/zcv9000gmscvq0l68369gd9g8cyz4pq2-coreutils-9.5-debug",
+        "info": "/nix/store/ji3pc89q1adac33kh403cq91c7f14snh-coreutils-9.5-info",
+        "out": "/nix/store/56xg01mscn8glg9bas39j8g19jil5arf-coreutils-9.5"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "electron",
+      "broken": false,
+      "derivation": "/nix/store/fxdd1bzh11wfp2v8rqmxy25qrqmi5pp9-electron-32.1.2.drv",
+      "description": "Cross platform desktop application shell",
+      "install_id": "electron",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "electron-32.1.2",
+      "pname": "electron",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "32.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/qaaqwkg3m07rpl8n0r9ni53fgdk0kxlk-electron-32.1.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "electron",
+      "broken": false,
+      "derivation": "/nix/store/hq3r12hadl6sx5r66lx4h99dyz2wjc40-electron-32.1.2.drv",
+      "description": "Cross platform desktop application shell",
+      "install_id": "electron",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "electron-32.1.2",
+      "pname": "electron",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "32.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/h7bcxpzbmdbgr35gwjf8n8d805ni13jp-electron-32.1.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "electron",
+      "broken": false,
+      "derivation": "/nix/store/d6ppcdgnam5brl3c60lag5nr17f87h42-electron-32.1.2.drv",
+      "description": "Cross platform desktop application shell",
+      "install_id": "electron",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "electron-32.1.2",
+      "pname": "electron",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "32.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/v00qsmvswdcga8nm4didx1ln603qm738-electron-32.1.2"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "electron",
+      "broken": false,
+      "derivation": "/nix/store/dl2xi60v1jsw07vsk15rx3y155dlsx4x-electron-32.1.2.drv",
+      "description": "Cross platform desktop application shell",
+      "install_id": "electron",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "electron-32.1.2",
+      "pname": "electron",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "32.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/kngaqsflx19jih4x6my6kigx2dqwaxaj-electron-32.1.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "groff",
+      "broken": false,
+      "derivation": "/nix/store/s84kxjlbdyha3h416a4gybmk67dam038-groff-1.23.0.drv",
+      "description": "GNU Troff, a typesetting package that reads plain text and produces formatted output",
+      "install_id": "groff",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "groff-1.23.0",
+      "pname": "groff",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.23.0",
+      "outputs_to_install": [
+        "out",
+        "perl"
+      ],
+      "outputs": {
+        "doc": "/nix/store/7l4cqgaxhsy33h9drhh9x56kq99jsfw2-groff-1.23.0-doc",
+        "info": "/nix/store/6bq32hp7iaclrp555cwr6sis8x2pp2lf-groff-1.23.0-info",
+        "man": "/nix/store/658c86fy09lcrpwahwrbmkgs2g3l3k4r-groff-1.23.0-man",
+        "out": "/nix/store/rm3hysgwx1f907dbgi2nxg0cgm9z72z8-groff-1.23.0",
+        "perl": "/nix/store/80ng5j5zh72nijw8sms1vskhc9jf7m8a-groff-1.23.0-perl"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "groff",
+      "broken": false,
+      "derivation": "/nix/store/mczrab7v3yi6spp1gg4mj8jbmyja96qr-groff-1.23.0.drv",
+      "description": "GNU Troff, a typesetting package that reads plain text and produces formatted output",
+      "install_id": "groff",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "groff-1.23.0",
+      "pname": "groff",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.23.0",
+      "outputs_to_install": [
+        "out",
+        "perl"
+      ],
+      "outputs": {
+        "doc": "/nix/store/ndx0mqrpahld9lsmrdbqvq45a6z27ka9-groff-1.23.0-doc",
+        "info": "/nix/store/2w1ddhbwqbcv85k905wf2ly1ygasz132-groff-1.23.0-info",
+        "man": "/nix/store/ii3slsqsixshxvq5iyka1kh0j5k22fpi-groff-1.23.0-man",
+        "out": "/nix/store/ssdd089jb42jfzv67i30f3d0kbaxsj98-groff-1.23.0",
+        "perl": "/nix/store/l0fbqjm018r3cb05a3y9m4ybbfh61aim-groff-1.23.0-perl"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "groff",
+      "broken": false,
+      "derivation": "/nix/store/gim25nd16xahlpmgzbc7d8ly43msqrpw-groff-1.23.0.drv",
+      "description": "GNU Troff, a typesetting package that reads plain text and produces formatted output",
+      "install_id": "groff",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "groff-1.23.0",
+      "pname": "groff",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.23.0",
+      "outputs_to_install": [
+        "out",
+        "perl"
+      ],
+      "outputs": {
+        "doc": "/nix/store/vl1lsl7jx0n85rby3v49d7b5b63vgf8x-groff-1.23.0-doc",
+        "info": "/nix/store/bbi7nv3vmdw2gkl9i6036s8n5j56ds00-groff-1.23.0-info",
+        "man": "/nix/store/sbkg3d787q34k5yhvm16p8n6gl20hpln-groff-1.23.0-man",
+        "out": "/nix/store/dwg0rixm52bahwj2v2z9zqa2sjs39xx9-groff-1.23.0",
+        "perl": "/nix/store/lz3h0cgps5flxk6jhddz7fnyw4zrjypc-groff-1.23.0-perl"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "groff",
+      "broken": false,
+      "derivation": "/nix/store/0lcc5gpffl0y0vsycz1wc1l713z9b7in-groff-1.23.0.drv",
+      "description": "GNU Troff, a typesetting package that reads plain text and produces formatted output",
+      "install_id": "groff",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "groff-1.23.0",
+      "pname": "groff",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.23.0",
+      "outputs_to_install": [
+        "out",
+        "perl"
+      ],
+      "outputs": {
+        "doc": "/nix/store/wdb612wwax54g9mj0r5ddh4575v3yjfk-groff-1.23.0-doc",
+        "info": "/nix/store/ws537cx61r5giyrmw988qn8xs39sq6r7-groff-1.23.0-info",
+        "man": "/nix/store/j9d9ibvfjh9y8na7b764pmak45819nsv-groff-1.23.0-man",
+        "out": "/nix/store/09b6cr56ygqx3s4dhw6323gzhqv1v5nn-groff-1.23.0",
+        "perl": "/nix/store/7crxbz12f35743vs0c5nqjwscqz14jqy-groff-1.23.0-perl"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/ynhixqy7ih4sjpww3y7ra64fn3s92y6j-nodejs-20.17.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "nodejs-20.17.0",
+      "pname": "nodejs",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "20.17.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "libv8": "/nix/store/baf3p9zf8dn2arp6wjkdi3v0g2xgfd6y-nodejs-20.17.0-libv8",
+        "out": "/nix/store/hxl1k8qgmrm1vfq5f419iv4wybz9szqq-nodejs-20.17.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/fr04z10588nlfmms64ask1g6nvg48vk1-nodejs-20.17.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "nodejs-20.17.0",
+      "pname": "nodejs",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "20.17.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "libv8": "/nix/store/0c57mzp5bqf0pp4a0pdj8wynphsgi92c-nodejs-20.17.0-libv8",
+        "out": "/nix/store/vc64zpxndmp3xh9699yb2vpbl81pxbk0-nodejs-20.17.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/pmw8kl5dckr1zfb4ny27v6gjk9aa9nrp-nodejs-20.17.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "nodejs-20.17.0",
+      "pname": "nodejs",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "20.17.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "libv8": "/nix/store/n4xvswmgb3ql2440bkl8xk4i3b11w46x-nodejs-20.17.0-libv8",
+        "out": "/nix/store/lgyrki1i0205nwh51c1h22bhl95x0nyd-nodejs-20.17.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/3hxn26fh3cpz4rnx3lcwm5cb0vg15rzk-nodejs-20.17.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "nodejs-20.17.0",
+      "pname": "nodejs",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "20.17.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "libv8": "/nix/store/bsqha32xvv1j20bwkhr2wsnclk4qsi3a-nodejs-20.17.0-libv8",
+        "out": "/nix/store/w78sh036dyn14f29w8za9ni9syrmwm3q-nodejs-20.17.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/dzz3d11s5dqrnzfyhmq4fhf1q9ly3jlp-python3-3.12.5.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "python3-3.12.5",
+      "pname": "python3",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/9pj4rzx5pbynkkxq1srzwjhywmcfxws3-python3-3.12.5"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/1gcbmlprvgy00zgar9czh867sr0kfw8n-python3-3.12.5.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "python3-3.12.5",
+      "pname": "python3",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/xc4hygp28y7g1rvjf0vi7fj0d83a75pj-python3-3.12.5-debug",
+        "out": "/nix/store/6iq3nhgdyp8a5wzwf097zf2mn4zyqxr6-python3-3.12.5"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/dazm7qi0dvmjlf1kbjzq81ipbwqlmiij-python3-3.12.5.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "python3-3.12.5",
+      "pname": "python3",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ks8acr22s4iggnmvxydm5czl30racy32-python3-3.12.5"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/5k1b6g2qgy2a7kiis6snyidzryz6bljl-python3-3.12.5.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "python3-3.12.5",
+      "pname": "python3",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/0a39pi2s6kxqc3kjjz2y9yzibd62zhhb-python3-3.12.5-debug",
+        "out": "/nix/store/h3i0acpmr8mrjx07519xxmidv8mpax4y-python3-3.12.5"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "wget",
+      "broken": false,
+      "derivation": "/nix/store/jlh27zgy29ibgq0cwi1w0zy6w4gbv0l4-wget-1.24.5.drv",
+      "description": "Tool for retrieving files using HTTP, HTTPS, and FTP",
+      "install_id": "wget",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "wget-1.24.5",
+      "pname": "wget",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.24.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/psa874fw1wd425xqqk7q95hgnb6vdhxg-wget-1.24.5"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "wget",
+      "broken": false,
+      "derivation": "/nix/store/8pw1qfr0r1cmjla0ah67nikfw4rv19dz-wget-1.24.5.drv",
+      "description": "Tool for retrieving files using HTTP, HTTPS, and FTP",
+      "install_id": "wget",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "wget-1.24.5",
+      "pname": "wget",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.24.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/4vpmpr4hrdqn0kmq39apfm3wcm6ya8ns-wget-1.24.5"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "wget",
+      "broken": false,
+      "derivation": "/nix/store/bsrhij50nhn4d5fpd9nwbca81yrbq23g-wget-1.24.5.drv",
+      "description": "Tool for retrieving files using HTTP, HTTPS, and FTP",
+      "install_id": "wget",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "wget-1.24.5",
+      "pname": "wget",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.24.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/iz3hq7bsl1fhrfv5jasyplw17hyyp7hf-wget-1.24.5"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "wget",
+      "broken": false,
+      "derivation": "/nix/store/8m88fbrk2iw63crqxlwn8453amira9r4-wget-1.24.5.drv",
+      "description": "Tool for retrieving files using HTTP, HTTPS, and FTP",
+      "install_id": "wget",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "wget-1.24.5",
+      "pname": "wget",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.24.5",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/knrmi1lxrymln482wgd3q8h0mnrhj9y8-wget-1.24.5"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "zlib",
+      "broken": false,
+      "derivation": "/nix/store/fny7x1ws2i89m2nwwcpiw099cnf2g6yh-zlib-1.3.1.drv",
+      "description": "Lossless data-compression library",
+      "install_id": "zlib",
+      "license": "Zlib",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "zlib-1.3.1",
+      "pname": "zlib",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.3.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/gyqlzy0hfw8wmh55pbgr9fb3bwvdplvg-zlib-1.3.1-dev",
+        "out": "/nix/store/9cpzwxa2fmkdl2da43968idffwfpcs53-zlib-1.3.1",
+        "static": "/nix/store/9fp56cx2yjicbabxx8xqyfkqrc90cxkp-zlib-1.3.1-static"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "zlib",
+      "broken": false,
+      "derivation": "/nix/store/8wyd2pm4kx2dchvy93296qqr4ihlxls0-zlib-1.3.1.drv",
+      "description": "Lossless data-compression library",
+      "install_id": "zlib",
+      "license": "Zlib",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "zlib-1.3.1",
+      "pname": "zlib",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.3.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/xbn2bdny04vypz0c70x7xvfwgz5s5r55-zlib-1.3.1-dev",
+        "out": "/nix/store/a2wdr217q0xk9yp6jgymlcp7v00ixbyn-zlib-1.3.1",
+        "static": "/nix/store/knia5xxr4nv5f222mwrwi53b7faiammh-zlib-1.3.1-static"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "zlib",
+      "broken": false,
+      "derivation": "/nix/store/aq14fjxkcy03fyx1r0nbjym4xp94x6s8-zlib-1.3.1.drv",
+      "description": "Lossless data-compression library",
+      "install_id": "zlib",
+      "license": "Zlib",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "zlib-1.3.1",
+      "pname": "zlib",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.3.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/rgwan1lscvgg5papznkzpdkvn6yrjys7-zlib-1.3.1-dev",
+        "out": "/nix/store/5z9nsxwrvq8pb8rn47ypx81cqd0s3dr9-zlib-1.3.1",
+        "static": "/nix/store/0sd2yz04sa64dc8fr17pnfln97immw35-zlib-1.3.1-static"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "zlib",
+      "broken": false,
+      "derivation": "/nix/store/fxz846h7jams5rbvqi6ba55qwqvw7b20-zlib-1.3.1.drv",
+      "description": "Lossless data-compression library",
+      "install_id": "zlib",
+      "license": "Zlib",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "zlib-1.3.1",
+      "pname": "zlib",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.3.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/0w4q8asq9sn56dl0sxp1m8gk4vy2ygs8-zlib-1.3.1-dev",
+        "out": "/nix/store/rqs1zrcncqz3966khjndg1183cpdnqxs-zlib-1.3.1",
+        "static": "/nix/store/9cb1kw8rpjdyb2789by8cxykn6ha6b1p-zlib-1.3.1-static"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}
