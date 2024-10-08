@@ -12,7 +12,9 @@ version = 1
 # hello.pkg-path = "hello"
 nodejs = { version = "20.17.0", pkg-path = "nodejs" }
 electron = { version = "32.1.2", pkg-path = "electron" }
+make.pkg-path = "gnumake"
 cmake.pkg-path = "cmake"
+gcc.pkg-path = "gcc"
 coreutils-prefixed.pkg-path = "coreutils-prefixed"
 wget.pkg-path = "wget"
 python3.pkg-path = "python3"

@@ -13,8 +13,14 @@
         "pkg-path": "electron",
         "version": "32.1.2"
       },
+      "gcc": {
+        "pkg-path": "gcc"
+      },
       "groff": {
         "pkg-path": "groff"
+      },
+      "make": {
+        "pkg-path": "gnumake"
       },
       "nodejs": {
         "pkg-path": "nodejs",
@@ -406,6 +412,134 @@
       "priority": 5
     },
     {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/rwh7zx7z0q53pcnkn83nwcwd9xn52g9b-gcc-wrapper-13.3.0.drv",
+      "description": "GNU Compiler Collection, version 13.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gcc-wrapper-13.3.0",
+      "pname": "gcc",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "wrapper-13.3.0",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/3mn8gjzcvvfsk479m5cxsx10jpzb9v4x-gcc-wrapper-13.3.0-info",
+        "man": "/nix/store/nrdgmwqxi8a6rj2nsrcdy5gfbbq1rkhn-gcc-wrapper-13.3.0-man",
+        "out": "/nix/store/h7fdr0l8vmg37xp2r11mr97v84d3jzxb-gcc-wrapper-13.3.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/jdkqf42vy69bcypd2m4x76xdrm57v8v3-gcc-wrapper-13.3.0.drv",
+      "description": "GNU Compiler Collection, version 13.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gcc-wrapper-13.3.0",
+      "pname": "gcc",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "wrapper-13.3.0",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/7pf64k2wnzjczmbh66dj0b4s5h4f9xc5-gcc-wrapper-13.3.0-info",
+        "man": "/nix/store/h3qn3115d4qj3m6radi1yp3k0xpqrmsr-gcc-wrapper-13.3.0-man",
+        "out": "/nix/store/q1bas0gp3flgciliddhcwbz3ps1pdnb2-gcc-wrapper-13.3.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/d6mkbik9ldkr6fq4lpzfnvjmrd176gs9-gcc-wrapper-13.3.0.drv",
+      "description": "GNU Compiler Collection, version 13.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gcc-wrapper-13.3.0",
+      "pname": "gcc",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "wrapper-13.3.0",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/8hj3abjm5ch5zckmvyvi3w8x8pjc9019-gcc-wrapper-13.3.0-info",
+        "man": "/nix/store/x1k5blc8f5ybsai7gi1k64li56473vwh-gcc-wrapper-13.3.0-man",
+        "out": "/nix/store/akas2ff33b54b30823ra5vhxwkibkxrv-gcc-wrapper-13.3.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/xlg144qrggr7dik60cwj315d1cyaiqrd-gcc-wrapper-13.3.0.drv",
+      "description": "GNU Compiler Collection, version 13.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gcc-wrapper-13.3.0",
+      "pname": "gcc",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "wrapper-13.3.0",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/325q6sb2v4w4azf9f0kv9040fawmbmq5-gcc-wrapper-13.3.0-info",
+        "man": "/nix/store/nfnxb85s44x712h6jmzl30jz3vragswr-gcc-wrapper-13.3.0-man",
+        "out": "/nix/store/zznja5f8v3jafffyah1rk46vpfcn38dv-gcc-wrapper-13.3.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "groff",
       "broken": false,
       "derivation": "/nix/store/s84kxjlbdyha3h416a4gybmk67dam038-groff-1.23.0.drv",
@@ -536,6 +670,136 @@
         "man": "/nix/store/j9d9ibvfjh9y8na7b764pmak45819nsv-groff-1.23.0-man",
         "out": "/nix/store/09b6cr56ygqx3s4dhw6323gzhqv1v5nn-groff-1.23.0",
         "perl": "/nix/store/7crxbz12f35743vs0c5nqjwscqz14jqy-groff-1.23.0-perl"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/sf5xahlr9cbk6sn3n954z3wym9q9fnj5-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "make",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/j755wklynl70bsffsmc72rqm0fg4y4dh-gnumake-4.4.1-info",
+        "man": "/nix/store/slxjfzk0mi14ffhiry1kx635yi3hrdsg-gnumake-4.4.1-man",
+        "out": "/nix/store/6mcdimq65bpmk4ccsbwk8zqqv0w57xki-gnumake-4.4.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/rgcvj9sy4bgyabdmg0jdmyrgb9jqwlpf-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "make",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "debug": "/nix/store/srjsvl0v6q5rr29ihsm8qad1mjdh5qv4-gnumake-4.4.1-debug",
+        "info": "/nix/store/qzd3k2d7f2gwz8cmvz3ddmxsvh6ax65b-gnumake-4.4.1-info",
+        "man": "/nix/store/yy4yzw27p2iw8vqhhqjw5dg2whl95dx0-gnumake-4.4.1-man",
+        "out": "/nix/store/b9hsc0cxnjpgr0ni8zjfa8yfx9k9icyf-gnumake-4.4.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/j4zqbdgybhbwq9lgndy9v5n7j0p3avd1-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "make",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "info": "/nix/store/5c2p60izk67sjlf86c1sp7pzpjh3qw8i-gnumake-4.4.1-info",
+        "man": "/nix/store/g3pmxslr6wpyw5pzarjc5rz8imh0wkx0-gnumake-4.4.1-man",
+        "out": "/nix/store/jzc62mfpsqx2k1ncmqs5awd7c1511hf3-gnumake-4.4.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/md9n6zgk7qnqv2ib4dnsy4rqnf91dqam-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "make",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=bc947f541ae55e999ffdb4013441347d83b00feb",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "bc947f541ae55e999ffdb4013441347d83b00feb",
+      "rev_count": 688563,
+      "rev_date": "2024-10-04T05:06:13Z",
+      "scrape_date": "2024-10-06T03:50:36Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "out",
+        "man"
+      ],
+      "outputs": {
+        "debug": "/nix/store/idisl8srk1khjm4jhmikqwiacy5gzb2p-gnumake-4.4.1-debug",
+        "info": "/nix/store/y1fmi86h3mr58s3yxjm65c3nnf5l5p9r-gnumake-4.4.1-info",
+        "man": "/nix/store/swbhqvfjkrk0xqqnbhax93psq8n1gynr-gnumake-4.4.1-man",
+        "out": "/nix/store/09vbil20hj3gn9lb3djvbglyki9jr3i6-gnumake-4.4.1"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
