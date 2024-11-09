@@ -39,7 +39,9 @@
     "vars": {
       "ELECTRON_SKIP_BINARY_DOWNLOAD": "1"
     },
-    "hook": {},
+    "hook": {
+      "on-activate": "  export ELECTRON_PATH=\"$(which electron)\"\n"
+    },
     "profile": {},
     "options": {
       "systems": [
