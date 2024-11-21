@@ -4,7 +4,7 @@ import { Curl } from '../../lib'
 describe('POST Request to API', () => {
   // UNSKIP TO RUN TEST - NOT ADDING TO CI PIPELINE UNTIL WE HAVE LOCAL REPRODUCIBLE SERVER
   // issue related to //SSL_CTX_set_options(sslctx, SSL_OP_IGNORE_UNEXPECTED_EOF);
-  it('should not fail with ssl error - version 1', (done) => {
+  it.skip('should not fail with ssl error - version 1', (done) => {
     const curl = new Curl()
 
     const postData = JSON.stringify({
@@ -50,7 +50,7 @@ describe('POST Request to API', () => {
 
     curl.perform()
   })
-  it('should not fail with ssl error - version 2', (done) => {
+  it.skip('should not fail with ssl error - version 2', (done) => {
     const curl = new Curl()
 
     const postData = JSON.stringify({})
