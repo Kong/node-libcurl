@@ -51,10 +51,10 @@ describe('DNS Resolution', () => {
   it('should resolve test.localhost to 127.0.0.1', (done) => {
     // skip this test if windows because it does not support *.localhost on hosts file?
     // https://stackoverflow.com/questions/138162/wildcards-in-a-windows-hosts-file/4166967#4166967
-    if (process.platform === 'win32') {
-      done()
-      return
-    }
+    // if (process.platform === 'win32') {
+    //   done()
+    //   return
+    // }
     curl.setOpt('URL', urlTestLocalhost)
 
     curl.on('end', (status, data) => {
