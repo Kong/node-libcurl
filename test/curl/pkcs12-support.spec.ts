@@ -6,13 +6,15 @@ import { Curl } from '../../lib'
 import express from 'express'
 
 const p12Path = path.resolve(__dirname, './example.p12')
+const p12ConvertedCrtPath = path.resolve(__dirname, './test-crt.crt')
+const p12ConvertedKeyPath = path.resolve(__dirname, './test-key.key')
 const p12Password = 'password123'
 const serverPort = 3000
 const baseUrl = `https://localhost:${serverPort}/`
 
 // Needs NODE_OPTIONS="--openssl-legacy-provider"
 
-describe('HTTPS Server support with old PKCS12 client certificate', () => {
+describe('PKCS12 client certificate support', () => {
   let curl: Curl
   let server: https.Server
 
@@ -64,11 +66,37 @@ describe('HTTPS Server support with old PKCS12 client certificate', () => {
     curl.close()
   })
 
-  it('should connect using client certificate and receive a valid response', (done) => {
+  it('using .p12 file + passphrase', (done) => {
     curl.setOpt('URL', baseUrl)
     curl.setOpt('SSLCERTTYPE', 'P12')
     curl.setOpt('SSLCERT', p12Path) // Set the path to the client certificate
     curl.setOpt('KEYPASSWD', p12Password) // Set the client certificate password
+
+    curl.on('end', (status, data) => {
+      if (status !== 200) {
+        throw new Error(`Invalid status code: ${status}`)
+      }
+      console.log('data:', data)
+      console.log('status:', status)
+
+      const response = data as string
+      response.should.be.equal('Secure server is running!')
+
+      done()
+    })
+
+    curl.on('error', (error) => {
+      console.error('error-2:', error)
+      done(error)
+    })
+    curl.perform()
+  })
+
+  it('using openssl legacy converted .crt and .key from .p12 file ', (done) => {
+    curl.setOpt('URL', baseUrl)
+    curl.setOpt('SSLKEY', p12ConvertedKeyPath)
+    curl.setOpt('SSLCERT', p12ConvertedCrtPath)
+    curl.setOpt('KEYPASSWD', p12Password)
 
     curl.on('end', (status, data) => {
       if (status !== 200) {
