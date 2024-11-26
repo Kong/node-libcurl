@@ -246,6 +246,7 @@ jobs:
       - name: Test
         run: |
           npm run ts-node -e "console.log(require('./lib').Curl.getVersionInfoString())"
+          $env:NODE_OPTIONS="--openssl-legacy-provider"
           npm run test
 
           if ($LASTEXITCODE -eq 0) {
@@ -289,6 +290,7 @@ jobs:
           npm ci
       - name: Test
         run: |
+          $env:NODE_OPTIONS="--openssl-legacy-provider"
           npm run test:electron
 
           if ($LASTEXITCODE -eq 0) {

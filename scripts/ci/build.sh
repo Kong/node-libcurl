@@ -362,10 +362,10 @@ fi
 
 if [ "$RUN_TESTS" == "true" ]; then
   if [ -n "$ELECTRON_VERSION" ]; then
-    [ $run_tests_electron == "true" ] && npm run test:electron || echo "Tests for this version of electron were disabled"
+    [ $run_tests_electron == "true" ] && NODE_OPTIONS="--openssl-legacy-provider" npm run test:electron || echo "Tests for this version of electron were disabled"
   else
     npx ts-node -e "console.log(require('./lib').Curl.getVersionInfoString())" || true
-    npm run test
+    NODE_OPTIONS="--openssl-legacy-provider" npm run test
   fi
 fi
 
