@@ -248,7 +248,6 @@ jobs:
           npm ci
       - name: Test
         run: |
-          $env:NODE_OPTIONS="--openssl-legacy-provider"
           npm run test:electron
 
           if ($LASTEXITCODE -eq 0) {
