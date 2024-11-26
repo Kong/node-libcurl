@@ -230,6 +230,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Apply enable-legacy-and-weak-cipher patch
+        shell: bash
+        run: |
+          pushd deps\curl-for-windows\curl
+          git apply --ignore-whitespace --reject --whitespace=fix --verbose ..\..\..\patches\enable-legacy-and-weak-cipher.patch
+          popd
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
@@ -274,6 +280,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Apply enable-legacy-and-weak-cipher patch
+        shell: bash
+        run: |
+          pushd deps\curl-for-windows\curl
+          git apply --ignore-whitespace --reject --whitespace=fix --verbose ..\..\..\patches\enable-legacy-and-weak-cipher.patch
+          popd
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:

@@ -1,0 +1,39 @@
+diff --git a/projects/build-openssl.bat b/projects/build-openssl.bat
+index 1d75444e35..b4439a01bf 100644
+--- a/projects/build-openssl.bat
++++ b/projects/build-openssl.bat
+@@ -387,7 +387,7 @@ rem
+         exit /B 1
+       )
+ 
+-      set options=!options! no-asm
++      set options=!options! no-asm enable-legacy enable-weak-ssl-ciphers
+     ) else if "%1" == "x64" (
+       if "%2" == "debug" (
+         set options=debug-VC-WIN64A
+@@ -396,6 +396,8 @@ rem
+       ) else (
+         exit /B 1
+       )
++
++      set options=!options! enable-legacy enable-weak-ssl-ciphers
+     ) else (
+       exit /B 1
+     )
+@@ -432,7 +434,7 @@ rem
+       exit /B 1
+     )
+ 
+-    set options=!options! no-asm
++    set options=!options! no-asm enable-legacy enable-weak-ssl-ciphers
+   ) else (
+     exit /B 1
+   )
+@@ -441,7 +443,6 @@ rem
+   perl "%SOURCE_PATH%\Configure" %options% "--prefix=%TMP_INSTALL_PATH%"
+ 
+   exit /B %ERRORLEVEL%
+-
+ rem Main build function.
+ rem
+ rem %1 - Platform (x86 or x64)
