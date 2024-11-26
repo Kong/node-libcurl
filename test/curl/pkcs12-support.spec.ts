@@ -72,10 +72,6 @@ describe('PKCS12 client certificate support', () => {
     curl.setOpt('SSLCERT', p12Path) // Set the path to the client certificate
     curl.setOpt('KEYPASSWD', p12Password) // Set the client certificate password
 
-    curl.on('debug', (type, data) => {
-      console.log(`Debug info [${type}]:`, data.toString('utf8'))
-    })
-
     curl.on('end', (status, data) => {
       if (status !== 200) {
         throw new Error(`Invalid status code: ${status}`)
