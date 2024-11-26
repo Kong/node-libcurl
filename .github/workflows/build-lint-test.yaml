@@ -233,8 +233,8 @@ jobs:
       - name: Apply enable-legacy-and-weak-cipher patch
         shell: bash
         run: |
-          pushd deps\curl-for-windows\curl
-          git apply --ignore-whitespace --reject --whitespace=fix --verbose ..\..\..\patches\enable-legacy-and-weak-cipher.patch
+          pushd deps/curl-for-windows/curl
+          git apply --ignore-whitespace --reject --whitespace=fix --verbose ../../../patches/enable-legacy-and-weak-cipher.patch
           popd
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
@@ -283,8 +283,8 @@ jobs:
       - name: Apply enable-legacy-and-weak-cipher patch
         shell: bash
         run: |
-          pushd deps\curl-for-windows\curl
-          git apply --ignore-whitespace --reject --whitespace=fix --verbose ..\..\..\patches\enable-legacy-and-weak-cipher.patch
+          pushd deps/curl-for-windows/curl
+          git apply --ignore-whitespace --reject --whitespace=fix --verbose ../../../patches/enable-legacy-and-weak-cipher.patch
           popd
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
