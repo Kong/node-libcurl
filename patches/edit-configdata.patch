@@ -1,0 +1,154 @@
+diff --git a/openssl/config/archs/VC-WIN32/asm/configdata.pm b/openssl/config/archs/VC-WIN32/asm/configdata.pm
+index b92aa414..01cdeb8c 100644
+--- a/openssl/config/archs/VC-WIN32/asm/configdata.pm
++++ b/openssl/config/archs/VC-WIN32/asm/configdata.pm
+@@ -215,7 +215,7 @@ our %config = (
+         "OPENSSL_SYS_WIN32"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -226,6 +226,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "VC-WIN32"
+     ],
+     "perlenv" => {
+diff --git a/openssl/config/archs/VC-WIN32/asm_avx2/configdata.pm b/openssl/config/archs/VC-WIN32/asm_avx2/configdata.pm
+index 965208f4..d6ffd5ba 100644
+--- a/openssl/config/archs/VC-WIN32/asm_avx2/configdata.pm
++++ b/openssl/config/archs/VC-WIN32/asm_avx2/configdata.pm
+@@ -215,7 +215,7 @@ our %config = (
+         "OPENSSL_SYS_WIN32"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -226,6 +226,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "VC-WIN32"
+     ],
+     "perlenv" => {
+diff --git a/openssl/config/archs/VC-WIN32/no-asm/configdata.pm b/openssl/config/archs/VC-WIN32/no-asm/configdata.pm
+index 99a63a73..6165ea9e 100644
+--- a/openssl/config/archs/VC-WIN32/no-asm/configdata.pm
++++ b/openssl/config/archs/VC-WIN32/no-asm/configdata.pm
+@@ -214,7 +214,7 @@ our %config = (
+         "OPENSSL_SYS_WIN32"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -225,6 +225,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "no-asm",
+         "VC-WIN32"
+     ],
+diff --git a/openssl/config/archs/VC-WIN64-ARM/no-asm/configdata.pm b/openssl/config/archs/VC-WIN64-ARM/no-asm/configdata.pm
+index de7d68a1..130ad437 100644
+--- a/openssl/config/archs/VC-WIN64-ARM/no-asm/configdata.pm
++++ b/openssl/config/archs/VC-WIN64-ARM/no-asm/configdata.pm
+@@ -212,7 +212,7 @@ our %config = (
+     ],
+     "openssl_sys_defines" => [],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -223,6 +223,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "no-asm",
+         "VC-WIN64-ARM"
+     ],
+diff --git a/openssl/config/archs/VC-WIN64A/asm/configdata.pm b/openssl/config/archs/VC-WIN64A/asm/configdata.pm
+index 00b5f1d8..6370228a 100644
+--- a/openssl/config/archs/VC-WIN64A/asm/configdata.pm
++++ b/openssl/config/archs/VC-WIN64A/asm/configdata.pm
+@@ -218,7 +218,7 @@ our %config = (
+         "OPENSSL_SYS_WIN64A"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -229,6 +229,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "VC-WIN64A"
+     ],
+     "perlenv" => {
+diff --git a/openssl/config/archs/VC-WIN64A/asm_avx2/configdata.pm b/openssl/config/archs/VC-WIN64A/asm_avx2/configdata.pm
+index af8cb890..8a48573c 100644
+--- a/openssl/config/archs/VC-WIN64A/asm_avx2/configdata.pm
++++ b/openssl/config/archs/VC-WIN64A/asm_avx2/configdata.pm
+@@ -218,7 +218,7 @@ our %config = (
+         "OPENSSL_SYS_WIN64A"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -229,6 +229,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "VC-WIN64A"
+     ],
+     "perlenv" => {
+diff --git a/openssl/config/archs/VC-WIN64A/no-asm/configdata.pm b/openssl/config/archs/VC-WIN64A/no-asm/configdata.pm
+index dcc24865..d8014608 100644
+--- a/openssl/config/archs/VC-WIN64A/no-asm/configdata.pm
++++ b/openssl/config/archs/VC-WIN64A/no-asm/configdata.pm
+@@ -217,7 +217,7 @@ our %config = (
+         "OPENSSL_SYS_WIN64A"
+     ],
+     "openssldir" => "",
+-    "options" => "enable-ssl-trace enable-fips no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
++    "options" => "enable-ssl-trace enable-fips enable-legacy enable-weak-ssl-ciphers no-afalgeng no-asan no-asm no-buildtest-c++ no-comp no-crypto-mdebug no-crypto-mdebug-backtrace no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-msan no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+     "patch" => "7",
+     "perl_archname" => "x86_64-linux-gnu-thread-multi",
+     "perl_cmd" => "/usr/bin/perl",
+@@ -228,6 +228,8 @@ our %config = (
+         "no-afalgeng",
+         "enable-ssl-trace",
+         "enable-fips",
++        "enable-legacy",
++        "enable-weak-ssl-ciphers",
+         "no-asm",
+         "VC-WIN64A"
+     ],
