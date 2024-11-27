@@ -1,0 +1,55 @@
+diff --git a/projects/build-openssl.bat b/projects/build-openssl.bat
+index f1ebbddbd6..81ec8ebb82 100644
+--- a/projects/build-openssl.bat
++++ b/projects/build-openssl.bat
+@@ -280,13 +280,13 @@ rem ***************************************************************************
+     call :install debug static %LEGACY_BUILD%
+ 
+     rem Configuring 64-bit Shared Library Debug Build
+-    call :configure x64 debug shared %LEGACY_BUILD%
++    call :configure x64 no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the build
+-    call :build x64 shared %LEGACY_BUILD%
++    call :build x64 no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the install
+-    call :install debug shared %LEGACY_BUILD%
++    call :install no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+   )
+ 
+   if not "%BUILD_CONFIG%" == "debug" (
+@@ -300,13 +300,13 @@ rem ***************************************************************************
+     call :install release static %LEGACY_BUILD%
+ 
+     rem Configuring 64-bit Shared Library Release Build
+-    call :configure x64 release shared %LEGACY_BUILD%
++    call :configure x64 release no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the build
+-    call :build x64 shared %LEGACY_BUILD%
++    call :build x64 no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the install
+-    call :install release shared %LEGACY_BUILD%
++    call :install release no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+   )
+ 
+   goto success
+@@ -327,13 +327,13 @@ rem ***************************************************************************
+     call :install debug static %LEGACY_BUILD%
+ 
+     rem Configuring 32-bit Shared Library Debug Build
+-    call :configure x86 debug shared %LEGACY_BUILD%
++    call :configure x86 no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the build
+-    call :build x86 shared %LEGACY_BUILD%
++    call :build x86 no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+ 
+     rem Perform the install
+-    call :install debug shared %LEGACY_BUILD%
++    call :install no-tests no-shared enable-legacy enable-weak-ssl-ciphers %LEGACY_BUILD%
+   )
+ 
+   if not "%BUILD_CONFIG%" == "debug" (
