@@ -6,14 +6,14 @@ on:
     branches:
     - develop
     tags:
-    - '*'  
+    - '*'
   workflow_dispatch: {}
 
 
 jobs:
   semgrep:
     name: Semgrep SAST
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       # required for all workflows
       security-events: write
