@@ -1,0 +1,29 @@
+name: List OpenSSL Providers and Ciphers
+on:
+  pull_request:
+
+jobs:
+  openssl-info:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-13-xlarge, ubuntu-latest]
+    env:
+      OPENSSL_CMD: openssl
+    steps:
+      - name: Set OpenSSL command for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "OPENSSL_CMD='openssl.exe'" >> $GITHUB_ENV
+
+      - name: List OpenSSL version
+        shell: bash
+        run: $OPENSSL_CMD version
+
+      - name: List OpenSSL providers
+        shell: bash
+        run: $OPENSSL_CMD list -providers
+
+      - name: List OpenSSL ciphers
+        shell: bash
+        run: $OPENSSL_CMD ciphers
