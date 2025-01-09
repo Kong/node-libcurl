@@ -41,7 +41,7 @@
     "gen:compile_commands:debug": "npm run pregyp -- configure --debug -- --format=\"gyp.generator.compile_commands_json.py\"",
     "gen:compile_commands:release": "npm run pregyp -- configure --release -- --format=\"gyp.generator.compile_commands_json.py\"",
     "gen:constants": "node scripts/build-constants.js",
-    "install": "node-pre-gyp install --fallback-to-build",
+    "install": "node scripts/nan-patch && node-pre-gyp install --fallback-to-build",
     "postinstall": "node scripts/postinstall",
     "lint": "eslint lib/ scripts/ test/ examples/",
     "pregyp": "node-pre-gyp",
