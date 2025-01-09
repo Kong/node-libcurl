@@ -58,7 +58,7 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "br0p0p/node-pre-gyp#replace-npmlog",
     "env-paths": "2.2.0",
-    "nan": "2.20.0",
+    "nan": "2.21.0",
     "node-gyp": "10.2.0",
     "rimraf": "^3.0.2",
     "tslib": "2.0.1"
