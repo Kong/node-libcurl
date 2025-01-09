@@ -365,12 +365,12 @@ dist_url = https://atom.io/download/atom-shell
 
 #### Electron >= 11
 
-If you are building for Electron >= 11  you need to set the build process to use the C++17 std, you can do that by passing the variable `node_libcurl_cpp_std=c++17`.
+If you are building for Electron >= 11  you need to set the build process to use the C++17 std, you can do that by passing the variable `node_libcurl_cpp_std=c++20`.
 
 > If using `npm`:
 
 ```sh
-npm install node-libcurl --build-from-source --node_libcurl_cpp_std=c++17
+npm install node-libcurl --build-from-source --node_libcurl_cpp_std=c++20
 ```
 
 ### Building on Linux
