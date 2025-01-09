@@ -339,14 +339,7 @@ echo "node-gyp version: $(npm ls node-gyp -g)"
 # https://github.com/nodejs/node-gyp/blob/main/docs/Updating-npm-bundled-node-gyp.md
 # npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@10.2.0
 
-
-
-
 npm ci
-
-# patch nan.h https://github.com/nodejs/nan/issues/978
-sed 's/^#include .nan_scriptorigin\.h./\/\/ #include nan_scriptorigin.h/' ./node_modules/nan/nan.h > ./node_modules/nan/nan.h.new && mv ./node_modules/nan/nan.h.new ./node_modules/nan/nan.h
-
 
 echo "node-gyp version: $(npm ls node-gyp -g)"
 
