@@ -75,7 +75,7 @@ jobs:
         run: cat run_result 2>/dev/null || echo 'default'
       - if: runner.os == 'macOS'
         name: Install Needed packages on macOS
-        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf@2.69 groff
+        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf groff
       - if: runner.os == 'Linux'
         name: Install Needed packages on Linux
         run: sudo apt-get install -y cmake
@@ -168,7 +168,7 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install Needed packages
-        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf@2.69 groff
+        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf groff
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Node
