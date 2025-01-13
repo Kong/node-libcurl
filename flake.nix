@@ -12,6 +12,7 @@
         (system:
           let
             pkgs = nixpkgs.legacyPackages.${system};
+            unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
           in
           pkgs.mkShell {
             buildInputs = [
@@ -29,8 +30,8 @@
             ];
 
             packages = [
-
             ];
+            ELECTRON_PATH = "${unstable.electron_33}/bin/electron";
             ELECTRON_SKIP_BINARY_DOWNLOAD = 1;
             LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib64:$LD_LIBRARY_PATH";
           });
