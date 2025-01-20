@@ -42,6 +42,7 @@ jobs:
         os:
           - macos-13-xlarge
           - ubuntu-22.04
+          - ubuntu-22.04-arm
         libcurl-release:
           - 7.86.0
         node-libcurl-cpp-std:
@@ -140,6 +141,7 @@ jobs:
         os:
           - macos-13-xlarge
           - ubuntu-22.04
+          - ubuntu-22.04-arm
         libcurl-release:
           - 7.86.0
         node:
