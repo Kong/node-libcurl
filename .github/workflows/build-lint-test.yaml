@@ -17,7 +17,7 @@ jobs:
     permissions:
       packages: write
       contents: write # publish sbom to GH releases/tag assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,6 +42,7 @@ jobs:
         os:
           - macos-13-xlarge
           - ubuntu-22.04
+          - ubuntu-22.04-arm
         libcurl-release:
           - 7.86.0
         node-libcurl-cpp-std:
@@ -50,7 +51,7 @@ jobs:
           - 20.18.0
         include:
           # Lint
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             node: 20.18.0
             node-libcurl-cpp-std: c++20
             libcurl-release: 7.86.0
@@ -103,6 +104,7 @@ jobs:
           RUN_TESTS=false \
           RUN_PREGYP_CLEAN=false \
           PUBLISH_BINARY=false \
+          TARGET_ARCH=${{ matrix.os=='ubuntu-22.04-arm' && 'arm' || 'x64' }} \
             ./scripts/ci/build.sh
       - name: 'Run lint'
         if: matrix.run-lint-and-tsc && steps.run_result.outputs.run_result != 'success'
@@ -140,6 +142,7 @@ jobs:
         os:
           - macos-13-xlarge
           - ubuntu-22.04
+          - ubuntu-22.04-arm
         libcurl-release:
           - 7.86.0
         node:
@@ -204,6 +207,8 @@ jobs:
           RUN_TESTS=true \
           RUN_PREGYP_CLEAN=false \
           PUBLISH_BINARY=false \
+          PUBLISH_BINARY=false \
+          TARGET_ARCH=${{ matrix.os=='ubuntu-22.04-arm' && 'arm' || 'x64' }} \
             ./scripts/ci/build.sh
       - name: Upload artifacts
         if: always() && steps.run_result.outputs.run_result != 'success'

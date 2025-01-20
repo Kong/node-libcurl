@@ -22,7 +22,7 @@ jobs:
     permissions:
       packages: write
       contents: write # publish sbom to GH releases/tag assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
