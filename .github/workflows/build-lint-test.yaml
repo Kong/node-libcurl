@@ -1,13 +1,12 @@
 name: build-lint-test
 
-on:
-  pull_request:
+on: [push, workflow_dispatch]
 
 env:
   LIBCURL_RELEASE: 'LATEST'
 
 concurrency:
-  group: ${{ github.head_ref }}
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 # all jobs here must have a matrix identical to the ones inside build-and-release.yaml
@@ -95,9 +94,9 @@ jobs:
           path: |
             ~/.node-gyp
             ~/deps
-          key: v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}
+          key: v4-build-lint-test-${{ matrix.os }}-libcurl-deps-cache-node-${{ matrix.node }}
           restore-keys: |
-            v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-node-${{ matrix.node }}
+            v4-build-lint-test-${{ matrix.os }}-libcurl-deps-cache-node-${{ matrix.node }}
       - name: Build node-libcurl ${{ matrix.node }}
         if: steps.run_result.outputs.run_result != 'success'
         run: |
@@ -184,10 +183,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/electron
-          key: v1-${{ runner.os }}-electron-cache-${{ matrix.electron-version }}
+          key: v1-${{ matrix.os }}-electron-cache-${{ matrix.electron-version }}
           restore-keys: |
-            v1-${{ runner.os }}-electron-cache-${{ matrix.electron-version }}
-            v1-${{ runner.os }}-electron-cache-
+            v1-${{ matrix.os }}-electron-cache-${{ matrix.electron-version }}
+            v1-${{ matrix.os }}-electron-cache-
       - name: Restore libcurl deps cache
         uses: actions/cache@v4
         id: libcurl-deps-cache
@@ -195,9 +194,9 @@ jobs:
           path: |
             ~/.node-gyp
             ~/deps
-          key: v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
+          key: v4-build-lint-test-${{ matrix.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
           restore-keys: |
-            v4-build-lint-test-${{ runner.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
+            v4-build-lint-test-${{ matrix.os }}-libcurl-deps-cache-electron-${{ matrix.electron-version }}
       - name: 'Set GIT_TAG'
         if: startsWith(github.ref, 'refs/tags')
         run: echo "GIT_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
