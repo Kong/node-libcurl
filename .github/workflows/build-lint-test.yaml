@@ -6,7 +6,7 @@ env:
   LIBCURL_RELEASE: 'LATEST'
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.head_ref }}
   cancel-in-progress: true
 
 # all jobs here must have a matrix identical to the ones inside build-and-release.yaml
