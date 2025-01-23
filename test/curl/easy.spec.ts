@@ -66,7 +66,6 @@ describe('easy', () => {
         'Return value from the HEADER callback must be an integer.',
       )
     })
-    // Below tests are skipped because we don't yet have an explanation why recent changes to github actions are causing them to fail
     it('READFUNCTION - should rethrow error', () => {
       curl.setOpt('UPLOAD', true)
       // @ts-ignore
