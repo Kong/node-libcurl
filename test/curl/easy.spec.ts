@@ -8,7 +8,7 @@ import 'should'
 
 import { Curl, CurlCode, Easy } from '../../lib'
 
-const url = 'http://example.com/'
+const url = 'http://httpbin.org/put'
 
 // This is the only test that does not uses a express server
 // It makes a request to a live server, which can cause issues if there are network problems
@@ -67,7 +67,7 @@ describe('easy', () => {
       )
     })
     // Below tests are skipped because we don't yet have an explanation why recent changes to github actions are causing them to fail
-    it.skip('READFUNCTION - should rethrow error', () => {
+    it('READFUNCTION - should rethrow error', () => {
       curl.setOpt('UPLOAD', true)
       // @ts-ignore
       curl.setOpt('READFUNCTION', () => {
@@ -76,7 +76,7 @@ describe('easy', () => {
       const perform = () => curl.perform()
       perform.should.throw('Error thrown on callback')
     })
-    it.skip('READFUNCTION - should throw error if has invalid return type', () => {
+    it('READFUNCTION - should throw error if has invalid return type', () => {
       curl.setOpt('UPLOAD', true)
       // @ts-ignore
       curl.setOpt('READFUNCTION', () => {
@@ -89,7 +89,7 @@ describe('easy', () => {
     })
 
     if (Curl.isVersionGreaterOrEqualThan(7, 64, 0)) {
-      it.skip('TRAILERFUNCTION - should rethrow error', () => {
+      it('TRAILERFUNCTION - should rethrow error', () => {
         curl.setOpt('UPLOAD', true)
         curl.setOpt('HTTPHEADER', ['x-random-header: random-value'])
         // @ts-ignore
@@ -107,7 +107,7 @@ describe('easy', () => {
         const perform = () => curl.perform()
         perform.should.throw('Error thrown on callback')
       })
-      it.skip('TRAILERFUNCTION - should throw error if has invalid return type', () => {
+      it('TRAILERFUNCTION - should throw error if has invalid return type', () => {
         curl.setOpt('UPLOAD', true)
         curl.setOpt('HTTPHEADER', ['x-random-header: random-value'])
         // @ts-ignore
