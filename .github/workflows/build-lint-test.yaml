@@ -238,6 +238,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: |
           choco install nasm -y
@@ -281,6 +283,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: |
           choco install nasm -y
