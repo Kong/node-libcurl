@@ -64,7 +64,7 @@ jobs:
     steps:
       - if: runner.os == 'macOS'
         name: Install Needed packages on macOS
-        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf groff
+        run: brew install coreutils automake libtool cmake gnu-sed m4 autoconf groff
       - if: runner.os == 'Linux'
         name: Install Needed packages on Linux
         run: sudo apt-get install -y cmake
@@ -128,7 +128,7 @@ jobs:
     steps:
       - if: runner.os == 'macOS'
         name: Install Needed packages
-        run: brew install coreutils wget automake libtool cmake gnu-sed m4 autoconf groff
+        run: brew install coreutils automake libtool cmake gnu-sed m4 autoconf groff
       - if: runner.os == 'Linux'
         name: Install Needed packages on Linux
         run: sudo apt-get install -y cmake
