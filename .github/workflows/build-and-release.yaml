@@ -73,7 +73,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Restore libcurl deps cache
@@ -137,7 +137,7 @@ jobs:
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Restore Electron Cache
