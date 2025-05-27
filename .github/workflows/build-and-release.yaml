@@ -12,16 +12,6 @@ on:
     branches:
       - develop
 
-env:
-  NODE_LIBCURL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NODE_VERSION: $(cat .node-version)
-  ELECTRON_VERSION: $(cat .electron-version)
-  LIBCURL_VERSION: $(cat .libcurl-version)
-  LIBCURL_RELEASE: $(cat .libcurl-version)
-  LATEST_LIBCURL_RELEASE: $(cat .libcurl-version)
-  NODE_LIBCURL_CPP_STD: c++20
-  npm_config_target: $(cat .electron-version)
-
 # all jobs here must have a matrix identical to the ones inside build-lint-test.yaml
 
 jobs:
@@ -46,8 +36,37 @@ jobs:
         with:
           dir: ${{ github.repository }}
           upload-sbom-release-assets: true
-
+      setup:
+        runs-on: ubuntu-22.04
+        outputs:
+          NODE_VERSION: ${{ steps.set-versions.outputs.NODE_VERSION }}
+          ELECTRON_VERSION: ${{ steps.set-versions.outputs.ELECTRON_VERSION }}
+          LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LIBCURL_RELEASE }}
+          LATEST_LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LATEST_LIBCURL_RELEASE }}
+          NODE_LIBCURL_CPP_STD: ${{ steps.set-versions.outputs.NODE_LIBCURL_CPP_STD }}
+          npm_config_target: ${{ steps.set-versions.outputs.npm_config_target }}
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+    
+          - name: Read .node-version
+            id: set-versions
+            run: |
+              NODE_VERSION=$(cat .node-version)
+              ELECTRON_VERSION=$(cat .electron-version)
+              LIBCURL_RELEASE=$(cat .libcurl-version)
+              LATEST_LIBCURL_RELEASE=$(cat .libcurl-version)
+              NODE_LIBCURL_CPP_STD=c++20
+              npm_config_target=$(cat .electron-version)
+              echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_OUTPUT
+              echo "ELECTRON_VERSION=$ELECTRON_VERSION" >> $GITHUB_OUTPUT
+              echo "LIBCURL_RELEASE=$LIBCURL_RELEASE" >> $GITHUB_OUTPUT
+              echo "LATEST_LIBCURL_RELEASE=$LATEST_LIBCURL_RELEASE" >> $GITHUB_OUTPUT
+              echo "NODE_LIBCURL_CPP_STD=$NODE_LIBCURL_CPP_STD" >> $GITHUB_OUTPUT
+              echo "npm_config_target=$npm_config_target" >> $GITHUB_OUTPUT
+        
   build-and-release-nodejs:
+    needs: setup
     permissions: write-all
     runs-on: ${{ matrix.os }}
     strategy:
@@ -57,7 +76,12 @@ jobs:
           - macos-13-xlarge
           - ubuntu-22.04
           - ubuntu-22.04-arm
-
+    env:
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - if: runner.os == 'macOS'
         name: Install Needed packages on macOS
@@ -102,6 +126,7 @@ jobs:
           retention-days: 5
 
   build-and-release-electron:
+    needs: setup
     permissions: write-all
     runs-on: ${{ matrix.os }}
     strategy:
@@ -111,6 +136,12 @@ jobs:
           - macos-13-xlarge
           - ubuntu-22.04
           - ubuntu-22.04-arm
+    env:
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - if: runner.os == 'macOS'
         name: Install Needed packages
@@ -162,11 +193,17 @@ jobs:
           retention-days: 5
 
   build-and-release-nodejs-windows:
+    needs: setup
     permissions: write-all
     runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -201,6 +238,7 @@ jobs:
           node scripts\module-packaging.js --publish $(npm run -s pregyp reveal staged_tarball --silent)
 
   build-and-release-electron-windows:
+    needs: setup
     permissions: write-all
     runs-on: windows-latest
     env:
@@ -208,6 +246,12 @@ jobs:
       npm_config_build_from_source: true
       npm_config_runtime: 'electron'
       npm_config_dist_url: 'https://electronjs.org/headers'
+    env:
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
