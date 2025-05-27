@@ -54,6 +54,7 @@ jobs:
           echo "npm_config_target=$npm_config_target" >> $GITHUB_OUTPUT
 
   build-and-test-nodejs:
+    needs: setup
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -63,11 +64,11 @@ jobs:
           - ubuntu-22.04
           - ubuntu-22.04-arm
     env:
-      NODE_VERSION: $(cat .node-version)
-      ELECTRON_VERSION: $(cat .electron-version)
-      LIBCURL_RELEASE: $(cat .libcurl-version)
-      LATEST_LIBCURL_RELEASE: $(cat .libcurl-version)
-      NODE_LIBCURL_CPP_STD: c++20
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - id: timestamp
         run: echo "timestamp=$(timestamp +%s)" >> $GITHUB_OUTPUT
@@ -141,6 +142,7 @@ jobs:
       - run: echo "::set-output name=run_result::success" > run_result
 
   build-and-test-electron:
+    needs: setup
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -150,11 +152,11 @@ jobs:
           - ubuntu-22.04
           - ubuntu-22.04-arm
     env:
-      NODE_VERSION: $(cat .node-version)
-      ELECTRON_VERSION: $(cat .electron-version)
-      LIBCURL_RELEASE: $(cat .libcurl-version)
-      LATEST_LIBCURL_RELEASE: $(cat .libcurl-version)
-      NODE_LIBCURL_CPP_STD: c++20
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - id: timestamp
         run: echo "timestamp=$(timestamp +%s)" >> $GITHUB_OUTPUT
@@ -223,15 +225,16 @@ jobs:
       - run: echo "::set-output name=run_result::success" > run_result
 
   build-and-test-nodejs-windows:
+    needs: setup
     runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
-      NODE_VERSION: $(cat .node-version)
-      ELECTRON_VERSION: $(cat .electron-version)
-      LIBCURL_RELEASE: $(cat .libcurl-version)
-      LATEST_LIBCURL_RELEASE: $(cat .libcurl-version)
-      NODE_LIBCURL_CPP_STD: c++20
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -260,18 +263,19 @@ jobs:
           }
 
   build-and-test-electron-windows:
+    needs: setup
     runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
       npm_config_runtime: 'electron'
       npm_config_dist_url: 'https://electronjs.org/headers'
-      NODE_VERSION: $(cat .node-version)
-      ELECTRON_VERSION: $(cat .electron-version)
-      LIBCURL_RELEASE: $(cat .libcurl-version)
-      LATEST_LIBCURL_RELEASE: $(cat .libcurl-version)
-      NODE_LIBCURL_CPP_STD: c++20
-      npm_config_target: $(cat .electron-version)
+      npm_config_target: ${{ needs.setup.outputs.NODE_VERSION }}
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
