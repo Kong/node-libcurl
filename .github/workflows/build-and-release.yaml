@@ -78,7 +78,6 @@ jobs:
           - ubuntu-22.04-arm
     env:
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
-      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
       LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
@@ -200,7 +199,6 @@ jobs:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
-      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
       LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
