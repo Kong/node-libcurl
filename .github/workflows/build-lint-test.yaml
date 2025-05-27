@@ -32,13 +32,18 @@ jobs:
   setup:
     runs-on: ubuntu-22.04
     outputs:
-      NODE_VERSION: ${{ steps.set-node-version.outputs.NODE_VERSION }}
+      NODE_VERSION: ${{ steps.set-versions.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ steps.set-versions.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ steps.set-versions.outputs.NODE_LIBCURL_CPP_STD }}
+      npm_config_target: ${{ steps.set-versions.outputs.npm_config_target }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Read .node-version
-        id: set-node-version
+        id: set-versions
         run: |
           NODE_VERSION=$(cat .node-version)
           ELECTRON_VERSION=$(cat .electron-version)
