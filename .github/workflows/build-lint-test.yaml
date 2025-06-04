@@ -273,12 +273,12 @@ jobs:
       npm_config_build_from_source: true
       npm_config_runtime: 'electron'
       npm_config_dist_url: 'https://electronjs.org/headers'
-      npm_config_target: ${{ steps.set-versions.outputs.npm_config_target }}
-      NODE_VERSION: ${{ steps.set-versions.outputs.NODE_VERSION }}
-      ELECTRON_VERSION: ${{ steps.set-versions.outputs.ELECTRON_VERSION }}
-      LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LIBCURL_RELEASE }}
-      LATEST_LIBCURL_RELEASE: ${{ steps.set-versions.outputs.LATEST_LIBCURL_RELEASE }}
-      NODE_LIBCURL_CPP_STD: ${{ steps.set-versions.outputs.NODE_LIBCURL_CPP_STD }}
+      npm_config_target: ${{ needs.setup.outputs.npm_config_target }}
+      NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
+      ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
+      LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
+      LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
+      NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
