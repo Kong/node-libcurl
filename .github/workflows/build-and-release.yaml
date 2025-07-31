@@ -5,12 +5,7 @@
 
 name: build-and-release
 
-on:
-  push:
-    tags:
-      - '*'
-    branches:
-      - develop
+on: push
 
 # all jobs here must have a matrix identical to the ones inside build-lint-test.yaml
 
