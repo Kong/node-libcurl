@@ -143,6 +143,7 @@ jobs:
           retention-days: 5
 
   build-and-release-electron:
+    if: false
     needs: setup
     permissions: write-all
     runs-on: ${{ matrix.os }}
@@ -231,6 +232,7 @@ jobs:
           retention-days: 5
 
   build-and-release-nodejs-windows:
+    if: false
     needs: setup
     permissions: write-all
     runs-on: windows-latest
@@ -281,6 +283,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-release-electron-windows:
+    if: false
     needs: setup
     permissions: write-all
     runs-on: windows-latest
