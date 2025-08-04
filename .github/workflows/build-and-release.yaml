@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ github.repository }}
+          fetch-depth: 0
 
       # Perform SCA analysis for the code repository
       # Produces SBOM and CVE report
