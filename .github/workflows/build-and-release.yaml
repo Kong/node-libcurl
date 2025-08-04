@@ -182,6 +182,9 @@ jobs:
       - name: 'Publish Binary'
         if: runner.os != 'macOS'
         run: |
+          pwd
+          git remote -v
+          git describe --tags
           gh release upload --clobber "$(git describe --tags --abbrev=0)" \
           "$(npm run --silent pregyp reveal staged_tarball --silent)"
         env:
@@ -189,6 +192,9 @@ jobs:
       - name: 'Publish Mac Binary'
         if: runner.os == 'macOS'
         run: |
+          pwd
+          git remote -v
+          git describe --tags
           gh release upload --clobber "$(git describe --tags --abbrev=0)" \
           "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
         env:
