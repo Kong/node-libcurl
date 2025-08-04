@@ -185,14 +185,14 @@ jobs:
           gh release upload --clobber "$(git describe --tags --abbrev=0)" \
           "$(npm run --silent pregyp reveal staged_tarball --silent)"
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish Mac Binary'
         if: runner.os == 'macOS'
         run: |
           gh release upload --clobber "$(git describe --tags --abbrev=0)" \
           "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
