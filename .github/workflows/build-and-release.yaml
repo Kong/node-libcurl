@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ github.repository }}
-          fetch-depth: 0
+          # fetch-depth: 0
 
       # Perform SCA analysis for the code repository
       # Produces SBOM and CVE report
@@ -186,7 +186,7 @@ jobs:
           pwd
           git remote -v
           git describe --tags
-          gh release upload --clobber "$(git describe --tags --abbrev=0)" \
+          gh release upload --clobber v2.36.12 \
           "$(npm run --silent pregyp reveal staged_tarball --silent)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -196,7 +196,7 @@ jobs:
           pwd
           git remote -v
           git describe --tags
-          gh release upload --clobber "$(git describe --tags --abbrev=0)" \
+          gh release upload --clobber v2.36.12 \
           "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
