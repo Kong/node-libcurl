@@ -202,22 +202,22 @@ jobs:
       - name: 'Publish Binary'
         if: runner.os != 'macOS'
         run: |
-          gh release upload --clobber v2.36.12 \
-          "$(cat ./package.txt)"
+          gh release upload v2.36.12 \
+          "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
-          gh release upload --clobber v2.36.12 \
-          "$(cat ./package_x64.txt)"
+          gh release upload v2.36.12 \
+          "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
-          gh release upload --clobber v2.36.12 \
-          "$(cat ./package_arm64.txt)"
+          gh release upload v2.36.12 \
+          "$(cat ./package_arm64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
