@@ -373,6 +373,8 @@ if [ "$RUN_TESTS" == "true" ]; then
   fi
 fi
 
+echo "=== node version: $(node -v)"
+
 # # If we are here, it means the addon worked
 # # Check if we need to publish the binaries
 # if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]]; then
