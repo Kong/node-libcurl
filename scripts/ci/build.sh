@@ -384,14 +384,17 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
     # --
     # Publish x64 package
     npm_config_target_arch=x64 npm run pregyp package testpackage --verbose
+    npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent>package_x64.txt
     # npm_config_target_arch=x64 node scripts/module-packaging.js --publish \
     #   "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
     # Publish arm64 package.
     npm_config_target_arch=arm64 npm run pregyp package --verbose  # Can't testpackage for arm64 yet.
+    npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent>package_arm64.txt
     # npm_config_target_arch=arm64 node scripts/module-packaging.js --publish \
     #   "$(npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent)"
   else
     npm run pregyp package testpackage --verbose
+    npm run --silent pregyp reveal staged_tarball --silent>package.txt
     # node scripts/module-packaging.js --publish "$(npm run --silent pregyp reveal staged_tarball --silent)"
   fi
 fi

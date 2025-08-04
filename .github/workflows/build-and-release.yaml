@@ -184,25 +184,22 @@ jobs:
         if: runner.os != 'macOS'
         run: |
           gh release upload --clobber v2.36.12 \
-          "$(npm run --silent pregyp reveal staged_tarball --silent)"
+          "$(cat ./package.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ELECTRON_VERSION: 36.4.0
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
           gh release upload --clobber v2.36.12 \
-          "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
+          "$(cat ./package_x64.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ELECTRON_VERSION: 36.4.0
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
           gh release upload --clobber v2.36.12 \
-          "$(npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent)"
+          "$(cat ./package_arm64.txt)"
         env:
-          ELECTRON_VERSION: 36.4.0
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: always()
