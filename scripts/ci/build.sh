@@ -375,26 +375,27 @@ fi
 
 echo "=== node version: $(node -v)"
 
-# # If we are here, it means the addon worked
-# # Check if we need to publish the binaries
-# if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]]; then
-#   echo "=== Publish binary is true - Testing and publishing package with pregyp"
-#   if [[ "$MACOS_UNIVERSAL_BUILD" == "true" ]]; then
-#     # Need to publish two binaries when doing a universal build.
-#     # --
-#     # Publish x64 package
-#     npm_config_target_arch=x64 npm run pregyp package testpackage --verbose
-#     npm_config_target_arch=x64 node scripts/module-packaging.js --publish \
-#       "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
-#     # Publish arm64 package.
-#     npm_config_target_arch=arm64 npm run pregyp package --verbose  # Can't testpackage for arm64 yet.
-#     npm_config_target_arch=arm64 node scripts/module-packaging.js --publish \
-#       "$(npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent)"
-#   else
-#     npm run pregyp package testpackage --verbose
-#     node scripts/module-packaging.js --publish "$(npm run --silent pregyp reveal staged_tarball --silent)"
-#   fi
-# fi
+# If we are here, it means the addon worked
+# Check if we need to publish the binaries
+if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]]; then
+  echo "=== Publish binary is true - Testing and publishing package with pregyp"
+  if [[ "$MACOS_UNIVERSAL_BUILD" == "true" ]]; then
+    # Need to publish two binaries when doing a universal build.
+    # --
+    # Publish x64 package
+    npm_config_target_arch=x64 npm run pregyp package testpackage --verbose
+    # npm_config_target_arch=x64 node scripts/module-packaging.js --publish \
+    #   "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
+    # Publish arm64 package.
+    npm_config_target_arch=arm64 npm run pregyp package --verbose  # Can't testpackage for arm64 yet.
+    # npm_config_target_arch=arm64 node scripts/module-packaging.js --publish \
+    #   "$(npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent)"
+  else
+    npm run pregyp package testpackage --verbose
+    # node scripts/module-packaging.js --publish "$(npm run --silent pregyp reveal staged_tarball --silent)"
+  fi
+fi
+
 # echo "=== node version: $(node -v)"
 # # In case we published the binaries, verify if we can download them, and that they work
 # # Otherwise, unpublish them
