@@ -277,8 +277,7 @@ jobs:
           # node scripts\module-packaging.js --publish $(npm run -s pregyp reveal staged_tarball --silent)
       - name: Publish Binary
         run: |
-          gh release upload v2.36.12 \
-          "$(npm run -s pregyp reveal staged_tarball --silent)"
+          gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -331,7 +330,6 @@ jobs:
           # node scripts\module-packaging.js --publish $(npm run -s pregyp reveal staged_tarball --silent)
       - name: Publish Binary
         run: |
-          gh release upload v2.36.12 \
-          "$(npm run -s pregyp reveal staged_tarball --silent)"
+          gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
