@@ -117,21 +117,21 @@ jobs:
         if: runner.os != 'macOS'
         run: |
           gh release upload v2.36.12 \
-          "$(cat ./package.txt)"
+          "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
           gh release upload v2.36.12 \
-          "$(cat ./package_x64.txt)"
+          "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS'
         run: |
           gh release upload v2.36.12 \
-          "$(cat ./package_arm64.txt)"
+          "$(cat ./package_arm64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
