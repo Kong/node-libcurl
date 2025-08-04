@@ -132,6 +132,8 @@ jobs:
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package_arm64.txt)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
