@@ -408,10 +408,10 @@ fi
 #   false
 # fi
 
-# Clean everything
-if [[ $RUN_PREGYP_CLEAN == true ]]; then
-  echo "=== cleanup"
-  npm run pregyp clean
-fi
+# # Clean everything
+# if [[ $RUN_PREGYP_CLEAN == true ]]; then
+#   echo "=== cleanup"
+#   npm run pregyp clean
+# fi
 
 set +uv
