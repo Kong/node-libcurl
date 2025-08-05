@@ -28,16 +28,16 @@ jobs:
         with:
           username: ${{ (github.event_name == 'workflow_dispatch' && github.actor) || 'insomnia-infra' }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.node-version'
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version-file: '.node-version'
 
-      - name: Install
-        run: npm ci --ignore-scripts
+      # - name: Install
+      #   run: npm ci --ignore-scripts
 
-      - name: Create new package version
-        run: npm version "${{ env.TAG }}"
+      # - name: Create new package version
+      #   run: npm version "${{ env.TAG }}"
 
       - name: DEBUG see tags
         run: |
