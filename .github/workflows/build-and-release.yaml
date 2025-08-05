@@ -117,21 +117,21 @@ jobs:
       - name: 'Publish Binary'
         if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package_arm64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -206,21 +206,21 @@ jobs:
       - name: 'Publish Binary'
         if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 \
+          gh release upload $(git describe --exact-match --tags) \
           "$(cat ./package_arm64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -278,7 +278,7 @@ jobs:
       - name: Publish Binary
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
+          gh release upload $(git describe --exact-match --tags) $(npm run -s pregyp reveal staged_tarball --silent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -331,6 +331,6 @@ jobs:
       - name: Publish Binary
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
+          gh release upload $(git describe --exact-match --tags) $(npm run -s pregyp reveal staged_tarball --silent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
