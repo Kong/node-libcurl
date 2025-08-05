@@ -115,21 +115,21 @@ jobs:
           RUNNER_OS=${{ matrix.os }} \
           ./scripts/ci/build.sh
       - name: 'Publish Binary'
-        if: runner.os != 'macOS'
+        if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package_arm64.txt)" || :
@@ -204,21 +204,21 @@ jobs:
           GIT_TAG=$GIT_TAG \
           ./scripts/ci/build.sh
       - name: 'Publish Binary'
-        if: runner.os != 'macOS'
+        if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package_x64.txt)" || :
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 \
           "$(cat ./package_arm64.txt)" || :
@@ -270,12 +270,13 @@ jobs:
             $host.SetShouldExit(0)
           }
       - name: Build binary
-        # if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           pip install packaging
           npm run pregyp package testpackage --verbose
           # node scripts\module-packaging.js --publish $(npm run -s pregyp reveal staged_tarball --silent)
       - name: Publish Binary
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
         env:
@@ -323,12 +324,12 @@ jobs:
             $host.SetShouldExit(0)
           }
       - name: Build binary
-        # if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           pip install packaging
           npm run pregyp package testpackage --verbose
-          # node scripts\module-packaging.js --publish $(npm run -s pregyp reveal staged_tarball --silent)
       - name: Publish Binary
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload v2.36.12 $(npm run -s pregyp reveal staged_tarball --silent)
         env:
