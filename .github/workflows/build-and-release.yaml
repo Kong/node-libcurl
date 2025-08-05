@@ -118,21 +118,21 @@ jobs:
         if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package.txt)" || :
+          "$(cat ./package.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package_x64.txt)" || :
+          "$(cat ./package_x64.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package_arm64.txt)" || :
+          "$(cat ./package_arm64.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
@@ -207,21 +207,21 @@ jobs:
         if: runner.os != 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package.txt)" || :
+          "$(cat ./package.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish x64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package_x64.txt)" || :
+          "$(cat ./package_x64.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish arm64 Mac Binary'
         if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
         run: |
           gh release upload $(git describe --exact-match --tags) \
-          "$(cat ./package_arm64.txt)" || :
+          "$(cat ./package_arm64.txt)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
