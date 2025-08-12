@@ -6,7 +6,6 @@ on:
       version:
         description: 'Tag version to release'
         required: true
-  push:
 
 env:
   # Release Tag to build and publish
