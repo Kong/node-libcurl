@@ -9,7 +9,7 @@ on:
 
 env:
   # Release Tag to build and publish
-  TAG: ${{ github.event.inputs.version || '2.36.13-alpha2' }}
+  TAG: ${{ github.event.inputs.version }}
 
 jobs:
   release:

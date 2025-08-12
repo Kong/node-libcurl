@@ -382,12 +382,12 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
   if [[ "$MACOS_UNIVERSAL_BUILD" == "true" ]]; then
     # Need to publish two binaries when doing a universal build.
     # --
-    # Publish x64 package
+    # Build x64 package
     npm_config_target_arch=x64 npm run pregyp package testpackage --verbose
     npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent>package_x64.txt
     # npm_config_target_arch=x64 node scripts/module-packaging.js --publish \
     #   "$(npm_config_target_arch=x64 npm run --silent pregyp reveal staged_tarball --silent)"
-    # Publish arm64 package.
+    # Build arm64 package.
     npm_config_target_arch=arm64 npm run pregyp package --verbose  # Can't testpackage for arm64 yet.
     npm_config_target_arch=arm64 npm run --silent pregyp reveal staged_tarball --silent>package_arm64.txt
     # npm_config_target_arch=arm64 node scripts/module-packaging.js --publish \
@@ -399,6 +399,7 @@ if [[ $PUBLISH_BINARY == true && $LIBCURL_RELEASE == $LATEST_LIBCURL_RELEASE ]];
   fi
 fi
 
+## Move this to action or a different script later
 # echo "=== node version: $(node -v)"
 # # In case we published the binaries, verify if we can download them, and that they work
 # # Otherwise, unpublish them
