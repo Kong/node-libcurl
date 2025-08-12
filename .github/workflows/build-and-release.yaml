@@ -30,8 +30,8 @@ jobs:
         uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1
         id: core_tag_and_release
         with:
-          tag: v${{ github.ref_name }}
-          name: 'nodelibcurl v${{ github.ref_name }} 📦'
+          tag: ${{ github.ref_name }}
+          name: 'nodelibcurl ${{ github.ref_name }} 📦'
           generateReleaseNotes: true
           prerelease: false
           draft: true
