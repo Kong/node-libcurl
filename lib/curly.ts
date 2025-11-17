@@ -79,7 +79,7 @@ const methods = [
   'unsubscribe',
 ] as const
 
-type HttpMethod = (typeof methods)[number]
+type HttpMethod = typeof methods[number]
 
 export type CurlyResponseBodyParser = (
   data: Buffer,
