@@ -1008,7 +1008,8 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         
         Nan::CopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
         
-        persistentValue.Reset(Nan::GetCurrentContext()->GetIsolate(), idxValueAsObject);
+        v8::Isolate* isolate = v8::Isolate::GetCurrent();
+        persistentValue.Reset(isolate, idxValueAsObject);
 
         obj->hstsReadCache.push_back(persistentValue);
       }
