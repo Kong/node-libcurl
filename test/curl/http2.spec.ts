@@ -12,7 +12,7 @@ import {
   IncomingHttpHeaders,
 } from 'http2'
 
-import { host, portHttp2, serverHttp2 } from '../helper/server'
+import { host, listenHttp, portHttp2, serverHttp2 } from '../helper/server'
 import { Curl, CurlHttpVersion } from '../../lib'
 console.log(process.versions)
 type OnSessionFn = (session: ServerHttp2Session) => void
@@ -42,7 +42,7 @@ describe('HTTP2', () => {
     serverHttp2.on('session', onSession)
     serverHttp2.on('stream', onStream)
 
-    serverHttp2.listen(portHttp2, host, () => {
+    listenHttp(serverHttp2, portHttp2, () => {
       done()
     })
   })

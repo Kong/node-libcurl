@@ -18,7 +18,7 @@ import path from 'path'
 import querystring from 'querystring'
 import formidable from 'formidable'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const image =
@@ -56,7 +56,7 @@ describe('dupHandle()', () => {
   })
 
   before((done) => {
-    server.listen(port, host, () => {
+    listenHttp(server, port, () => {
       fs.writeFile(imageFilename, buffer, done)
     })
 

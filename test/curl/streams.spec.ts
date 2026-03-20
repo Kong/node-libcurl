@@ -11,7 +11,7 @@ import crypto from 'crypto'
 
 import { Curl, CurlCode, curly } from '../../lib'
 
-import { app, closeServer, host, port, server } from '../helper/server'
+import { app, closeServer, host, listenHttp, port, server } from '../helper/server'
 import { allMethodsWithMultipleReqResTypes } from '../helper/commonRoutes'
 
 interface GetReadableStreamForBufferOptions {
@@ -103,7 +103,7 @@ let randomBuffer: Buffer
 describe('streams', () => {
   before((done) => {
     randomBuffer = getRandomBuffer()
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     allMethodsWithMultipleReqResTypes(app, {
       putUploadBuffer: randomBuffer,

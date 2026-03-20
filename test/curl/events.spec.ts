@@ -6,7 +6,7 @@
  */
 import 'should'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl, CurlCode } from '../../lib'
 
 let curl: Curl
@@ -36,7 +36,7 @@ describe('Events', () => {
       }, 1000)
     })
 
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
   })
 
   after(() => {

@@ -6,7 +6,7 @@
  */
 import 'should'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl, CurlCode } from '../../lib'
 
 let curl: Curl
@@ -23,7 +23,7 @@ describe('Callbacks', () => {
   })
 
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     app.get('/delayed', (_req, res) => {
       const delayBetweenSends = 10

@@ -204,15 +204,18 @@
               'xcode_settings': {
                 'OTHER_CPLUSPLUSFLAGS' : [
                   '-arch x86_64',
-                  '-arch arm64'
+                  '-arch arm64',
+                  '-isysroot <!@(xcrun --show-sdk-path)',
                 ],
                 'OTHER_CFLAGS': [
                   '-arch x86_64',
-                  '-arch arm64'
+                  '-arch arm64',
+                  '-isysroot <!@(xcrun --show-sdk-path)',
                 ],
                 'OTHER_LDFLAGS': [
                   '-arch x86_64',
-                  '-arch arm64'
+                  '-arch arm64',
+                  '-isysroot <!@(xcrun --show-sdk-path)',
                 ]
               }
             }]

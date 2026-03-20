@@ -9,7 +9,7 @@ import https from 'https'
 import http2 from 'http2'
 import fs from 'fs'
 import path from 'path'
-import { Socket } from 'net'
+import type { Server as NetServer, Socket } from 'net'
 
 import express from 'express'
 import bodyParser from 'body-parser'
@@ -61,3 +61,11 @@ export const port = process.env.TEST_PORT
 export const portHttps = 3443
 export const portHttp2 = 3333
 export const host = 'localhost'
+
+export function listenHttp(
+  srv: NetServer,
+  listenPort: number,
+  cb?: () => void,
+): void {
+  srv.listen({ port: listenPort, host: '::', ipv6Only: false }, cb)
+}

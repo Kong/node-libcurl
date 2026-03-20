@@ -6,7 +6,7 @@
  */
 import 'should'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const image =
@@ -16,7 +16,7 @@ const size = buffer.length
 
 describe('Binary Data', () => {
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     app.post('/', (req, res) => {
       res.send(req.body.length.toString())
