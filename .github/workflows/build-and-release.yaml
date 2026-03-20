@@ -259,7 +259,7 @@ jobs:
   build-and-release-nodejs-windows:
     needs: setup
     permissions: write-all
-    runs-on: windows-2022
+    runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
@@ -276,6 +276,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install dependencies
         run: |
           choco install nasm -y
@@ -309,7 +313,7 @@ jobs:
   build-and-release-electron-windows:
     needs: setup
     permissions: write-all
-    runs-on: windows-2022
+    runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
@@ -330,6 +334,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install dependencies
         run: |
           choco install nasm -y
