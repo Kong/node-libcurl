@@ -4,11 +4,10 @@ on:
   pull_request: {}
   push:
     branches:
-    - develop
+      - develop
     tags:
-    - '*'
+      - '*'
   workflow_dispatch: {}
-
 
 jobs:
   semgrep:

@@ -68,7 +68,7 @@
               # 4068 -> Unknown pragma (mostly GCC pragmas being used)
               # 4996 -> Declared wrongly Nan::Callback::Call
               # 4309 -> 'static_cast': truncation of constant value on v8 header
-              # 4018 -> v8-internal.h: signed/unsigned mismatch in SmiTagging
+              # 4018 -> '<=': signed/unsigned mismatch on v8 header
               'DisableSpecificWarnings': ['4244', '4506', '4068', '4838', '4996', '4309', '4018'],
               'AdditionalOptions': [
                 '/std:<(node_libcurl_cpp_std)',

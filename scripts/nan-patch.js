@@ -15,10 +15,15 @@ if (fs.existsSync(nanH)) {
   if (content.includes('#include "nan_scriptorigin.h"')) {
     fs.writeFileSync(
       nanH,
-      content.replace(/#include "nan_scriptorigin.h"/, '// #include "nan_scriptorigin.h"'),
+      content.replace(
+        /#include "nan_scriptorigin.h"/,
+        '// #include "nan_scriptorigin.h"',
+      ),
       'utf8',
     )
-    console.log('[nan-patch] commented out #include "nan_scriptorigin.h" (nodejs/nan#978)')
+    console.log(
+      '[nan-patch] commented out #include "nan_scriptorigin.h" (nodejs/nan#978)',
+    )
   }
 }
 
@@ -59,9 +64,13 @@ if (fs.existsSync(callbacksInl)) {
   if (src.includes(patched)) {
     console.log('[nan-patch] PropertyCallbackInfo already patched, skipping')
   } else if (!src.includes(original)) {
-    console.warn('[nan-patch] could not find expected code in nan_callbacks_12_inl.h — nan may have been updated')
+    console.warn(
+      '[nan-patch] could not find expected code in nan_callbacks_12_inl.h — nan may have been updated',
+    )
   } else {
     fs.writeFileSync(callbacksInl, src.replace(original, patched), 'utf8')
-    console.log('[nan-patch] patched PropertyCallbackInfo::This() and Holder() for V8 >= 12.5')
+    console.log(
+      '[nan-patch] patched PropertyCallbackInfo::This() and Holder() for V8 >= 12.5',
+    )
   }
 }

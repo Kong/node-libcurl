@@ -46,7 +46,7 @@
     "postinstall": "node scripts/postinstall",
     "lint": "eslint lib/ scripts/ test/ examples/",
     "pregyp": "node-pre-gyp",
-    "prettier": "prettier --write",
+    "prettier": "prettier --write .",
     "prettier:all": "npm run prettier lib/**/*.ts tools/**/*.js scripts/**/*.js test/**/*.ts examples/**/*.js",
     "test": "mocha --require ts-node/register test/**/*.spec.ts --reporter spec --timeout 60000",
     "test:coverage": "nyc npm run test",
@@ -107,7 +107,7 @@
     "serialize-javascript": "^7.0.3",
     "glob": "13.0.6",
     "tough-cookie": "4.1.3",
-    "flatted":"3.4.2",
+    "flatted": "3.4.2",
     "qs": "6.14.2",
     "form-data": "2.5.5"
   },
