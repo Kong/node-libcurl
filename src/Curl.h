@@ -7,11 +7,11 @@
 #ifndef NODELIBCURL_H
 #define NODELIBCURL_H
 
-#include "macros.h"
-
 #include <curl/curl.h>
 #include <nan.h>
 #include <node.h>
+
+#include "macros.h"
 
 #include <functional>
 #include <memory>

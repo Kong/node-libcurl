@@ -11,7 +11,7 @@ import crypto from 'crypto'
 import httpAuth from 'http-auth'
 import httpAuthConnect from 'http-auth-connect'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl, CurlAuth } from '../../lib'
 
 const url = `http://${host}:${port}/`
@@ -62,7 +62,7 @@ describe('Option HTTPAUTH', () => {
   })
 
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
   })
 
   after(() => {

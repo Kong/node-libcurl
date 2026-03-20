@@ -12,7 +12,7 @@ import crypto from 'crypto'
 
 import express from 'express'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const url = `http://${host}:${port}`
@@ -104,7 +104,7 @@ describe('Put Upload', () => {
       },
     )
 
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
   })
 
   after(() => {

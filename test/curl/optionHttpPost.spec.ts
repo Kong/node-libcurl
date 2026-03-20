@@ -11,7 +11,7 @@ import path from 'path'
 
 import formidable from 'formidable'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const url = `http://${host}:${port}/`
@@ -35,7 +35,7 @@ describe('Option HTTPPOST', () => {
   })
 
   before((done) => {
-    server.listen(port, host, () => {
+    listenHttp(server, port, () => {
       fs.writeFile(imageFilePath, buffer, done)
     })
 

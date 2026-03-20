@@ -17,7 +17,7 @@ on:
 jobs:
   release:
     permissions: write-all
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
     permissions:
       packages: write
       contents: write # publish sbom to GH releases/tag assets
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
           upload-sbom-release-assets: true
 
   setup:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       NODE_VERSION: ${{ steps.set-versions.outputs.NODE_VERSION }}
       ELECTRON_VERSION: ${{ steps.set-versions.outputs.ELECTRON_VERSION }}
@@ -96,9 +96,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13-xlarge
-          - ubuntu-22.04
-          - ubuntu-22.04-arm
+          - macos-14-xlarge
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
     env:
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
       LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
@@ -176,9 +176,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13-xlarge
-          - ubuntu-22.04
-          - ubuntu-22.04-arm
+          - macos-14-xlarge
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
     env:
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
       ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
@@ -275,12 +275,21 @@ jobs:
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install dependencies
         run: |
           choco install nasm -y
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
-          python deps\curl-for-windows\configure.py
+          Push-Location deps\curl-for-windows
+          git submodule update --init --recursive
+          python configure.py
+          Pop-Location
       - name: Build
         run: |
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
@@ -329,12 +338,21 @@ jobs:
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install dependencies
         run: |
           choco install nasm -y
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
-          python deps\curl-for-windows\configure.py
+          Push-Location deps\curl-for-windows
+          git submodule update --init --recursive
+          python configure.py
+          Pop-Location
           npm i -g electron@${env:ELECTRON_VERSION}
       - name: Build
         run: |

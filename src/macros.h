@@ -53,6 +53,13 @@
 #define SETLOCALE_WRAPPER(code) code
 #endif
 
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 14 \
+    || (V8_MAJOR_VERSION == 14 && defined(V8_MINOR_VERSION) && V8_MINOR_VERSION >= 2))
+#define NLC_ACCESS_CONTROL_DEFAULT Nan::DEFAULT
+#else
+#define NLC_ACCESS_CONTROL_DEFAULT v8::DEFAULT
+#endif
+
 #define THROW_ERROR_OR_SET_MULTI_CALLBACK_ERROR_IF_INSIDE_MULTI(typeError) \
   if (obj->isInsideMultiHandle) {                                          \
     obj->callbackError.Reset(typeError);                                   \

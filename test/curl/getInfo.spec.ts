@@ -6,7 +6,7 @@
  */
 import 'should'
 
-import { app, closeServer, host, port, server } from '../helper/server'
+import { app, closeServer, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const url = `http://${host}:${port}/`
@@ -24,7 +24,7 @@ describe('getInfo()', () => {
   })
 
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     app.get('/', (_req, res) => {
       res.send('Hello World!')

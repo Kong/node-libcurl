@@ -774,7 +774,7 @@ NAN_MODULE_INIT(Initialize) {
   Nan::SetMethod(obj, "getVersion", GetVersion);
   Nan::SetMethod(obj, "getCount", GetCount);
   Nan::SetAccessor(obj, Nan::New("VERSION_NUM").ToLocalChecked(), GetterVersionNum, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
+                   v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT, attributes);
 
   Nan::Set(target, Nan::New("Curl").ToLocalChecked(), obj);
 }

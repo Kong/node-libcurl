@@ -365,7 +365,7 @@ dist_url = https://atom.io/download/atom-shell
 
 #### Electron >= 31
 
-If you are building for Electron >= 31  you need to set the build process to use the C++20 std, you can do that by passing the variable `node_libcurl_cpp_std=c++20`.
+If you are building for Electron >= 31 you need to set the build process to use the C++20 std, you can do that by passing the variable `node_libcurl_cpp_std=c++20`.
 
 > If using `npm`:
 

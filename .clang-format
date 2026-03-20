@@ -11,11 +11,11 @@ PointerAlignment: Left
 # or Merge would be better?
 IncludeBlocks: Regroup
 IncludeCategories:
-- Regex: '^\"'
-  Priority: 1000
-- Regex: '^<(node|nan|curl/)'
-  Priority: 2000
-- Regex: '^<.*/.*'
-  Priority: 4000
-- Regex: '^<[^/]*>'
-  Priority: 5000
+  - Regex: '^\"'
+    Priority: 1000
+  - Regex: '^<(node|nan|curl/)'
+    Priority: 2000
+  - Regex: '^<.*/.*'
+    Priority: 4000
+  - Regex: '^<[^/]*>'
+    Priority: 5000

@@ -7,6 +7,7 @@ The certificate file can be obtained in multiple ways:
 1. Extracted directly from your system/browser
 2. Downloaded from https://curl.haxx.se/docs/caextract.html, which is based on the one from Firefox
 3. Creating a file with the contents of `tls.rootCertificates`, which was added with Node.js `v12.3.0`, example:
+
 ```javascript
 const fs = require('fs')
 const path = require('path')

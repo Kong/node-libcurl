@@ -8,7 +8,7 @@ import 'should'
 
 import querystring from 'querystring'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 const url = `http://${host}:${port}/`
@@ -32,7 +32,7 @@ describe('Option POSTFIELDS', () => {
   })
 
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     app.post('/', (req, res) => {
       res.send(JSON.stringify(req.body))

@@ -6,12 +6,12 @@
  */
 import 'should'
 
-import { app, host, portHttps, serverHttps } from '../helper/server'
+import { app, host, listenHttp, portHttps, serverHttps } from '../helper/server'
 import { Curl } from '../../lib'
 
 describe('SSL', () => {
   before((done) => {
-    serverHttps.listen(portHttps, host, done)
+    listenHttp(serverHttps, portHttps, done)
 
     app.get('/', (_req, res) => {
       res.send('ok')

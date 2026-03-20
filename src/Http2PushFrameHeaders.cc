@@ -9,6 +9,8 @@
  */
 #include "Http2PushFrameHeaders.h"
 
+#include "macros.h"
+
 #include <iostream>
 
 namespace NodeLibcurl {
@@ -97,7 +99,7 @@ NAN_MODULE_INIT(Http2PushFrameHeaders::Initialize) {
 
   Nan::SetAccessor(objTmpl, Nan::New("numberOfHeaders").ToLocalChecked(),
                    Http2PushFrameHeaders::GetterNumberOfHeaders, 0, v8::Local<v8::Value>(),
-                   v8::DEFAULT, attributes);
+                   NLC_ACCESS_CONTROL_DEFAULT, attributes);
 
   Nan::SetMethod(objTmpl, "getByIndex", Http2PushFrameHeaders::GetByIndex);
   Nan::SetMethod(objTmpl, "getByName", Http2PushFrameHeaders::GetByName);

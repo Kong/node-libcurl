@@ -6,7 +6,7 @@
  */
 import 'should'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { Curl, CurlCode } from '../../lib'
 
 const url = `http://${host}:${port}/`
@@ -23,7 +23,7 @@ describe('reset()', () => {
       res.send('Hi')
     })
 
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
   })
 
   after(() => {

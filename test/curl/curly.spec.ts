@@ -8,14 +8,14 @@ import 'should'
 
 import { curly } from '../../lib'
 
-import { app, host, port, server } from '../helper/server'
+import { app, host, listenHttp, port, server } from '../helper/server'
 import { allMethodsWithMultipleReqResTypes } from '../helper/commonRoutes'
 
 const url = `http://${host}:${port}`
 
 describe('curly', () => {
   before((done) => {
-    server.listen(port, host, done)
+    listenHttp(server, port, done)
 
     allMethodsWithMultipleReqResTypes(app)
   })

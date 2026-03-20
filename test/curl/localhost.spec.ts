@@ -1,14 +1,16 @@
 import 'should'
-import { app, host, port, server } from '../helper/server'
+import { app, listenHttp, port, server } from '../helper/server'
 import { Curl } from '../../lib'
 
 let curl: Curl
 const urlLocalhost = `http://localhost:${port}/`
 const urlTestLocalhost = `http://test.localhost:${port}/`
 
+const loopbackRemoteIps = ['::1', '::ffff:127.0.0.1', '127.0.0.1']
+
 describe('DNS Resolution', () => {
   before((done) => {
-    server.listen(port, host, () => done())
+    listenHttp(server, port, () => done())
 
     app.get('/', (req, res) => {
       res.send({ message: 'resolved', ip: req.ip })
@@ -29,7 +31,7 @@ describe('DNS Resolution', () => {
     curl.close()
   })
 
-  it('should resolve localhost to 127.0.0.1', (done) => {
+  it('should resolve localhost to loopback', (done) => {
     curl.setOpt('URL', urlLocalhost)
 
     curl.on('end', (status, data) => {
@@ -39,7 +41,7 @@ describe('DNS Resolution', () => {
 
       const result = JSON.parse(data as string)
       result.message.should.be.equal('resolved')
-      result.ip.should.be.equal('::1')
+      result.ip.should.be.oneOf(loopbackRemoteIps)
 
       done()
     })
@@ -48,7 +50,7 @@ describe('DNS Resolution', () => {
     curl.perform()
   })
 
-  it('should resolve test.localhost to 127.0.0.1', (done) => {
+  it('should resolve test.localhost to loopback', (done) => {
     // skip this test if windows because it does not support *.localhost on hosts file?
     // https://stackoverflow.com/questions/138162/wildcards-in-a-windows-hosts-file/4166967#4166967
     // if (process.platform === 'win32') {
@@ -64,7 +66,7 @@ describe('DNS Resolution', () => {
 
       const result = JSON.parse(data as string)
       result.message.should.be.equal('resolved')
-      result.ip.should.be.equal('::1')
+      result.ip.should.be.oneOf(loopbackRemoteIps)
 
       done()
     })

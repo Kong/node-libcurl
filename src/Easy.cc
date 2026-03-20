@@ -1008,7 +1008,7 @@ int Easy::CbHstsRead(CURL* handle, struct curl_hstsentry* sts, void* userdata) {
         
         Nan::CopyablePersistentTraits<v8::Object>::CopyablePersistent persistentValue;
         
-        persistentValue.Reset(Nan::GetCurrentContext()->GetIsolate(), idxValueAsObject);
+        persistentValue.Reset(v8::Isolate::GetCurrent(), idxValueAsObject);
 
         obj->hstsReadCache.push_back(persistentValue);
       }
@@ -1402,7 +1402,6 @@ NAN_MODULE_INIT(Easy::Initialize) {
   v8::Local<v8::FunctionTemplate> tmpl = Nan::New<v8::FunctionTemplate>(Easy::New);
   tmpl->SetClassName(Nan::New("Easy").ToLocalChecked());
   tmpl->InstanceTemplate()->SetInternalFieldCount(1);
-  v8::Local<v8::ObjectTemplate> proto = tmpl->PrototypeTemplate();
 
   // prototype methods
   Nan::SetPrototypeMethod(tmpl, "setOpt", Easy::SetOpt);
@@ -1422,17 +1421,18 @@ NAN_MODULE_INIT(Easy::Initialize) {
   // static methods
   Nan::SetMethod(tmpl, "strError", Easy::StrError);
 
-  // Instance accessors
-  Nan::SetAccessor(proto, Nan::New("id").ToLocalChecked(), Easy::IdGetter, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, v8::ReadOnly);
-  Nan::SetAccessor(proto, Nan::New("isInsideMultiHandle").ToLocalChecked(),
-                   Easy::IsInsideMultiHandleGetter, 0, v8::Local<v8::Value>(), v8::DEFAULT,
+  v8::Local<v8::ObjectTemplate> inst = tmpl->InstanceTemplate();
+
+  Nan::SetAccessor(inst, Nan::New("id").ToLocalChecked(), Easy::IdGetter, 0,
+                   v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT, v8::ReadOnly);
+  Nan::SetAccessor(inst, Nan::New("isInsideMultiHandle").ToLocalChecked(),
+                   Easy::IsInsideMultiHandleGetter, 0, v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT,
                    v8::ReadOnly);
-  Nan::SetAccessor(proto, Nan::New("isMonitoringSockets").ToLocalChecked(),
-                   Easy::IsMonitoringSocketsGetter, 0, v8::Local<v8::Value>(), v8::DEFAULT,
+  Nan::SetAccessor(inst, Nan::New("isMonitoringSockets").ToLocalChecked(),
+                   Easy::IsMonitoringSocketsGetter, 0, v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT,
                    v8::ReadOnly);
-  Nan::SetAccessor(proto, Nan::New("isOpen").ToLocalChecked(), Easy::IsOpenGetter, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, v8::ReadOnly);
+  Nan::SetAccessor(inst, Nan::New("isOpen").ToLocalChecked(), Easy::IsOpenGetter, 0,
+                   v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT, v8::ReadOnly);
 
   Easy::constructor.Reset(tmpl);
 
