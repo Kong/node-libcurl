@@ -209,7 +209,9 @@ jobs:
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -257,7 +259,9 @@ jobs:
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:

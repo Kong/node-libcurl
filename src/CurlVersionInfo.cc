@@ -96,9 +96,9 @@ NAN_MODULE_INIT(CurlVersionInfo::Initialize) {
   v8::Local<v8::Object> obj = Nan::New<v8::Object>();
 
   Nan::SetAccessor(obj, Nan::New("protocols").ToLocalChecked(), GetterProtocols, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
+                   v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT, attributes);
   Nan::SetAccessor(obj, Nan::New("features").ToLocalChecked(), GetterFeatures, 0,
-                   v8::Local<v8::Value>(), v8::DEFAULT, attributes);
+                   v8::Local<v8::Value>(), NLC_ACCESS_CONTROL_DEFAULT, attributes);
   SetObjPropertyToNullOrValue(obj, "rawFeatures", versionInfo->features);
 
   SetObjPropertyToNullOrValue(obj, "version", versionInfo->version);
