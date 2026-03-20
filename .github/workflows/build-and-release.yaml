@@ -259,7 +259,7 @@ jobs:
   build-and-release-nodejs-windows:
     needs: setup
     permissions: write-all
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
@@ -309,7 +309,7 @@ jobs:
   build-and-release-electron-windows:
     needs: setup
     permissions: write-all
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true

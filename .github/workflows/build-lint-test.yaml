@@ -193,7 +193,7 @@ jobs:
 
   build-and-test-nodejs-windows:
     needs: setup
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
@@ -230,7 +230,7 @@ jobs:
 
   build-and-test-electron-windows:
     needs: setup
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       npm_config_msvs_version: 2022
       npm_config_build_from_source: true
