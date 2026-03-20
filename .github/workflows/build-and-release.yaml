@@ -284,7 +284,10 @@ jobs:
         run: |
           choco install nasm -y
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
-          python deps\curl-for-windows\configure.py
+          Push-Location deps\curl-for-windows
+          git submodule update --init --recursive
+          python configure.py
+          Pop-Location
       - name: Build
         run: |
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
@@ -342,7 +345,10 @@ jobs:
         run: |
           choco install nasm -y
           $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
-          python deps\curl-for-windows\configure.py
+          Push-Location deps\curl-for-windows
+          git submodule update --init --recursive
+          python configure.py
+          Pop-Location
           npm i -g electron@${env:ELECTRON_VERSION}
       - name: Build
         run: |
