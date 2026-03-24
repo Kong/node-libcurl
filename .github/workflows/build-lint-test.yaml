@@ -66,8 +66,8 @@ jobs:
       matrix:
         os:
           - macos-14-xlarge
-          - ubuntu-24.04
-          - ubuntu-24.04-arm
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
     env:
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
       LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
@@ -129,8 +129,8 @@ jobs:
       matrix:
         os:
           - macos-14-xlarge
-          - ubuntu-24.04
-          - ubuntu-24.04-arm
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
     env:
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
       ELECTRON_VERSION: ${{ needs.setup.outputs.ELECTRON_VERSION }}
