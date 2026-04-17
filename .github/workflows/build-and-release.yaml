@@ -12,22 +12,25 @@ on:
     branches:
       - develop
 
+permissions: {}
+
 # all jobs here must have a matrix identical to the ones inside build-lint-test.yaml
 
 jobs:
   release:
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1.16.0
         id: core_tag_and_release
         with:
           tag: ${{ github.ref_name }}
@@ -38,12 +41,11 @@ jobs:
 
   scan:
     permissions:
-      packages: write
       contents: write # publish sbom to GH releases/tag assets
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           path: ${{ github.repository }}
           # fetch-depth: 0
@@ -60,6 +62,8 @@ jobs:
           upload-sbom-release-assets: true
 
   setup:
+    permissions:
+      contents: read
     runs-on: ubuntu-24.04
     outputs:
       NODE_VERSION: ${{ steps.set-versions.outputs.NODE_VERSION }}
@@ -70,7 +74,7 @@ jobs:
       npm_config_target: ${{ steps.set-versions.outputs.npm_config_target }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Read .node-version
         id: set-versions
@@ -90,7 +94,8 @@ jobs:
 
   build-and-release-nodejs:
     needs: setup
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -112,15 +117,15 @@ jobs:
         name: Install Needed packages on Linux
         run: sudo apt-get install -y cmake
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Restore libcurl deps cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: libcurl-deps-cache
         with:
           path: |
@@ -162,7 +167,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: build-logs-${{ matrix.os }}-${{ env.LIBCURL_RELEASE }}-${{ env.NODE_VERSION }}
           path: ./logs/
@@ -170,7 +175,8 @@ jobs:
 
   build-and-release-electron:
     needs: setup
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -193,15 +199,15 @@ jobs:
         name: Install Needed packages on Linux
         run: sudo apt-get install -y cmake
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Restore Electron Cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/Library/Caches/electron
           key: v1-${{ matrix.os }}-electron-cache-${{ env.ELECTRON_VERSION }} }}
@@ -209,7 +215,7 @@ jobs:
             v1-${{ matrix.os }}-electron-cache-${{ env.ELECTRON_VERSION }} }}
             v1-${{ matrix.os }}-electron-cache-
       - name: Restore libcurl deps cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: libcurl-deps-cache
         with:
           path: |
@@ -250,7 +256,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: build-logs-${{ matrix.os }}-${{ env.LIBCURL_RELEASE }}-${{ env.ELECTRON_VERSION }} }}
           path: ./logs/
@@ -258,7 +264,8 @@ jobs:
 
   build-and-release-nodejs-windows:
     needs: setup
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
@@ -269,17 +276,17 @@ jobs:
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           submodules: recursive
       - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Setup Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
       - name: Install dependencies
@@ -317,7 +324,8 @@ jobs:
 
   build-and-release-electron-windows:
     needs: setup
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: windows-latest
     env:
       npm_config_msvs_version: 2022
@@ -332,17 +340,17 @@ jobs:
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           submodules: recursive
       - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: '.node-version'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Setup Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
       - name: Install dependencies
