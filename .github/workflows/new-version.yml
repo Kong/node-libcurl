@@ -11,13 +11,16 @@ env:
   # Release Tag to build and publish
   TAG: ${{ github.event.inputs.version }}
 
+permissions: {}
+
 jobs:
   release:
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -49,7 +52,7 @@ jobs:
       #     git push origin develop
 
       - name: Create Tag and Release
-        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1.16.0
         id: core_tag_and_release
         with:
           tag: v${{ env.TAG }}
