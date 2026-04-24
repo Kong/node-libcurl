@@ -272,6 +272,7 @@ export LDFLAGS=$LDFLAGS
 
 # Release - Static
 ./configure \
+    --enable-ipv6 \
     --without-nss \
     --without-libpsl \
     --without-librtmp \
