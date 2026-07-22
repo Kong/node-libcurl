@@ -57,7 +57,7 @@ const execConfig = {
 const depsGypTarget = `curl-for-windows/curl.gyp:libcurl`
 
 const fileWithDepsTag = 'LIBCURL_VERSION_WIN_DEPS'
-const depsRepo = 'https://github.com/JCMais/curl-for-windows.git'
+const depsRepo = 'https://github.com/Kong/curl-for-windows.git'
 const envCurlForWindowsDepsVersionTag = process.env.NODE_LIBCURL_WINDEPS_TAG
 
 const cleanupAndExit = (code = 0) => {
@@ -123,7 +123,8 @@ const retrieveWinDeps = async () => {
   }
 
   await execAsync(
-    'cd curl-for-windows && git submodule update --init && python configure.py',
+    `cd curl-for-windows && git submodule update --init && python configure.py${process.arch === 'arm64' ? ' --target-arch arm64' : ''
+    }`,
     execConfig,
   )
 

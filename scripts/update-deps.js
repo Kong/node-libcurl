@@ -13,8 +13,10 @@ const { resolve } = require('path')
 
 const config = { cwd: resolve(__dirname, '..') }
 
+const configureArgs = process.arch === 'arm64' ? ' --target-arch arm64' : ''
+
 exec(
-  'git submodule update --init --recursive && python deps/curl-for-windows/configure.py',
+  `git submodule update --init --recursive && python deps/curl-for-windows/configure.py${configureArgs}`,
   function (err) {
     if (err) {
       console.log(err.toString())
