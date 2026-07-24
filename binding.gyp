@@ -139,6 +139,17 @@
           ],
         }],
         ['OS=="linux"', {
+          # gcc (Ubuntu 22.04 / gcc 11) cannot parse V8 15's
+          #   class V8_DEPRECATED(...) V8_EXPORT Value { ... }
+          # a [[deprecated(...)]] attribute immediately followed by
+          # __attribute__((visibility("default"))). Dropping node-gyp's
+          # deprecation-warning defines makes V8_DEPRECATED expand to nothing.
+          'defines!': [
+            'V8_DEPRECATION_WARNINGS',
+            'V8_DEPRECATION_WARNINGS=1',
+            'V8_IMMINENT_DEPRECATION_WARNINGS',
+            'V8_IMMINENT_DEPRECATION_WARNINGS=1',
+          ],
           'conditions': [
             ['curl_static_build=="true"', {
               # pretty sure cflags adds that
