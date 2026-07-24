@@ -15,6 +15,10 @@ jobs:
       id-token: write # Required for npm provenance/SLSA attestation ( --provenance flag )
       actions: read # For getting workflow run info to build provenance
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Setup Node.js
