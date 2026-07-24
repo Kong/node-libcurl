@@ -1,7 +1,6 @@
 ## GitHub Actions is used to build:
-## - Electron (macOs)
-## - Nwjs (macOs)
-## - Node.js (macOs, linux)
+## - Electron (macOS, Linux, Windows x64/arm64)
+## - Node.js (macOS, Linux, Windows x64/arm64)
 
 name: build-and-release
 
@@ -266,10 +265,19 @@ jobs:
     needs: setup
     permissions:
       contents: write
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            arch: x64
+          - runner: windows-11-vs2026-arm
+            arch: arm64
     env:
-      npm_config_msvs_version: 2022
+      npm_config_msvs_version: 2026
       npm_config_build_from_source: true
+      npm_config_target_arch: ${{ matrix.arch }}
       NODE_VERSION: ${{ needs.setup.outputs.NODE_VERSION }}
       LIBCURL_RELEASE: ${{ needs.setup.outputs.LIBCURL_RELEASE }}
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
@@ -289,17 +297,29 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Install NASM
+        if: matrix.arch == 'x64'
         run: |
           choco install nasm -y
-          $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
+          echo "NASM_PATH=$env:PROGRAMFILES\NASM" >> $env:GITHUB_ENV
+      - name: Install dependencies
+        run: |
+          if ($env:NASM_PATH) {
+            $env:PATH = "$env:NASM_PATH;$env:Path"
+          }
           Push-Location deps\curl-for-windows
           git submodule update --init --recursive
-          python configure.py
+          $configureArgs = @()
+          if ("${{ matrix.arch }}" -eq "arm64") {
+            $configureArgs = @("--target-arch", "arm64")
+          }
+          python configure.py @configureArgs
           Pop-Location
       - name: Build
         run: |
-          $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
+          if ($env:NASM_PATH) {
+            $env:PATH = "$env:NASM_PATH;$env:Path"
+          }
           npm ci
       - name: Test
         run: |
@@ -326,10 +346,19 @@ jobs:
     needs: setup
     permissions:
       contents: write
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            arch: x64
+          - runner: windows-11-vs2026-arm
+            arch: arm64
     env:
-      npm_config_msvs_version: 2022
+      npm_config_msvs_version: 2026
       npm_config_build_from_source: true
+      npm_config_target_arch: ${{ matrix.arch }}
       npm_config_runtime: 'electron'
       npm_config_dist_url: 'https://electronjs.org/headers'
       npm_config_target: ${{ needs.setup.outputs.npm_config_target }}
@@ -353,18 +382,30 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Install NASM
+        if: matrix.arch == 'x64'
         run: |
           choco install nasm -y
-          $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
+          echo "NASM_PATH=$env:PROGRAMFILES\NASM" >> $env:GITHUB_ENV
+      - name: Install dependencies
+        run: |
+          if ($env:NASM_PATH) {
+            $env:PATH = "$env:NASM_PATH;$env:Path"
+          }
           Push-Location deps\curl-for-windows
           git submodule update --init --recursive
-          python configure.py
+          $configureArgs = @()
+          if ("${{ matrix.arch }}" -eq "arm64") {
+            $configureArgs = @("--target-arch", "arm64")
+          }
+          python configure.py @configureArgs
           Pop-Location
           npm i -g electron@${env:ELECTRON_VERSION}
       - name: Build
         run: |
-          $env:PATH=$env:PROGRAMFILES + "\NASM;" + $env:Path
+          if ($env:NASM_PATH) {
+            $env:PATH = "$env:NASM_PATH;$env:Path"
+          }
           npm ci
       - name: Test
         run: |
