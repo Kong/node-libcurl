@@ -11,7 +11,14 @@ import crypto from 'crypto'
 
 import { Curl, CurlCode, curly } from '../../lib'
 
-import { app, closeServer, host, listenHttp, port, server } from '../helper/server'
+import {
+  app,
+  closeServer,
+  host,
+  listenHttp,
+  port,
+  server,
+} from '../helper/server'
 import { allMethodsWithMultipleReqResTypes } from '../helper/commonRoutes'
 
 interface GetReadableStreamForBufferOptions {

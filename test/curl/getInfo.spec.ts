@@ -6,7 +6,14 @@
  */
 import 'should'
 
-import { app, closeServer, host, listenHttp, port, server } from '../helper/server'
+import {
+  app,
+  closeServer,
+  host,
+  listenHttp,
+  port,
+  server,
+} from '../helper/server'
 import { Curl } from '../../lib'
 
 const url = `http://${host}:${port}/`

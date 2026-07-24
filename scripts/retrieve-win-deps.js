@@ -123,7 +123,8 @@ const retrieveWinDeps = async () => {
   }
 
   await execAsync(
-    `cd curl-for-windows && git submodule update --init && python configure.py${process.arch === 'arm64' ? ' --target-arch arm64' : ''
+    `cd curl-for-windows && git submodule update --init && python configure.py${
+      process.arch === 'arm64' ? ' --target-arch arm64' : ''
     }`,
     execConfig,
   )
