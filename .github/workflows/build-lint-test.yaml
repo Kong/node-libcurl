@@ -16,6 +16,11 @@ jobs:
       contents: read
     runs-on: ubuntu-24.04
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -42,6 +47,11 @@ jobs:
       NODE_LIBCURL_CPP_STD: ${{ steps.set-versions.outputs.NODE_LIBCURL_CPP_STD }}
       npm_config_target: ${{ steps.set-versions.outputs.npm_config_target }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
@@ -79,6 +89,10 @@ jobs:
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
       - id: timestamp
         run: echo "timestamp=$(timestamp +%s)" >> $GITHUB_OUTPUT
       - if: runner.os == 'macOS'
@@ -145,6 +159,10 @@ jobs:
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
       - id: timestamp
         run: echo "timestamp=$(timestamp +%s)" >> $GITHUB_OUTPUT
       - if: runner.os == 'macOS'
@@ -220,6 +238,10 @@ jobs:
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -293,6 +315,10 @@ jobs:
       LATEST_LIBCURL_RELEASE: ${{ needs.setup.outputs.LATEST_LIBCURL_RELEASE }}
       NODE_LIBCURL_CPP_STD: ${{ needs.setup.outputs.NODE_LIBCURL_CPP_STD }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
