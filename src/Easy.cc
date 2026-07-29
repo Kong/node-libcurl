@@ -1457,7 +1457,14 @@ NAN_METHOD(Easy::New) {
 
     // This is the case when calling with a curl easy handle directly
     if (jsHandle->IsExternal()) {
-      CURL* curlEasyHandle = reinterpret_cast<CURL*>(info[0].As<v8::External>()->Value());
+      // V8 15 (Electron 43) requires an external-pointer tag on External::Value();
+      // must match the tag used when the handle was wrapped via Nan::New<v8::External>.
+#ifdef V8_EXTERNAL_POINTER_TAG_COUNT
+      void* handlePtr = info[0].As<v8::External>()->Value(v8::kExternalPointerTypeTagDefault);
+#else
+      void* handlePtr = info[0].As<v8::External>()->Value();
+#endif
+      CURL* curlEasyHandle = reinterpret_cast<CURL*>(handlePtr);
       obj = new Easy(curlEasyHandle);
     } else {
       Easy* orig = Nan::ObjectWrap::Unwrap<Easy>(Nan::To<v8::Object>(info[0]).ToLocalChecked());
