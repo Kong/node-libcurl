@@ -1,0 +1,29 @@
+#
+# This is a Flox environment manifest.
+# Visit flox.dev/docs/concepts/manifest/
+# or see flox-edit(1), manifest.toml(5) for more information.
+#
+# Flox manifest version managed by Flox CLI
+version = 1
+[install]
+nodejs = { version = "20.17.0", pkg-path = "nodejs" }
+electron = { version = "32.1.2", pkg-path = "electron" }
+make.pkg-path = "gnumake"
+cmake.pkg-path = "cmake"
+gcc.pkg-path = "gcc"
+coreutils-prefixed.pkg-path = "coreutils-prefixed"
+wget.pkg-path = "wget"
+python3.pkg-path = "python3"
+zlib.pkg-path = "zlib"
+groff.pkg-path = "groff"
+
+[vars]
+ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
+
+[hook]
+on-activate = '''
+  export ELECTRON_PATH="$(which electron)"
+'''
+
+[options]
+systems = ["aarch64-darwin", "aarch64-linux", "x86_64-darwin", "x86_64-linux"]
