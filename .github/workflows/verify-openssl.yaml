@@ -26,10 +26,6 @@ jobs:
             arch: x64
           - runner: windows-11-vs2026-arm
             arch: arm64
-          - runner: macos-14-xlarge
-            arch: arm64
-          - runner: ubuntu-22.04
-            arch: x64
     env:
       npm_config_build_from_source: true
     steps:
