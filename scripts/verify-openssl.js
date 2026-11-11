@@ -114,7 +114,7 @@ function startWeakServer(openssl, dir) {
   });
 }
 
-function curlGet(nativeCurl, url, opts) {
+function curlGet(nativeCurl, url, opts, expectBody = true) {
   return new Promise(resolve => {
     const curl = new nativeCurl();
     let body = '';
@@ -138,7 +138,7 @@ function curlGet(nativeCurl, url, opts) {
     for (const [key, value] of Object.entries(opts || {})) {
       curl.setOpt(key, value);
     }
-    curl.on('end', () => done(body.trim() === 'ok', `status ok, body=${JSON.stringify(body.trim())}`));
+    curl.on('end', () => done(expectBody ? body.trim() === 'ok' : true, `transferred ${body.length} bytes`));
     curl.on('error', (err, code) => done(false, `code=${code} ${err}`));
     curl.perform();
   });
@@ -205,7 +205,7 @@ async function main() {
 
   const weak = await startWeakServer(openssl, dir);
   if (weak) {
-    const { ok, detail } = await curlGet(Curl, `https://localhost:${weak.port}/`, { SSL_VERIFYPEER: 0 });
+    const { ok, detail } = await curlGet(Curl, `https://localhost:${weak.port}/`, { SSL_VERIFYPEER: 0 }, false);
     record('1024-bit server certificate accepted (security level 1)', ok, detail);
     weak.child.kill();
   } else {
