@@ -26,12 +26,11 @@ jobs:
             arch: x64
           - runner: windows-11-vs2026-arm
             arch: arm64
-          - runner: macos-14
+          - runner: macos-14-xlarge
             arch: arm64
           - runner: ubuntu-22.04
             arch: x64
     env:
-      npm_config_msvs_version: 2026
       npm_config_build_from_source: true
     steps:
       - name: Install Needed packages on macOS
@@ -55,6 +54,9 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
+      - name: Windows environment
+        if: runner.os == 'Windows'
+        run: echo "npm_config_msvs_version=2026" >> $env:GITHUB_ENV
       - name: Install NASM
         if: runner.os == 'Windows' && matrix.arch == 'x64'
         run: |
