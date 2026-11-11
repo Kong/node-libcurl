@@ -60,6 +60,7 @@ jobs:
         run: |
           choco install nasm -y
           echo "NASM_PATH=$env:PROGRAMFILES\NASM" >> $env:GITHUB_ENV
+          echo "$env:PROGRAMFILES\NASM" >> $env:GITHUB_PATH
       - name: Configure libcurl build
         if: runner.os == 'Windows'
         run: |
@@ -72,7 +73,6 @@ jobs:
           Pop-Location
       - name: Build from source (node runtime)
         run: |
-          if ($env:NASM_PATH) { $env:PATH = "$env:NASM_PATH;$env:Path" }
           npm ci
           npm run build:dist
       - name: Verify OpenSSL version and TLS behaviour
@@ -80,7 +80,6 @@ jobs:
       - name: Rebuild for Electron (Insomnia)
         if: runner.os == 'Windows'
         run: |
-          if ($env:NASM_PATH) { $env:PATH = "$env:NASM_PATH;$env:Path" }
           ./node_modules/.bin/node-pre-gyp rebuild --runtime=electron --target=43.2.0 --dist-url=https://electronjs.org/headers
           npm run pregyp package testpackage --verbose
       - name: Upload Electron binary
