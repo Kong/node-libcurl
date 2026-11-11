@@ -79,7 +79,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           ./node_modules/.bin/node-pre-gyp rebuild --runtime=electron --target=43.2.0 --dist-url=https://electronjs.org/headers
-          npm run pregyp package testpackage --verbose
+          # testpackage would dlopen the electron build with the node binary
+          ./node_modules/.bin/node-pre-gyp package --runtime=electron --target=43.2.0 --dist-url=https://electronjs.org/headers
       - name: Upload Electron binary
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
