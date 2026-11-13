@@ -17,7 +17,7 @@ if [[ -f $build_folder/lib/libz.a ]] && [[ -z $FORCE_REBUILD || $FORCE_REBUILD !
 fi
 
 if [ ! -d $2/source/$1 ]; then
-  $curr_dirname/download-and-unpack.sh https://github.com/madler/zlib/archive/v$1.tar.gz $2
+  $curr_dirname/download-and-unpack.sh https://github.com/madler/zlib/releases/download/v$1/zlib-$1.tar.gz $2
 
   mv $2/zlib-$1 $2/source/$1
   cd $2/source/$1
