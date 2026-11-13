@@ -119,7 +119,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14-xlarge
+          - macos-15-xlarge
           - ubuntu-22.04
           - ubuntu-22.04-arm
     env:
@@ -206,7 +206,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14-xlarge
+          - macos-15-xlarge
           - ubuntu-22.04
           - ubuntu-22.04-arm
     env:
