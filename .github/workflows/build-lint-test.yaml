@@ -297,6 +297,16 @@ jobs:
             $host.SetShouldExit(0)
           }
 
+      # Consumed by downstream projects (Insomnia E2E) that need this exact
+      # binary before a release exists.
+      - name: Upload binding
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: binding-win32-${{ matrix.arch }}-node
+          path: lib/binding/node_libcurl.node
+          if-no-files-found: error
+          retention-days: 7
+
   build-and-test-electron-windows:
     needs: setup
     permissions:
@@ -374,3 +384,13 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             $host.SetShouldExit(0)
           }
+
+      # Consumed by downstream projects (Insomnia E2E) that need this exact
+      # binary before a release exists.
+      - name: Upload binding
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: binding-win32-${{ matrix.arch }}-electron
+          path: lib/binding/node_libcurl.node
+          if-no-files-found: error
+          retention-days: 7
