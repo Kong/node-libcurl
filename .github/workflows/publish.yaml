@@ -9,6 +9,9 @@ permissions: {}
 
 jobs:
   publish:
+    # Verification tags (`vX.Y.Z-ver.N`) exist to build release assets for
+    # downstream testing; they must not publish to npm.
+    if: ${{ !contains(github.ref_name, '-ver.') }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read # Required for actions/checkout
