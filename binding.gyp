@@ -156,6 +156,19 @@
               'defines': [
                 'CURL_STATICLIB',
               ],
+              # Do not re-export symbols coming from the statically linked
+              # archives (libcurl, OpenSSL, nghttp2, ...). Without this the
+              # addon exports its bundled OpenSSL symbols, and the dynamic
+              # linker resolves its *internal* calls to whatever libcrypto
+              # is already loaded in the process (e.g. pulled in by Electron
+              # via libcups / libgssapi_krb5). On distros shipping a
+              # different OpenSSL major version (Fedora 45: OpenSSL 4) the
+              # bundled OpenSSL 3.x ends up calling into OpenSSL 4 and
+              # segfaults in conf_ssl_name_find(). Hiding the symbols makes
+              # every reference bind to the bundled copy at link time.
+              'ldflags': [
+                '-Wl,--exclude-libs,ALL',
+              ],
               'conditions': [
                 ['curl_libraries==""', {
                   'libraries': [
